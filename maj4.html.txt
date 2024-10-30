@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronomètre Vitesse</title>
+    <style>
+        /* Styles de base */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #timer-display {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        #input-controls {
+            margin-top: 20px;
+        }
+        #input-controls label {
+            margin: 5px;
+        }
+        #input-controls input {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1.2em;
+            width: 120px;
+        }
+        /* Styles des boutons */
+        #timer-controls {
+            display: flex; /* Utilise flexbox pour aligner les boutons */
+            justify-content: center; /* Centre les boutons */
+            gap: 10px; /* Espace entre les boutons */
+            margin-bottom: 20px; /* Marge en bas des contrôles de timer */
+        }
+        #timer-controls button {
+            padding: 0;
+            font-size: 14px;
+            font-weight: bold;
+            width: 80px;
+            height: 80px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%; /* Garder les boutons ronds */
+            margin: 5px; /* Espacement entre les boutons */
+        }
+        #start-button {
+            background-color: #008CBA; /* Bleu */
+        }
+        #intermediate-button {
+            background-color: #4CAF50; /* Vert */
+        }
+        #stop-button {
+            background-color: #f44336; /* Rouge */
+        }
+        #reset-download-controls {
+            display: flex; /* Utilise flexbox pour aligner les boutons */
+            justify-content: center; /* Centre les boutons */
+            gap: 10px; /* Espace entre les boutons */
+        }
+        #reset-button, #download-button {
+            padding: 10px 20px;
+            margin: 5px; /* Espacement entre les boutons */
+            border-radius: 5px; /* Bord arrondi */
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        #reset-button {
+            background-color: #f44336; /* Rouge */
+        }
+        #download-button {
+            background-color: #FF9800; /* Orange */
+        }
+        #results {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 400px;
+        }
+        #results ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #results li {
+            background: #e0e0e0;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .final-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #D0E8FF;
+            color: #333;
+            font-weight: bold;
+        }
+        #creator {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        #creator a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Chronomètre Vitesse</h1>
+
+    <div id="input-controls">
+        <label for="total-distance">Distance Totale (m) :</label>
+        <input type="number" id="total-distance" value="800">
+        <label for="intermediate-distance">Distance Intermédiaire (m) :</label>
+        <input type="number" id="intermediate-distance" value="200">
+    </div>
+
+    <div id="timer-display">00:00:00</div>
+
+    <div id="timer-controls">
+        <button id="start-button">Démarrer</button>
+        <button id="intermediate-button">Tour</button>
+        <button id="stop-button">Stop</button>
+    </div>
+
+    <div id="reset-download-controls">
+        <button id="reset-button">Réinitialiser</button>
+        <button id="download-button">Télécharger</button>
+    </div>
+
+    <div id="results">
+        <h3>Temps Intermédiaires</h3>
+        <ul id="time-list"></ul>
+        <p id="final-result" class="final-result"></p>
+    </div>
+
+    <div id="creator">
+        <p>Créé par Jérôme BARLETTA</p>
+        <a href="http://bjerome.eklablog.com/accueil-c30088056" target="_blank">Accéder au blog</a>
+    </div>
+
+    <script>
+        let startTime = null;
+        let intervalId = null;
+        let intermediateTimes = [];
+        let totalDistance = 800; // Distance totale par défaut
+        let intermediateDistance = 200; // Distance intermédiaire par défaut
+        let currentDistance = 0;
+
+        const timerDisplay = document.getElementById('timer-display');
+        const timeList = document.getElementById('time-list');
+        const finalResult = document.getElementById('final-result');
+
+        const startButton = document.getElementById('start-button');
+        const intermediateButton = document.getElementById('intermediate-button');
+        const stopButton = document.getElementById('stop-button');
+        const resetButton = document.getElementById('reset-button');
+        const downloadButton = document.getElementById('download-button');
+
+        const totalDistanceInput = document.getElementById('total-distance');
+        const intermediateDistanceInput = document.getElementById('intermediate-distance');
+
+        // Événements pour les inputs
+        totalDistanceInput.addEventListener('input', () => {
+            totalDistance = parseInt(totalDistanceInput.value);
+        });
+
+        intermediateDistanceInput.addEventListener('input', () => {
+            intermediateDistance = parseInt(intermediateDistanceInput.value);
+        });
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function calculateSpeed(timeInSeconds, distance) {
+            if (timeInSeconds === 0) return 0;
+            return ((distance / timeInSeconds) * 3.6).toFixed(2);
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((new Date() - startTime) / 1000);
+            timerDisplay.textContent = formatTime(elapsed);
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!intervalId) {
+                startTime = new Date();
+                intervalId = setInterval(updateTimer, 1000);
+                currentDistance = 0;
+                intermediateTimes = [];
+                timeList.innerHTML = '';
+                finalResult.textContent = '';
+            }
+        });
+
+        intermediateButton.addEventListener('click', () => {
+            if (intervalId && currentDistance + intermediateDistance <= totalDistance) {
+                const now = new Date();
+                const elapsed = Math.floor((now - startTime) / 1000);
+                currentDistance += intermediateDistance;
+
+                const speed = calculateSpeed(elapsed, currentDistance);
+                const timeEntry = document.createElement('li');
+                timeEntry.textContent = `Distance: ${currentDistance}m - Temps: ${formatTime(elapsed)} - Vitesse: ${speed} km/h`;
+                timeList.appendChild(timeEntry);
+                intermediateTimes.push({
+                    distance: currentDistance,
+                    elapsed: elapsed,
+                    speed: speed
+                });
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+
+                const elapsed = Math.floor((new Date() - startTime) / 1000);
+                const averageSpeed = calculateSpeed(elapsed, totalDistance);
+                finalResult.textContent = `Temps Total: ${formatTime(elapsed)} - Vitesse Moyenne: ${averageSpeed} km/h`;
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            clearInterval(intervalId);
+            intervalId = null;
+            timerDisplay.textContent = '00:00:00';
+            currentDistance = 0;
+            intermediateTimes = [];
+            timeList.innerHTML = '';
+            finalResult.textContent = '';
+        });
+
+        downloadButton.addEventListener('click', () => {
+            const data = intermediateTimes.map(entry => `Distance: ${entry.distance}now = new Date();
+                constm - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`).join('\n');
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'temps_intermediaires.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>

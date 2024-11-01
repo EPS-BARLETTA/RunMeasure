@@ -255,24 +255,34 @@
         });
 
         downloadButton.addEventListener('click', () => {
-    const elapsed = intervalId ? Math.floor((new Date() - startTime) / 1000) : 0;
-    const averageSpeed = calculateSpeed(elapsed, totalDistance);
+    // Calculer le temps écoulé et la vitesse moyenne
+    const elapsed = intervalId ? Math.floor((new Date() - startTime) / 1000) : 0; // Temps total écoulé
+    const averageSpeed = calculateSpeed(elapsed, totalDistance); // Vitesse moyenne pour la distance totale
+
+    // Préparer le texte pour le téléchargement
     const finalResultText = `Temps final de votre course : ${formatTime(elapsed)} - Vitesse moyenne : ${averageSpeed} km/h\n\n`;
     const data = intermediateTimes.map(entry => 
         `Distance: ${entry.distance}m - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`
     ).join('\n');
-    
-    const fullText = finalResultText + data;
-    const blob = new Blob([fullText], { type: 'text/plain' });
+
+    // Créer le blob
+    const blob = new Blob([finalResultText + data], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
-    // Créer un lien que l'utilisateur doit cliquer manuellement
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank'; // Force l'ouverture dans une nouvelle fenêtre sur iOS
-    a.download = 'temps_intermediaires.txt';
-    a.textContent = "Cliquez ici pour télécharger les résultats";
-    document.body.appendChild(a);
+    // Vérification pour appareils mobiles
+    if (navigator.userAgent.match(/(iPad|iPhone|iPod)/i)) {
+        // Ouvrir le fichier dans une nouvelle fenêtre sur iOS
+        window.open(url, '_blank');
+    } else {
+        // Télécharger directement pour les autres appareils
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'temps_intermediaires.txt';
+        a.click();
+    }
+
+    // Révoquer l'URL après utilisation
+    URL.revokeObjectURL(url);
 });
     </script>
 </body>

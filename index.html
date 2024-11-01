@@ -234,15 +234,16 @@
         });
 
         stopButton.addEventListener('click', () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
 
-                const elapsed = Math.floor((new Date() - startTime) / 1000);
-                const averageSpeed = calculateSpeed(elapsed, totalDistance);
-                finalResult.textContent = `Temps Total: ${formatTime(elapsed)} - Vitesse Moyenne: ${averageSpeed} km/h`;
-            }
-        });
+        // Cette ligne est retirée pour ne pas afficher le temps total final
+        // const elapsed = Math.floor((new Date() - startTime) / 1000);
+        // const averageSpeed = calculateSpeed(elapsed, totalDistance);
+        // finalResult.textContent = `Temps Total: ${formatTime(elapsed)} - Vitesse Moyenne: ${averageSpeed} km/h`;
+    }
+});
 
         resetButton.addEventListener('click', () => {
             clearInterval(intervalId);

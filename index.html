@@ -260,18 +260,28 @@
     const averageSpeed = calculateSpeed(elapsed, totalDistance); // Vitesse moyenne pour la distance totale
 
     // Préparer le texte pour le téléchargement
-    const finalResultText = `Temps Total: ${formatTime(elapsed)} - Vitesse Moyenne: ${averageSpeed} km/h\n\n`;
+    const finalResultText = `Temps final de votre course : ${formatTime(elapsed)} - Vitesse moyenne : ${averageSpeed} km/h\n\n`;
     const data = intermediateTimes.map(entry => 
         `Distance: ${entry.distance}m - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`
     ).join('\n');
 
-    // Créer le blob et télécharger le fichier
+    // Créer le blob
     const blob = new Blob([finalResultText + data], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'temps_intermediaires.txt';
-    a.click();
+
+    // Vérification pour appareils mobiles
+    if (navigator.userAgent.match(/(iPad|iPhone|iPod)/i)) {
+        // Ouvrir le fichier dans une nouvelle fenêtre sur iOS
+        window.open(url, '_blank');
+    } else {
+        // Télécharger directement pour les autres appareils
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'temps_intermediaires.txt';
+        a.click();
+    }
+
+    // Révoquer l'URL après utilisation
     URL.revokeObjectURL(url);
 });
     </script>

@@ -263,9 +263,16 @@
     ).join('\n');
     
     const fullText = finalResultText + data;
-    const newWindow = window.open('', '_blank');
-    newWindow.document.write(`<pre>${fullText}</pre>`);
-    newWindow.document.close();
+    const blob = new Blob([fullText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    // Créer un lien que l'utilisateur doit cliquer manuellement
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank'; // Force l'ouverture dans une nouvelle fenêtre sur iOS
+    a.download = 'temps_intermediaires.txt';
+    a.textContent = "Cliquez ici pour télécharger les résultats";
+    document.body.appendChild(a);
 });
     </script>
 </body>

@@ -255,8 +255,16 @@
         });
 
         downloadButton.addEventListener('click', () => {
+    // Calculer le temps total et la vitesse moyenne
+    const elapsed = Math.floor((new Date() - startTime) / 1000);
+    const averageSpeed = calculateSpeed(elapsed, totalDistance);
+    
+    // Préparer les données à télécharger
+    const finalResultText = `Temps Total: ${formatTime(elapsed)} - Vitesse Moyenne: ${averageSpeed} km/h\n\n`;
     const data = intermediateTimes.map(entry => `Distance: ${entry.distance}m - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`).join('\n');
-    const blob = new Blob([data], { type: 'text/plain' });
+
+    // Créer le blob et télécharger le fichier
+    const blob = new Blob([finalResultText + data], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

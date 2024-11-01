@@ -255,16 +255,15 @@
         });
 
         downloadButton.addEventListener('click', () => {
-            const data = intermediateTimes.map(entry => `Distance: ${entry.distance}now = new Date();
-                constm - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`).join('\n');
-            const blob = new Blob([data], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'temps_intermediaires.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
+    const data = intermediateTimes.map(entry => `Distance: ${entry.distance}m - Temps: ${formatTime(entry.elapsed)} - Vitesse: ${entry.speed} km/h`).join('\n');
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'temps_intermediaires.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+});
     </script>
 </body>
 </html>

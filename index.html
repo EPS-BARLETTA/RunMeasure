@@ -69,7 +69,7 @@
     .alert .dial-progress{stroke:var(--danger)}
     .alert .dial-time{color:#7f1d1d}
   </style>
-  <!-- QRCode.js fiable (CDN) -->
+  <!-- Librairie QR fiable -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -79,7 +79,7 @@
     <div class="container center">
       <div class="stack" style="width:100%;max-width:720px">
         <div class="brand">ChronoVitesse</div>
-        <div class="sub">Choisis ton mode : minuteur, chrono simple, ou chrono avec tours (QR ScanProf).</div>
+        <div class="sub">Choisis ton mode : minuteur, chrono simple, ou chrono avec tours.</div>
         <div class="card center">
           <div class="stack">
             <button class="btn help" id="btn-go-modes">Choisir un mode</button>
@@ -106,7 +106,7 @@
         </div>
         <div class="card stack" style="grid-column:1/-1">
           <h3>Chrono avec tours</h3>
-          <p>Pour l’EPS : élève, distance totale & par tour, vitesses instantanées, tableau des tours, <b>QR ScanProf</b> et CSV.</p>
+          <p>Pour l’EPS : élève, distance totale & par tour, vitesses instantanées, tableau des tours, QR & CSV.</p>
           <div class="row">
             <button class="btn help" id="mode-laps">Ouvrir (passe par l’Aide)</button>
             <button class="btn sec" onclick="go('view-home')">Retour</button>
@@ -124,14 +124,13 @@
         <div class="grid-2">
           <div class="stack">
             <h3>1) Saisie élève</h3>
-            <p>Entre <b>Nom / Prénom / Classe / Sexe</b>, choisis la <b>distance totale</b> (ex. 800 m) et la <b>distance par tour</b> (ex. 200 m).</p>
+            <p>Entre <b>Nom / Prénom / Classe / Sexe</b>, choisis la <b>distance totale</b> et la <b>distance par tour</b>.</p>
             <h3>2) Lancer la course</h3>
             <p><span class="pill">Démarrer</span> puis <span class="pill">Tour</span> à chaque passage. Mode des tours : <i>Temps du tour</i> ou <i>Temps cumulé</i>.</p>
           </div>
           <div class="stack">
             <h3>3) Fin & exports</h3>
-            <p>À l’arrêt : tableau des tours, <b>QR</b> (ScanProf) et <b>CSV</b>. <b>Réinitialiser</b> pour une nouvelle course.</p>
-            <p class="muted">Vitesse instantanée = distance du tour / temps du tour (km/h). VMA estimée = vitesse moyenne.</p>
+            <p>À l’arrêt : tableau des tours, <b>QR</b> et <b>CSV</b>. <b>Réinitialiser</b> pour une nouvelle course.</p>
           </div>
         </div>
         <div class="row" style="margin-top:12px">
@@ -234,16 +233,17 @@
 
           <hr style="border:none;border-top:1px solid var(--ring); margin:14px 0">
 
-          <h4>QR compatible ScanProf</h4>
+          <h4>Exports & QR</h4>
           <div class="qrbox">
             <div id="qrcode"></div>
-            <div class="stack" style="min-width:240px">
-              <button id="btn-generate-qr" class="btn">Générer le QR</button>
-              <button id="btn-download-csv" class="btn warn">Exporter CSV</button>
+            <div class="stack" style="min-width:260px">
+              <button id="btn-generate-qr" class="btn">QR infos de course</button>
+              <button id="btn-download-csv-simple" class="btn warn">CSV simple (1 ligne)</button>
+              <button id="btn-download-csv-detail" class="btn warn">CSV détaillé (par tour)</button>
               <button id="btn-new" class="btn sec">Nouvelle course</button>
             </div>
           </div>
-          <p class="muted" style="margin-top:8px">QR = [ { nom, prenom, classe, sexe, distance, vitesse, vma, laps[] } ]</p>
+          <p class="muted" style="margin-top:8px">QR = [{ nom, prenom, classe, temps_total, intermediaires[] }]</p>
         </div>
       </div>
     </div>
@@ -456,22 +456,17 @@
 
     byId('btn-new').onclick = ()=>{ stopLaps(); go('view-form'); };
 
-    // QR payload conforme ScanProf
+    /* ===== QR : seulement nom, prenom, classe, temps_total, intermediaires[] ===== */
     function makeQRPayload(){
-      const totalSec = totalElapsedMs()/1000;
-      const distance = doneMeters();
-      const vitesse = kmh(distance, totalSec);
-      const vma = vitesse; // estimation simple
-      const laps = lapsState.laps.map(L=>({ tour:L.i, distance:L.dist, temps_tour:fmt(L.lapMs), temps_cumule:fmt(L.cumMs), vitesse:+L.vInst.toFixed(2) }));
+      const totalMs = (lapsState.laps.length ? lapsState.laps[lapsState.laps.length-1].cumMs : 0);
+      const tempsTotalTxt = fmt(totalMs);
+      const inters = lapsState.laps.map(L => fmt(L.lapMs));
       const payload = [{
-        nom: lapsState.student.nom,
+        nom:    lapsState.student.nom,
         prenom: lapsState.student.prenom,
         classe: lapsState.student.classe,
-        sexe: (lapsState.student.sexe==='Autre' ? 'M' : lapsState.student.sexe),
-        distance: Math.round(distance),
-        vitesse: +vitesse.toFixed(2),
-        vma: +vma.toFixed(2),
-        laps
+        temps_total: tempsTotalTxt,
+        intermediaires: inters
       }];
       return JSON.stringify(payload);
     }
@@ -483,18 +478,45 @@
       new QRCode(box, { text:data, width:256, height:256, correctLevel: QRCode.CorrectLevel.M });
     };
 
-    // CSV simple (nom, prenom, classe, intermediaires)
-    byId('btn-download-csv').onclick = ()=>{
-      if(lapsState.laps.length===0){ alert('Pas de données à exporter.'); return; }
-      const inters = lapsState.laps.map(L => fmt(L.lapMs)).join(' | ');
-      const headers = ['nom','prenom','classe','intermediaires'];
-      const row = [lapsState.student.nom, lapsState.student.prenom, lapsState.student.classe, `"${inters}"`];
-      const csv = headers.join(',') + '\n' + row.join(',');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    /* ===== CSV : simple (1 ligne) & détaillé (par tour) ===== */
+    function downloadFile(name, text, mime='text/csv;charset=utf-8;'){
+      const blob = new Blob([text], {type:mime});
       const url  = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `chronovitesse_${lapsState.student.nom}_${lapsState.student.prenom}.csv`;
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    byId('btn-download-csv-simple').onclick = ()=>{
+      if(lapsState.laps.length===0){ alert('Pas de données à exporter.'); return; }
+      const totalMs = lapsState.laps[lapsState.laps.length-1].cumMs;
+      const totalTxt = fmt(totalMs);
+      const inters = lapsState.laps.map(L => fmt(L.lapMs)).join(' | ');
+      const headers = ['nom','prenom','classe','sexe','temps_total','intermediaires'];
+      const row = [
+        lapsState.student.nom,
+        lapsState.student.prenom,
+        lapsState.student.classe,
+        (lapsState.student.sexe==='Autre'?'M':lapsState.student.sexe),
+        totalTxt,
+        `"${inters}"`
+      ];
+      const csv = headers.join(',')+'\n'+row.join(',');
+      downloadFile(`chronovitesse_${lapsState.student.nom}_${lapsState.student.prenom}_simple.csv`, csv);
+    };
+
+    byId('btn-download-csv-detail').onclick = ()=>{
+      if(lapsState.laps.length===0){ alert('Pas de données à exporter.'); return; }
+      const headers = ['nom','prenom','classe','sexe','tour','distance_m','temps_tour','temps_cumule','vitesse_inst_kmh'];
+      const rows = lapsState.laps.map(L => ([
+        lapsState.student.nom,
+        lapsState.student.prenom,
+        lapsState.student.classe,
+        (lapsState.student.sexe==='Autre'?'M':lapsState.student.sexe),
+        L.i, L.dist, fmt(L.lapMs), fmt(L.cumMs), L.vInst.toFixed(2)
+      ].join(',')));
+      const csv = headers.join(',')+'\n'+rows.join('\n');
+      downloadFile(`chronovitesse_${lapsState.student.nom}_${lapsState.student.prenom}_detail.csv`, csv);
     };
 
     /* ==============

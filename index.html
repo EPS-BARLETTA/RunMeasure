@@ -76,9 +76,6 @@
       <div class="tile t-green" onclick="nav('timer')"><div>⏱</div><div><h3>Minuteur</h3><p>Décompte (mm:ss), gros cadran.</p></div></div>
       <div class="tile t-cyan" onclick="nav('simple')"><div>🕒</div><div><h3>Chrono simple</h3><p>Compteur ascendant.</p></div></div>
       <div class="tile t-blue" onclick="nav('help-laps')"><div>🏁</div><div><h3>Chrono avec tours</h3><p>Élève, tours, QR & CSV.</p></div></div>
-      <div class="tile t-violet" onclick="nav('vma')"><div>🎯</div><div><h3>Test VMA (navette)</h3><p>Paliers, vitesse, QR résultat.</p></div></div>
-      <div class="tile t-amber" onclick="nav('chase')"><div>🏃‍♀️🏃‍♂️</div><div><h3>Course poursuite</h3><p>Deux élèves, gagnant.</p></div></div>
-      <div class="tile t-pink" onclick="nav('series')"><div>📋</div><div><h3>Série multi-épreuves</h3><p>Enchaînez plusieurs chronos.</p></div></div>
     </div>
   </div>
 </section>
@@ -91,7 +88,7 @@
       <div class="stack">
         <p>1) Saisir <b>Nom / Prénom / Classe / Sexe</b>, <b>Distance totale</b> et <b>Distance par tour</b>.</p>
         <p>2) Démarrer → bouton <b>Tour</b> à chaque passage. Choisir <i>Temps du tour</i> ou <i>Temps cumulé</i>.</p>
-        <p>3) Arrêt → Tableau, QR “infos de course”, CSV simple/détaillé.</p>
+        <p>3) Arrêt → Tableau, QR infos de course, CSV simple/détaillé.</p>
         <div><button class="btn violet" onclick="nav('form')">Saisie élève →</button></div>
       </div>
     </div>
@@ -209,73 +206,61 @@
   </div>
 </section>
 
-<!-- TEST VMA -->
-<section id="vma" class="section">
-  <div class="container">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Test VMA (navette)</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
-    <div class="card" style="margin-top:12px">
-      <div class="row">
-        <div class="stack" style="flex:1 1 260px">
-          <label>Nom</label><input id="vma-nom">
-          <label>Prénom</label><input id="vma-prenom">
-          <label>Classe</label><input id="vma-classe">
-          <label>Sexe</label><select id="vma-sexe"><option>M</option><option>F</option><option>Autre</option></select>
-        </div>
-        <div class="stack" style="flex:1 1 260px">
-          <label>Palier initial</label><input id="vma-start" type="number" value="1" min="1">
-          <label>Palier max (objectif)</label><input id="vma-max" type="number" value="20" min="1">
-          <label>Durée palier (s)</label><input id="vma-palier-sec" type="number" value="60" min="10">
-          <label>Incrément vitesse (km/h par palier)</label><input id="vma-inc" type="number" value="0.5" step="0.1">
-        </div>
-      </div>
-      <div class="stack" style="align-items:center; margin-top:10px">
-        <div class="dial-wrap" id="dial-wrap-vma">
-          <svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-progress-vma" cx="120" cy="120" r="96"></circle></svg>
-          <div class="dial-center"><div id="vma-timer" class="dial-time">00:00.0</div><div class="dial-meta">Palier <span id="vma-palier">1</span> — <span id="vma-speed">8.0</span> km/h</div></div>
-        </div>
-        <div class="row">
-          <button id="vma-start-btn" class="btn circle green">Démarrer</button>
-          <button id="vma-next" class="btn circle cyan">Palier +1</button>
-          <button id="vma-stop" class="btn circle amber">Stop</button>
-          <button id="vma-reset" class="btn circle red">Réinit.</button>
-        </div>
-      </div>
-      <div class="row" style="margin-top:12px; align-items:flex-start">
-        <div class="card" style="flex:1 1 420px">
-          <h3 style="margin:0 0 8px">Historique des paliers</h3>
-          <table><thead><tr><th>#</th><th>Palier</th><th>Vitesse</th><th>Durée</th></tr></thead><tbody id="vma-body"></tbody></table>
-        </div>
-        <div class="card" style="flex:1 1 320px">
-          <h3 style="margin:0 0 8px">QR Test VMA</h3>
-          <div class="row">
-            <div id="qrcode-vma" class="card" style="border:1px dashed var(--ring); padding:8px"></div>
-            <button id="vma-qr" class="btn violet">QR VMA</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<footer>ChronoVitesse - L'Equipe EPS Lycee Vauban - LUXEMBOURG - JB</footer>
 
-<!-- COURSE POURSUITE -->
-<section id="chase" class="section">
-  <div class="container">
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Course poursuite (A vs B)</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
-    <div class="card" style="margin-top:12px">
-      <div class="row">
-        <div class="stack" style="flex:1 1 260px"><h3 style="margin:2px 0">Élève A</h3><label>Nom</label><input id="chA-nom"><label>Prénom</label><input id="chA-prenom"><label>Classe</label><input id="chA-classe"></div>
-        <div class="stack" style="flex:1 1 260px"><h3 style="margin:2px 0">Élève B</h3><label>Nom</label><input id="chB-nom"><label>Prénom</label><input id="chB-prenom"><label>Classe</label><input id="chB-classe"></div>
-      </div>
-      <div class="row">
-        <div class="card stack" style="align-items:center; flex:1 1 420px">
-          <div class="dial-wrap"><svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chA" cx="120" cy="120" r="96"></circle></svg><div class="dial-center"><div id="chA-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève A</div></div></div>
-          <div class="row"><button id="chA-lap" class="btn cyan">Tour A</button></div>
-          <table><thead><tr><th>#</th><th>Tour</th><th>Cumulé</th></tr></thead><tbody id="chA-body"></tbody></table>
-        </div>
-        <div class="card stack" style="align-items:center; flex:1 1 420px">
-          <div class="dial-wrap"><svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chB" cx="120" cy="120" r="96"></circle></svg><div class="dial-center"><div id="chB-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève B</div></div></div>
-          <div class="row"><button id="chB-lap" class="btn cyan">Tour B</button></div>
-          <table><thead><tr><th>#</th><th>Tour</th><th>Cumulé</th></tr></thead><tbody id="chB-body"></tbody></table>
-        </div>
-      </div>
-      <div c
+<script>
+/* ===== NAV & UTILS ===== */
+const nav = id => { document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+document.getElementById('btn-start-app').onclick=()=>nav('modes');
+
+const fmt = (ms)=>{ const t=Math.floor(ms/100)/10, m=Math.floor(t/60), s=Math.floor(t%60), d=Math.floor((t*10)%10); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${d}`; };
+function dial(circle,wrap,ratio,alert=false){ const r=parseFloat(circle.getAttribute('r')), C=2*Math.PI*r; circle.style.strokeDasharray=`${C} ${C}`; circle.style.strokeDashoffset=String(C*(1-Math.max(0,Math.min(1,ratio)))); wrap.classList.toggle('alert',alert); }
+function download(name,text){ const blob=new Blob([text],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url); }
+const qs = s => document.querySelector(s);
+const qid = id => document.getElementById(id);
+const val = id => (qid(id).value || '').trim();   /* <-- remplace l'ancien helper "in" */
+
+/* ===== CHRONO AVEC TOURS ===== */
+const L={student:{nom:'',prenom:'',classe:'',sexe:'M'}, total:800, lap:200, running:false, startAt:0, lastLapAt:0, tickId:null, mode:'lap', laps:[]};
+qid('to-race').onclick=()=>{ 
+  L.student.nom=val('in-nom'); L.student.prenom=val('in-prenom'); L.student.classe=val('in-classe'); L.student.sexe=val('in-sexe')||'M';
+  L.total=+(val('in-total')||0); L.lap=+(val('in-lap')||1);
+  if(!L.student.nom||!L.student.prenom||!L.student.classe){ alert('Nom/Prénom/Classe requis.'); return; }
+  qid('race-student').textContent=`${L.student.prenom} ${L.student.nom} — ${L.student.classe}`;
+  qid('meta-total').textContent=String(L.total); qid('meta-done').textContent='0'; qid('laps-body').innerHTML=''; qid('qrcode').innerHTML='';
+  L.laps=[]; L.running=false; L.startAt=0; L.lastLapAt=0; clearInterval(L.tickId); L.tickId=null; qid('timer-laps').textContent='00:00.0';
+  dial(qid('dial-progress-laps'),qid('dial-wrap-laps'),0,false); nav('race');
+};
+qid('mode-tours').onchange=e=>L.mode=e.target.value;
+const doneMeters=()=>L.laps.length*L.lap;
+function updLapsUI(){ const elapsed=performance.now()-L.startAt; qid('timer-laps').textContent=fmt(elapsed); const ratio=L.total>0?doneMeters()/L.total:0; const danger=(Math.floor((elapsed/1000)%60)>=50); dial(qid('dial-progress-laps'),qid('dial-wrap-laps'),ratio,danger); }
+qid('start-laps').onclick=()=>{ if(L.running)return; L.running=true; const n=performance.now(); L.startAt=n; L.lastLapAt=n; L.tickId=setInterval(updLapsUI,100); };
+qid('stop-laps').onclick=()=>{ if(!L.running)return; L.running=false; clearInterval(L.tickId); L.tickId=null; updLapsUI(); };
+qid('reset-laps').onclick=()=>{ L.running=false; clearInterval(L.tickId); L.tickId=null; L.laps=[]; qid('laps-body').innerHTML=''; qid('timer-laps').textContent='00:00.0'; qid('qrcode').innerHTML=''; qid('meta-done').textContent='0'; dial(qid('dial-progress-laps'),qid('dial-wrap-laps'),0,false); };
+qid('new-laps').onclick=()=>nav('form');
+qid('lap').onclick=()=>{ if(!L.running)return; const now=performance.now(); const cum=now-L.startAt; const lapMs=(L.mode==='lap')?(now-L.lastLapAt):(cum-(L.laps.length?L.laps[L.laps.length-1].cumMs:0)); L.lastLapAt=now; const vInst=L.lap>0?(L.lap/(lapMs/1000))*3.6:0;
+  const i=L.laps.length+1, dist=i*L.lap; L.laps.push({i,dist,lapMs,cumMs:cum,vInst}); const tr=document.createElement('tr'); tr.innerHTML=`<td>${i}</td><td>${dist}</td><td>${fmt(lapMs)}</td><td>${fmt(cum)}</td><td>${vInst.toFixed(2)}</td>`; qid('laps-body').appendChild(tr); qid('meta-done').textContent=String(doneMeters()); dial(qid('dial-progress-laps'),qid('dial-wrap-laps'),(L.total?doneMeters()/L.total:0),false); if(doneMeters()>=L.total){ qid('stop-laps').click(); } };
+function qrDataLaps(){ const totalMs=L.laps.length?L.laps[L.laps.length-1].cumMs:0; return JSON.stringify([{ nom:L.student.nom, prenom:L.student.prenom, classe:L.student.classe, temps_total:fmt(totalMs), temps_tour:L.laps.map(x=>fmt(x.lapMs)), temps_cumule:L.laps.map(x=>fmt(x.cumMs)) }]); }
+qid('qr-laps').onclick=()=>{ if(!L.laps.length){alert('Ajoute au moins un tour.');return;} const box=qid('qrcode'); box.innerHTML=''; new QRCode(box,{text:qrDataLaps(),width:256,height:256,correctLevel:QRCode.CorrectLevel.M}); };
+qid('csv-laps-simple').onclick=()=>{ if(!L.laps.length){alert('Pas de données.');return;} const totalMs=L.laps[L.laps.length-1].cumMs; const inters=L.laps.map(x=>fmt(x.lapMs)).join(' | '); const headers=['nom','prenom','classe','sexe','temps_total','intermediaires']; const row=[L.student.nom,L.student.prenom,L.student.classe,(L.student.sexe==='Autre'?'M':L.student.sexe),fmt(totalMs),`"${inters}"`]; download(`chronovitesse_${L.student.nom}_${L.student.prenom}_simple.csv`,headers.join(',')+'\n'+row.join(',')); };
+qid('csv-laps-detail').onclick=()=>{ if(!L.laps.length){alert('Pas de données.');return;} const headers=['nom','prenom','classe','sexe','tour','distance_m','temps_tour','temps_cumule','vitesse_inst_kmh']; const rows=L.laps.map(Lx=>[L.student.nom,L.student.prenom,L.student.classe,(L.student.sexe==='Autre'?'M':L.student.sexe),Lx.i,Lx.dist,fmt(Lx.lapMs),fmt(Lx.cumMs),Lx.vInst.toFixed(2)].join(',')); download(`chronovitesse_${L.student.nom}_${L.student.prenom}_detail.csv`,headers.join(',')+'\n'+rows.join('\n')); };
+
+/* ===== MINUTEUR ===== */
+const TM={totalMs:180000,leftMs:180000,running:false,startAt:0,tickId:null};
+const tmEl={min:qid('tm-min'),sec:qid('tm-sec'),time:qid('timer-down'),wrap:qid('dial-wrap-timer'),prog:qid('dial-progress-timer')};
+function setTimer(){ const m=Math.max(0,+tmEl.min.value||0), s=Math.max(0,Math.min(59,+tmEl.sec.value||0)); TM.totalMs=(m*60+s)*1000; TM.leftMs=TM.totalMs; TM.running=false; clearInterval(TM.tickId); TM.tickId=null; tmEl.time.textContent=fmt(TM.totalMs); dial(tmEl.prog,tmEl.wrap,1,false); }
+function updTimer(force=false){ if(TM.running||force){ const el=performance.now()-TM.startAt; TM.leftMs=Math.max(0,TM.totalMs-el); } const t=TM.leftMs; tmEl.time.textContent=fmt(t); const danger=(t<=10000); dial(tmEl.prog,tmEl.wrap,TM.totalMs>0?(TM.leftMs/TM.totalMs):0,danger); if(t<=0){ clearInterval(TM.tickId); TM.running=false; if(navigator.vibrate) navigator.vibrate([120,80,120]); } }
+tmEl.min.addEventListener('input',setTimer); tmEl.sec.addEventListener('input',setTimer); setTimer();
+qid('tm-start').onclick=()=>{ if(TM.totalMs<=0){alert('Définis un temps > 0.');return;} if(TM.running)return; TM.running=true; TM.startAt=performance.now()-(TM.totalMs-TM.leftMs); TM.tickId=setInterval(()=>updTimer(true),100); };
+qid('tm-pause').onclick=()=>{ if(!TM.running)return; TM.running=false; clearInterval(TM.tickId); TM.tickId=null; updTimer(true); };
+qid('tm-reset').onclick=()=>{ TM.running=false; clearInterval(TM.tickId); TM.tickId=null; TM.leftMs=TM.totalMs; updTimer(true); };
+
+/* ===== CHRONO SIMPLE ===== */
+const SP={running:false,startAt:0,tickId:null}; const spEl={time:qid('timer-up'),wrap:qid('dial-wrap-simple'),prog:qid('dial-progress-simple')};
+function updSimple(){ const el=performance.now()-SP.startAt; spEl.time.textContent=fmt(el); const r=Math.min(1,((el/1000)%60)/60), danger=(Math.floor((el/1000)%60)>=50); dial(spEl.prog,spEl.wrap,r,danger); }
+qid('sp-start').onclick=()=>{ if(SP.running)return; SP.running=true; SP.startAt=performance.now(); SP.tickId=setInterval(updSimple,100); };
+qid('sp-pause').onclick=()=>{ if(!SP.running)return; SP.running=false; clearInterval(SP.tickId); SP.tickId=null; updSimple(); };
+qid('sp-reset').onclick=()=>{ SP.running=false; clearInterval(SP.tickId); SP.tickId=null; spEl.time.textContent='00:00.0'; dial(spEl.prog,spEl.wrap,0,false); };
+</script>
+</body>
+</html>

@@ -4,168 +4,81 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>ChronoVitesse — EPS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f7fafc; --fg:#0f172a; --muted:#64748b;
-    --ring:#e2e8f0; --card:#ffffff;
-    --primary:#2563eb; --primary-600:#1d4ed8; --primary-50:#eef2ff;
-    --green:#16a34a; --amber:#f59e0b; --red:#ef4444; --violet:#7c3aed; --cyan:#0891b2;
+    --bg:#f7fafc; --fg:#0f172a; --muted:#64748b; --ring:#e2e8f0; --card:#ffffff;
+    --primary:#2563eb; --green:#16a34a; --amber:#f59e0b; --red:#ef4444; --violet:#7c3aed; --cyan:#0891b2; --pink:#e11d48;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; font-family:"Inter",system-ui,ui-sans-serif,Segoe UI,Roboto,Arial,sans-serif;
-    background:linear-gradient(180deg,#f8fafc 0%,#ffffff 60%);
-    color:var(--fg); display:flex; flex-direction:column;
+    background:linear-gradient(180deg,#f8fafc 0%,#ffffff 60%); color:var(--fg); display:flex; flex-direction:column;
   }
-  .container{max-width:1100px; margin:0 auto; padding:20px}
-  header .brand{font-size:clamp(34px,5vw,58px); font-weight:800; letter-spacing:.2px; margin:6px 0 2px}
-  header .sub{color:var(--muted); margin:0 0 12px}
-  .section{display:none}
-  .section.active{display:block}
-  .card{
-    background:var(--card); border:1px solid var(--ring);
-    border-radius:18px; padding:18px; box-shadow:0 10px 30px rgba(15,23,42,.05);
-  }
+  .container{max-width:1080px; margin:0 auto; padding:20px}
+  .section{display:none} .section.active{display:block}
+  .card{background:var(--card); border:1px solid var(--ring); border-radius:18px; padding:18px; box-shadow:0 10px 28px rgba(15,23,42,.06)}
   .stack{display:flex; flex-direction:column; gap:14px}
-  .row{display:flex; flex-wrap:wrap; gap:12px}
-  .grid{display:grid; gap:14px}
-  .grid.two{grid-template-columns:1fr}
-  @media(min-width:860px){ .grid.two{grid-template-columns:1fr 1fr} }
-  .tiles{display:grid; gap:16px; grid-template-columns:1fr; }
-  @media(min-width:720px){ .tiles{grid-template-columns:repeat(3,1fr);} }
-  .tile{
-    border-radius:18px; padding:18px; color:#fff; min-height:150px; position:relative;
-    display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 12px 24px rgba(0,0,0,.08);
-    transition:transform .08s ease, box-shadow .15s ease; cursor:pointer; user-select:none;
-  }
-  .tile:hover{transform:translateY(-2px); box-shadow:0 16px 30px rgba(0,0,0,.12)}
-  .tile h3{margin:0 0 8px; font-size:20px}
-  .tile p{margin:0; opacity:.9}
-  .tile .ico{font-size:28px; opacity:.9}
-  .t-blue{background:linear-gradient(135deg,#2563eb,#3b82f6)}
-  .t-green{background:linear-gradient(135deg,#16a34a,#22c55e)}
-  .t-amber{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
-  .t-violet{background:linear-gradient(135deg,#7c3aed,#8b5cf6)}
-  .t-cyan{background:linear-gradient(135deg,#0891b2,#06b6d4)}
-  .t-rose{background:linear-gradient(135deg,#e11d48,#fb7185)}
-
-  .btn{
-    appearance:none; border:none; cursor:pointer; font-weight:800;
-    padding:12px 18px; border-radius:14px; background:var(--primary); color:#fff; font-size:1rem;
-    box-shadow:0 10px 20px rgba(37,99,235,.22); transition:transform .05s ease, filter .15s ease;
-  }
-  .btn:active{transform:translateY(1px)}
+  .row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+  .tiles{display:grid; gap:16px; grid-template-columns:1fr} @media(min-width:720px){ .tiles{grid-template-columns:repeat(3,1fr)} }
+  .tile{border-radius:18px; padding:18px; color:#fff; min-height:150px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 14px 28px rgba(0,0,0,.10); cursor:pointer; transition:transform .08s ease, box-shadow .15s}
+  .tile:hover{transform:translateY(-2px); box-shadow:0 18px 34px rgba(0,0,0,.14)}
+  .t-green{background:linear-gradient(135deg,#16a34a,#22c55e)} .t-cyan{background:linear-gradient(135deg,#0891b2,#06b6d4)}
+  .t-blue{background:linear-gradient(135deg,#2563eb,#3b82f6)} .t-violet{background:linear-gradient(135deg,#7c3aed,#8b5cf6)}
+  .t-amber{background:linear-gradient(135deg,#f59e0b,#fbbf24)} .t-pink{background:linear-gradient(135deg,#e11d48,#fb7185)}
+  h1.brand{font-size:clamp(42px,6vw,72px); font-weight:800; text-align:center; margin:30px 0 8px}
+  .subtitle{text-align:center; color:var(--muted); margin:0 0 18px}
+  .btn{appearance:none; border:none; cursor:pointer; font-weight:800; padding:14px 20px; border-radius:14px; background:var(--primary); color:#fff; font-size:1rem; box-shadow:0 10px 20px rgba(37,99,235,.22)}
   .btn.sec{background:#e2e8f0; color:#0f172a; box-shadow:none}
   .btn.ghost{background:transparent; border:1px solid var(--ring); color:var(--fg)}
-  .btn.green{background:var(--green)} .btn.amber{background:var(--amber)}
-  .btn.red{background:var(--red)} .btn.violet{background:var(--violet)}
-  .btn.cyan{background:var(--cyan)}
+  .btn.green{background:var(--green)} .btn.amber{background:var(--amber)} .btn.red{background:var(--red)} .btn.violet{background:var(--violet)} .btn.cyan{background:var(--cyan)}
   .btn.xl{font-size:18px; padding:16px 22px; border-radius:16px}
   .btn.circle{width:104px; height:104px; border-radius:999px; font-size:.95rem; display:flex; align-items:center; justify-content:center}
-
   label{font-weight:700; font-size:.95rem}
-  input,select{
-    width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--ring);
-    background:#fff; font-size:1rem;
-  }
+  input,select{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--ring); background:#fff; font-size:1rem}
   table{width:100%; border-collapse:separate; border-spacing:0; border-radius:14px; overflow:hidden; border:1px solid var(--ring); background:#fff}
-  th,td{padding:10px 12px; border-bottom:1px solid var(--ring); font-size:.96rem}
-  th{background:#f1f5f9; text-align:left}
+  th,td{padding:10px 12px; border-bottom:1px solid var(--ring); font-size:.96rem} th{background:#f1f5f9; text-align:left}
   tr:nth-child(even) td{background:#fbfdff}
-  .muted{color:var(--muted)}
-  .badge{display:inline-block; padding:6px 10px; border-radius:999px; background:#eef2ff; color:#1d4ed8; font-weight:800; font-size:.8rem}
-
-  /* Dial */
   .dial-wrap{position:relative; width:300px; height:300px}
   .dial{width:300px; height:300px; display:block; transform:rotate(-90deg)}
   .dial-track{stroke:#e5e7eb; stroke-width:18; fill:none}
-  .dial-progress{stroke:var(--primary); stroke-width:18; fill:none; stroke-linecap:round; transition:stroke-dashoffset .15s ease}
+  .dial-progress{stroke:var(--primary); stroke-width:18; fill:none; stroke-linecap:round; transition:stroke-dashoffset .15s}
   .dial-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px}
   .dial-time{font-variant-numeric:tabular-nums; font-size:52px; font-weight:900; letter-spacing:.5px; color:#0b4975}
   .dial-meta{font-size:.95rem; color:var(--muted); font-weight:700}
   .alert .dial-progress{stroke:var(--red)} .alert .dial-time{color:#7f1d1d}
-
-  footer{
-    margin-top:auto; text-align:center; padding:16px; background:#0f172a; color:#e2e8f0; font-weight:700; letter-spacing:.2px;
-  }
+  footer{margin-top:auto; text-align:center; padding:16px; background:#0f172a; color:#e2e8f0; font-weight:700}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
-<header class="container">
-  <div class="brand">ChronoVitesse</div>
-  <div class="sub">Outils chrono & tests pour l’EPS — simple, rapide, lisible.</div>
-</header>
-
-<!-- ACCUEIL -->
+<!-- ACCUEIL SIMPLE -->
 <section id="home" class="section active">
   <div class="container">
-    <div class="card" style="padding:26px">
-      <div class="row" style="align-items:center; justify-content:space-between">
-        <div class="stack">
-          <h2 style="margin:0">Bienvenue 👋</h2>
-          <p class="muted" style="margin:0">Choisissez un mode et lancez le chrono.</p>
-        </div>
-        <button id="go-modes" class="btn xl green">Choisir un mode</button>
-      </div>
+    <h1 class="brand">ChronoVitesse</h1>
+    <p class="subtitle">Outils chrono & tests pour l’EPS — simple, rapide, lisible.</p>
+    <div class="stack" style="align-items:center">
+      <button id="btn-start-app" class="btn xl green">Démarrer</button>
     </div>
   </div>
 </section>
 
-<!-- MODES -->
+<!-- CHOIX DES MODES -->
 <section id="modes" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center">
+    <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Choisir un mode</h2>
-      <button class="btn sec" onclick="nav('home')">← Retour</button>
+      <button class="btn sec" onclick="nav('home')">← Accueil</button>
     </div>
     <div class="tiles" style="margin-top:14px">
-      <div class="tile t-green" onclick="nav('timer')">
-        <div class="ico">⏱</div>
-        <div>
-          <h3>Minuteur</h3>
-          <p>Décompte (mm:ss), gros cadran, pause/réinit.</p>
-        </div>
-      </div>
-      <div class="tile t-cyan" onclick="nav('simple')">
-        <div class="ico">🕒</div>
-        <div>
-          <h3>Chrono simple</h3>
-          <p>Compteur ascendant, clair et lisible.</p>
-        </div>
-      </div>
-      <div class="tile t-blue" onclick="nav('help-laps')">
-        <div class="ico">🏁</div>
-        <div>
-          <h3>Chrono avec tours</h3>
-          <p>Élève, tours, QR, CSV — mode course.</p>
-        </div>
-      </div>
-      <div class="tile t-violet" onclick="nav('vma')">
-        <div class="ico">🎯</div>
-        <div>
-          <h3>Test VMA (navette)</h3>
-          <p>Paliers, vitesses, meilleur palier, QR.</p>
-        </div>
-      </div>
-      <div class="tile t-amber" onclick="nav('chase')">
-        <div class="ico">🏃‍♀️🏃‍♂️</div>
-        <div>
-          <h3>Course poursuite</h3>
-          <p>Deux élèves, gagnant, QR récap.</p>
-        </div>
-      </div>
-      <div class="tile t-rose" onclick="nav('series')">
-        <div class="ico">📋</div>
-        <div>
-          <h3>Série multi-épreuves</h3>
-          <p>Enchaînez plusieurs chronos, QR final.</p>
-        </div>
-      </div>
+      <div class="tile t-green" onclick="nav('timer')"><div>⏱</div><div><h3>Minuteur</h3><p>Décompte (mm:ss), gros cadran.</p></div></div>
+      <div class="tile t-cyan" onclick="nav('simple')"><div>🕒</div><div><h3>Chrono simple</h3><p>Compteur ascendant.</p></div></div>
+      <div class="tile t-blue" onclick="nav('help-laps')"><div>🏁</div><div><h3>Chrono avec tours</h3><p>Élève, tours, QR & CSV.</p></div></div>
+      <div class="tile t-violet" onclick="nav('vma')"><div>🎯</div><div><h3>Test VMA (navette)</h3><p>Paliers, vitesse, QR résultat.</p></div></div>
+      <div class="tile t-amber" onclick="nav('chase')"><div>🏃‍♀️🏃‍♂️</div><div><h3>Course poursuite</h3><p>Deux élèves, gagnant.</p></div></div>
+      <div class="tile t-pink" onclick="nav('series')"><div>📋</div><div><h3>Série multi-épreuves</h3><p>Enchaînez plusieurs chronos.</p></div></div>
     </div>
   </div>
 </section>
@@ -173,21 +86,13 @@
 <!-- AIDE LAPS -->
 <section id="help-laps" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center"><h2>Mode d’emploi — Chrono avec tours</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Mode d’emploi — Chrono avec tours</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
     <div class="card">
-      <div class="grid two">
-        <div class="stack">
-          <div class="badge">1</div>
-          <p>Saisie <b>Nom/Prénom/Classe/Sexe</b>, <b>Distance totale</b> et <b>Par tour</b>.</p>
-          <div class="badge">2</div>
-          <p>Démarre, puis <b>Tour</b> à chaque passage. Mode : <i>Temps du tour</i> ou <i>Temps cumulé</i>.</p>
-          <div class="badge">3</div>
-          <p>Arrêt → Tableau, QR “infos de course”, CSV (simple/détaillé).</p>
-        </div>
-        <div class="stack">
-          <p class="muted">Conseil : grands boutons pour éviter les erreurs, chiffres tabulaires, couleurs contrastées (plein soleil).</p>
-          <button class="btn violet" onclick="nav('form')">Saisie élève →</button>
-        </div>
+      <div class="stack">
+        <p>1) Saisir <b>Nom / Prénom / Classe / Sexe</b>, <b>Distance totale</b> et <b>Distance par tour</b>.</p>
+        <p>2) Démarrer → bouton <b>Tour</b> à chaque passage. Choisir <i>Temps du tour</i> ou <i>Temps cumulé</i>.</p>
+        <p>3) Arrêt → Tableau, QR “infos de course”, CSV simple/détaillé.</p>
+        <div><button class="btn violet" onclick="nav('form')">Saisie élève →</button></div>
       </div>
     </div>
   </div>
@@ -196,18 +101,18 @@
 <!-- SAISIE LAPS -->
 <section id="form" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center"><h2>Saisie élève</h2><button class="btn sec" onclick="nav('help-laps')">← Aide</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Saisie élève</h2><button class="btn sec" onclick="nav('help-laps')">← Aide</button></div>
     <div class="card">
-      <div class="grid two">
-        <div class="stack"><label>Nom</label><input id="in-nom" placeholder="Martin"></div>
-        <div class="stack"><label>Prénom</label><input id="in-prenom" placeholder="Julie"></div>
-        <div class="stack"><label>Classe</label><input id="in-classe" placeholder="4C"></div>
-        <div class="stack">
+      <div class="row">
+        <div class="stack" style="flex:1 1 240px"><label>Nom</label><input id="in-nom" placeholder="Martin"></div>
+        <div class="stack" style="flex:1 1 240px"><label>Prénom</label><input id="in-prenom" placeholder="Julie"></div>
+        <div class="stack" style="flex:1 1 200px"><label>Classe</label><input id="in-classe" placeholder="4C"></div>
+        <div class="stack" style="flex:1 1 160px">
           <label>Sexe</label>
           <select id="in-sexe"><option value="M">M</option><option value="F">F</option><option value="Autre">Autre</option></select>
         </div>
-        <div class="stack"><label>Distance totale (m)</label><input id="in-total" type="number" value="800"></div>
-        <div class="stack"><label>Distance par tour (m)</label><input id="in-lap" type="number" value="200"></div>
+        <div class="stack" style="flex:1 1 180px"><label>Distance totale (m)</label><input id="in-total" type="number" value="800"></div>
+        <div class="stack" style="flex:1 1 180px"><label>Distance par tour (m)</label><input id="in-lap" type="number" value="200"></div>
       </div>
       <div class="row" style="margin-top:10px"><button class="btn" id="to-race">Aller au chrono →</button></div>
     </div>
@@ -217,18 +122,14 @@
 <!-- CHRONO LAPS -->
 <section id="race" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center">
-      <div>
-        <h2 style="margin:0">Chrono (Tours)</h2>
-        <div class="muted" id="race-student"></div>
-      </div>
+    <div class="row" style="justify-content:space-between">
+      <div><h2 style="margin:0">Chrono (Tours)</h2><div class="muted" id="race-student"></div></div>
       <div class="row">
-        <label style="align-self:center">Mode tours</label>
+        <label>Mode tours</label>
         <select id="mode-tours"><option value="lap">Temps du tour</option><option value="cum">Temps cumulé</option></select>
         <button class="btn sec" onclick="nav('form')">↺ changer élève</button>
       </div>
     </div>
-
     <div class="card" style="margin-top:12px">
       <div class="stack" style="align-items:center">
         <div class="dial-wrap" id="dial-wrap-laps">
@@ -243,14 +144,12 @@
         </div>
       </div>
     </div>
-
-    <div class="grid two" style="margin-top:12px">
-      <div class="card">
+    <div class="row" style="margin-top:12px; align-items:flex-start">
+      <div class="card" style="flex:1 1 420px">
         <h3 style="margin:0 0 8px">Tableau des tours</h3>
         <table><thead><tr><th>#</th><th>Distance (m)</th><th>Temps tour</th><th>Temps cumulé</th><th>Vitesse (km/h)</th></tr></thead><tbody id="laps-body"></tbody></table>
       </div>
-
-      <div class="card">
+      <div class="card" style="flex:1 1 320px">
         <h3 style="margin:0 0 8px">Exports & QR</h3>
         <div class="row">
           <div id="qrcode" class="card" style="border:1px dashed var(--ring); padding:8px"></div>
@@ -269,7 +168,7 @@
 <!-- MINUTEUR -->
 <section id="timer" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center"><h2>Minuteur</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Minuteur</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
     <div class="card" style="margin-top:12px">
       <div class="stack" style="align-items:center">
         <div class="row">
@@ -293,7 +192,7 @@
 <!-- CHRONO SIMPLE -->
 <section id="simple" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center"><h2>Chrono simple</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Chrono simple</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
     <div class="card" style="margin-top:12px">
       <div class="stack" style="align-items:center">
         <div class="dial-wrap" id="dial-wrap-simple">
@@ -310,23 +209,19 @@
   </div>
 </section>
 
-<!-- TEST VMA (NAVETTE) -->
+<!-- TEST VMA -->
 <section id="vma" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center">
-      <h2>Test VMA (navette)</h2>
-      <button class="btn sec" onclick="nav('modes')">← Modes</button>
-    </div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Test VMA (navette)</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
     <div class="card" style="margin-top:12px">
-      <div class="grid two">
-        <div class="stack">
+      <div class="row">
+        <div class="stack" style="flex:1 1 260px">
           <label>Nom</label><input id="vma-nom">
           <label>Prénom</label><input id="vma-prenom">
           <label>Classe</label><input id="vma-classe">
-          <label>Sexe</label>
-          <select id="vma-sexe"><option>M</option><option>F</option><option>Autre</option></select>
+          <label>Sexe</label><select id="vma-sexe"><option>M</option><option>F</option><option>Autre</option></select>
         </div>
-        <div class="stack">
+        <div class="stack" style="flex:1 1 260px">
           <label>Palier initial</label><input id="vma-start" type="number" value="1" min="1">
           <label>Palier max (objectif)</label><input id="vma-max" type="number" value="20" min="1">
           <label>Durée palier (s)</label><input id="vma-palier-sec" type="number" value="60" min="10">
@@ -345,18 +240,16 @@
           <button id="vma-reset" class="btn circle red">Réinit.</button>
         </div>
       </div>
-      <div class="grid two" style="margin-top:12px">
-        <div class="card">
+      <div class="row" style="margin-top:12px; align-items:flex-start">
+        <div class="card" style="flex:1 1 420px">
           <h3 style="margin:0 0 8px">Historique des paliers</h3>
-          <table><thead><tr><th>#</th><th>Palier</th><th>Vitesse (km/h)</th><th>Durée</th></tr></thead><tbody id="vma-body"></tbody></table>
+          <table><thead><tr><th>#</th><th>Palier</th><th>Vitesse</th><th>Durée</th></tr></thead><tbody id="vma-body"></tbody></table>
         </div>
-        <div class="card">
+        <div class="card" style="flex:1 1 320px">
           <h3 style="margin:0 0 8px">QR Test VMA</h3>
           <div class="row">
             <div id="qrcode-vma" class="card" style="border:1px dashed var(--ring); padding:8px"></div>
-            <div class="stack">
-              <button id="vma-qr" class="btn violet">QR VMA</button>
-            </div>
+            <button id="vma-qr" class="btn violet">QR VMA</button>
           </div>
         </div>
       </div>
@@ -367,193 +260,22 @@
 <!-- COURSE POURSUITE -->
 <section id="chase" class="section">
   <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center">
-      <h2>Course poursuite (A vs B)</h2>
-      <button class="btn sec" onclick="nav('modes')">← Modes</button>
-    </div>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Course poursuite (A vs B)</h2><button class="btn sec" onclick="nav('modes')">← Modes</button></div>
     <div class="card" style="margin-top:12px">
-      <div class="grid two">
-        <div class="stack">
-          <h3 style="margin:0">Élève A</h3>
-          <label>Nom</label><input id="chA-nom">
-          <label>Prénom</label><input id="chA-prenom">
-          <label>Classe</label><input id="chA-classe">
-        </div>
-        <div class="stack">
-          <h3 style="margin:0">Élève B</h3>
-          <label>Nom</label><input id="chB-nom">
-          <label>Prénom</label><input id="chB-prenom">
-          <label>Classe</label><input id="chB-classe">
-        </div>
+      <div class="row">
+        <div class="stack" style="flex:1 1 260px"><h3 style="margin:2px 0">Élève A</h3><label>Nom</label><input id="chA-nom"><label>Prénom</label><input id="chA-prenom"><label>Classe</label><input id="chA-classe"></div>
+        <div class="stack" style="flex:1 1 260px"><h3 style="margin:2px 0">Élève B</h3><label>Nom</label><input id="chB-nom"><label>Prénom</label><input id="chB-prenom"><label>Classe</label><input id="chB-classe"></div>
       </div>
-      <div class="grid two" style="margin-top:12px">
-        <div class="card stack" style="align-items:center">
-          <div class="dial-wrap">
-            <svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chA" cx="120" cy="120" r="96"></circle></svg>
-            <div class="dial-center"><div id="chA-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève A</div></div>
-          </div>
+      <div class="row">
+        <div class="card stack" style="align-items:center; flex:1 1 420px">
+          <div class="dial-wrap"><svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chA" cx="120" cy="120" r="96"></circle></svg><div class="dial-center"><div id="chA-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève A</div></div></div>
           <div class="row"><button id="chA-lap" class="btn cyan">Tour A</button></div>
-          <table><thead><tr><th>#</th><th>Temps tour</th><th>Cumulé</th></tr></thead><tbody id="chA-body"></tbody></table>
+          <table><thead><tr><th>#</th><th>Tour</th><th>Cumulé</th></tr></thead><tbody id="chA-body"></tbody></table>
         </div>
-        <div class="card stack" style="align-items:center">
-          <div class="dial-wrap">
-            <svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chB" cx="120" cy="120" r="96"></circle></svg>
-            <div class="dial-center"><div id="chB-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève B</div></div>
-          </div>
+        <div class="card stack" style="align-items:center; flex:1 1 420px">
+          <div class="dial-wrap"><svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-chB" cx="120" cy="120" r="96"></circle></svg><div class="dial-center"><div id="chB-time" class="dial-time">00:00.0</div><div class="dial-meta">Élève B</div></div></div>
           <div class="row"><button id="chB-lap" class="btn cyan">Tour B</button></div>
-          <table><thead><tr><th>#</th><th>Temps tour</th><th>Cumulé</th></tr></thead><tbody id="chB-body"></tbody></table>
+          <table><thead><tr><th>#</th><th>Tour</th><th>Cumulé</th></tr></thead><tbody id="chB-body"></tbody></table>
         </div>
       </div>
-      <div class="row" style="justify-content:center; gap:16px; margin-top:12px">
-        <button id="ch-start" class="btn xl green">Démarrer</button>
-        <button id="ch-stop" class="btn xl amber">Stop</button>
-        <button id="ch-reset" class="btn xl red">Réinit.</button>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3 style="margin:0 0 8px">QR Course poursuite</h3>
-        <div class="row">
-          <div id="qrcode-chase" class="card" style="border:1px dashed var(--ring); padding:8px"></div>
-          <button id="ch-qr" class="btn violet">QR Poursuite</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SÉRIE MULTI-ÉPREUVES -->
-<section id="series" class="section">
-  <div class="container">
-    <div class="row" style="justify-content:space-between; align-items:center">
-      <h2>Série multi-épreuves</h2>
-      <button class="btn sec" onclick="nav('modes')">← Modes</button>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <div class="grid two">
-        <div class="stack">
-          <label>Nom</label><input id="se-nom">
-          <label>Prénom</label><input id="se-prenom">
-          <label>Classe</label><input id="se-classe">
-          <div class="row">
-            <input id="se-epreuve-name" placeholder="Nom épreuve (ex: 200m)">
-            <button id="se-add" class="btn cyan">Ajouter épreuve</button>
-          </div>
-          <ul id="se-list" class="stack" style="padding:0; list-style:none;"></ul>
-        </div>
-        <div class="stack" style="align-items:center">
-          <div class="dial-wrap">
-            <svg class="dial" viewBox="0 0 240 240"><circle class="dial-track" cx="120" cy="120" r="96"></circle><circle class="dial-progress" id="dial-se" cx="120" cy="120" r="96"></circle></svg>
-            <div class="dial-center"><div id="se-time" class="dial-time">00:00.0</div><div class="dial-meta" id="se-meta">—</div></div>
-          </div>
-          <div class="row">
-            <button id="se-start" class="btn circle green">Démarrer</button>
-            <button id="se-stop" class="btn circle amber">Stop</button>
-            <button id="se-next" class="btn circle cyan">Suivant</button>
-            <button id="se-reset" class="btn circle red">Réinit.</button>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3 style="margin:0 0 8px">QR Série</h3>
-        <div class="row">
-          <div id="qrcode-series" class="card" style="border:1px dashed var(--ring); padding:8px"></div>
-          <button id="se-qr" class="btn violet">QR Série</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
-
-<script>
-/* ---------- NAV & UTILS ---------- */
-const nav = id => { document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
-document.getElementById('go-modes').onclick=()=>nav('modes');
-
-const fmt = (ms)=>{ const t=Math.floor(ms/100)/10, m=Math.floor(t/60), s=Math.floor(t%60), d=Math.floor((t*10)%10); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${d}`; };
-function dial(circle,wrap,ratio,alert=false){
-  const r = parseFloat(circle.getAttribute('r')), C = 2*Math.PI*r;
-  circle.style.strokeDasharray = `${C} ${C}`;
-  circle.style.strokeDashoffset = String(C*(1-Math.max(0,Math.min(1,ratio))));
-  wrap.classList.toggle('alert', alert);
-}
-
-/* ---------- CHRONO AVEC TOURS ---------- */
-const L = {
-  student:{nom:'',prenom:'',classe:'',sexe:'M'},
-  total:800, lap:200, running:false, startAt:0, lastLapAt:0, tickId:null, mode:'lap', laps:[]
-};
-document.getElementById('to-race').onclick=()=>{
-  L.student.nom = document.getElementById('in-nom').value.trim();
-  L.student.prenom = document.getElementById('in-prenom').value.trim();
-  L.student.classe = document.getElementById('in-classe').value.trim();
-  L.student.sexe = document.getElementById('in-sexe').value || 'M';
-  L.total = +document.getElementById('in-total').value||0;
-  L.lap   = +document.getElementById('in-lap').value||1;
-  if(!L.student.nom || !L.student.prenom || !L.student.classe){ alert('Nom/Prénom/Classe requis.'); return; }
-  document.getElementById('race-student').textContent = `${L.student.prenom} ${L.student.nom} — ${L.student.classe}`;
-  document.getElementById('meta-total').textContent = String(L.total);
-  document.getElementById('meta-done').textContent = '0';
-  document.getElementById('laps-body').innerHTML='';
-  document.getElementById('qrcode').innerHTML='';
-  L.laps=[]; L.running=false; L.startAt=0; L.lastLapAt=0; clearInterval(L.tickId); L.tickId=null;
-  document.getElementById('timer-laps').textContent='00:00.0';
-  dial(document.getElementById('dial-progress-laps'), document.getElementById('dial-wrap-laps'),0,false);
-  nav('race');
-};
-document.getElementById('mode-tours').onchange=e=>L.mode=e.target.value;
-const doneMeters=()=>L.laps.length*L.lap;
-function updLapsUI(){
-  const elapsed = performance.now()-L.startAt;
-  document.getElementById('timer-laps').textContent=fmt(elapsed);
-  const ratio = L.total>0 ? doneMeters()/L.total : 0;
-  const alert = (Math.floor((elapsed/1000)%60)>=50);
-  dial(document.getElementById('dial-progress-laps'), document.getElementById('dial-wrap-laps'), ratio, alert);
-}
-document.getElementById('start-laps').onclick=()=>{
-  if(L.running) return; L.running=true; const now=performance.now(); L.startAt=now; L.lastLapAt=now; L.tickId=setInterval(updLapsUI,100);
-};
-document.getElementById('stop-laps').onclick=()=>{ if(!L.running) return; L.running=false; clearInterval(L.tickId); L.tickId=null; updLapsUI(); };
-document.getElementById('reset-laps').onclick=()=>{
-  L.running=false; clearInterval(L.tickId); L.tickId=null; L.laps=[]; document.getElementById('laps-body').innerHTML='';
-  document.getElementById('timer-laps').textContent='00:00.0'; document.getElementById('qrcode').innerHTML=''; document.getElementById('meta-done').textContent='0';
-  dial(document.getElementById('dial-progress-laps'), document.getElementById('dial-wrap-laps'),0,false);
-};
-document.getElementById('new-laps').onclick=()=>nav('form');
-document.getElementById('lap').onclick=()=>{
-  if(!L.running) return;
-  const now=performance.now(); const cum=now-L.startAt;
-  const lapMs = (L.mode==='lap') ? (now-L.lastLapAt) : (cum - (L.laps.length?L.laps[L.laps.length-1].cumMs:0));
-  L.lastLapAt=now;
-  const vInst = L.lap>0 ? (L.lap/(lapMs/1000))*3.6 : 0;
-  const idx=L.laps.length+1; const dist=idx*L.lap;
-  L.laps.push({i:idx,dist,lapMs,cumMs:cum,vInst});
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td>${idx}</td><td>${dist}</td><td>${fmt(lapMs)}</td><td>${fmt(cum)}</td><td>${vInst.toFixed(2)}</td>`;
-  document.getElementById('laps-body').appendChild(tr);
-  document.getElementById('meta-done').textContent=String(doneMeters());
-  dial(document.getElementById('dial-progress-laps'), document.getElementById('dial-wrap-laps'), (L.total?doneMeters()/L.total:0), false);
-  if(doneMeters()>=L.total){ document.getElementById('stop-laps').click(); }
-};
-/* QR laps: nom, prenom, classe, temps_total, intermediaires[] */
-function qrDataLaps(){
-  const totalMs = L.laps.length? L.laps[L.laps.length-1].cumMs : 0;
-  const payload=[{ nom:L.student.nom, prenom:L.student.prenom, classe:L.student.classe, temps_total:fmt(totalMs), intermediaires: L.laps.map(x=>fmt(x.lapMs)) }];
-  return JSON.stringify(payload);
-}
-document.getElementById('qr-laps').onclick=()=>{
-  if(!L.laps.length){ alert('Ajoute au moins un tour.'); return; }
-  const box=document.getElementById('qrcode'); box.innerHTML='';
-  new QRCode(box,{text:qrDataLaps(), width:256, height:256, correctLevel:QRCode.CorrectLevel.M});
-};
-/* CSV laps */
-function download(name,text){ const blob=new Blob([text],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
-document.getElementById('csv-laps-simple').onclick=()=>{
-  if(!L.laps.length){ alert('Pas de données.'); return; }
-  const totalMs=L.laps[L.laps.length-1].cumMs, inters=L.laps.map(x=>fmt(x.lapMs)).join(' | ');
-  const headers=['nom','prenom','classe','sexe','temps_total','intermediaires'];
-  const row=[L.student.nom,L.student.prenom,L.student.classe,(L.student.sexe==='Autre'?'M':L.student.sexe),fmt(totalMs),`"${inters}"`];
-  download(`chronovitesse_${L.student.nom}_${L.student.prenom}_simple.csv`, headers.join(',')+'\n'+row.join(','));
-};
-document.getElementById('csv-laps-detail').onclick=()=>{
-  if(!L.laps.length){ alert('
+      <div c

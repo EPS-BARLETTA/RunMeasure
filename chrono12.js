@@ -1,12 +1,13 @@
 // js/chrono12.js
-// Chrono 12 minutes (même logique que 6min, durée = 12:00)
+// Chrono 12 minutes (même logique que 6min, durée fixe = 12:00)
 
 (function () {
-  const pageReady = () => document.readyState === "interactive" || document.readyState === "complete";
-  if (!pageReady()) document.addEventListener("DOMContentLoaded", init);
+  const ready = () => document.readyState === "interactive" || document.readyState === "complete";
+  if (!ready()) document.addEventListener("DOMContentLoaded", init);
   else init();
 
   function init() {
+    // Éléments
     const nom = qs('#nom');
     const prenom = qs('#prenom');
     const classe = qs('#classe');
@@ -20,19 +21,23 @@
     const qrBox = qs('#qrcode');
     const saveCsvBtn = qs('#saveCsv');
 
+    // Constantes
     const TARGET_SECS = 12 * 60;
     let running = false;
     let startTime = 0;
     let rafId = 0;
+
+    // Mesures
     let extraLaps = 0;
     let lastRender = 0;
 
+    // Helpers
     const setButtons = (isRunning) => {
       running = isRunning;
       startBtn.disabled = isRunning;
       stopBtn.disabled = !isRunning;
       resetBtn.disabled = isRunning;
-      incBtns.forEach(b => b.disabled = !isRunning ? true : false);
+      incBtns.forEach(b => b.disabled = !isRunning);
     };
 
     const fmt = (s) => {
@@ -65,60 +70,81 @@
       rafId = requestAnimationFrame(loop);
     };
 
-    const startChrono = () => {
-      if (!nom.value || !prenom.value || !classe.value) {
-        alert("Veuillez saisir Nom, Prénom et Classe");
+    function startChrono() {
+      if (!nom.value.trim() || !prenom.value.trim() || !classe.value.trim()) {
+        alert('Merci de renseigner Nom, Prénom et Classe.');
         return;
       }
-      startTime = performance.now();
+      // Reset mesures
       extraLaps = 0;
-      setButtons(true);
-      loop();
-    };
+      display.textContent = '12:00';
+      toggleLast10(display, false);
 
-    const stopChrono = (auto = false) => {
+      setButtons(true);
+      startTime = performance.now();
+      lastRender = startTime;
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function stopChrono(auto = false) {
+      if (!running) return;
       cancelAnimationFrame(rafId);
       setButtons(false);
 
-      const totalTime = TARGET_SECS;
-      const totalMeters = (parseFloat(lapLenInput.value) || 0) * extraLaps;
+      const lapLen = Math.max(0, parseFloat(lapLenInput.value || '0'));
+      const totalMeters = Math.round(extraLaps * lapLen);
 
-      const data = {
-        nom: nom.value,
-        prenom: prenom.value,
-        classe: classe.value,
-        temps: totalTime,
-        distance: totalMeters
+      const payload = {
+        mode: "12min",
+        nom: nom.value.trim(),
+        prenom: prenom.value.trim(),
+        classe: classe.value.trim(),
+        duree_s: TARGET_SECS,
+        distance_m: totalMeters
       };
 
-      makeQRCode(qrBox, data);
-      saveRowToCsv(data, "chrono12");
-    };
+      // QR + CSV
+      makeQRCode(qrBox, payload);
+      saveRowToCsv({
+        nom: payload.nom,
+        prenom: payload.prenom,
+        classe: payload.classe,
+        mode: payload.mode,
+        duree_s: payload.duree_s,
+        distance_m: payload.distance_m
+      }, 'mc_12min');
+    }
 
-    const resetChrono = () => {
+    function resetChrono() {
       cancelAnimationFrame(rafId);
-      updateDisplay(TARGET_SECS * 1000);
+      running = false;
+      display.textContent = '12:00';
+      toggleLast10(display, false);
       setButtons(false);
-      qrBox.innerHTML = '';
       extraLaps = 0;
-    };
+      if (qrBox) qrBox.innerHTML = '';
+    }
 
-    startBtn.addEventListener("click", startChrono);
-    stopBtn.addEventListener("click", () => stopChrono(false));
-    resetBtn.addEventListener("click", resetChrono);
+    // Événements
+    on(startBtn, 'click', debounce(startChrono, 200));
+    on(stopBtn, 'click', debounce(() => stopChrono(false), 200));
+    on(resetBtn, 'click', debounce(resetChrono, 200));
 
     incBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        extraLaps += parseFloat(btn.dataset.inc);
-      });
+      on(btn, 'click', debounce(() => {
+        if (!running) return;
+        const inc = parseFloat(btn.getAttribute('data-inc') || '0');
+        if (!isFinite(inc) || inc <= 0) return;
+        extraLaps += inc;
+      }, 120));
     });
 
-    saveCsvBtn.addEventListener("click", () => {
-      exportCsvFromStore("chrono12", "chrono12.csv");
+    on(saveCsvBtn, 'click', () => {
+      exportCsvFromStore('mc_12min', 'multichrono_12min.csv');
     });
 
-    // Init affichage
-    updateDisplay(TARGET_SECS * 1000);
+    // État initial
     setButtons(false);
+    updateDisplay(TARGET_SECS * 1000);
   }
 })();

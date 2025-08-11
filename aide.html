@@ -1,100 +1,17 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aide • ChronoVitesse EPS</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<title>Aide</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>Aide • ChronoVitesse</h1>
-    <nav class="top-nav">
-      <a class="nav-btn" href="index.html">⬅️ Retour</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <section class="panel">
-      <h2>Présentation rapide</h2>
-      <p><strong>ChronoVitesse</strong> est un couteau-suisse pour l’EPS : chronos simples, minuteur,
-         VMA (Cooper, 6′/Astrand, Léger‑Boucher, VAMEVAL), <em>duel</em> et <em>multi</em> (jusqu’à 4 élèves).
-         Les QR générés sont <strong>compatibles ScanProf</strong> et suivent le format JSON attendu.</p>
-    </section>
-
-    <section class="panel">
-      <h2>Format QR compatible ScanProf</h2>
-      <p>Le QR code contient toujours un <strong>tableau</strong> d’objets (un ou plusieurs élèves) :</p>
-      <pre><code>[
-  { "nom":"Martin","prenom":"Julie","classe":"4C","sexe":"F","distance":580,"vitesse":13.5,"vma":15.2 },
-  { "nom":"Dupont","prenom":"Lucas","classe":"4C","sexe":"M","distance":610,"vitesse":14.2,"vma":16.3 }
-]</code></pre>
-      <ul>
-        <li><code>distance</code> en mètres</li>
-        <li><code>vitesse</code> et <code>vma</code> en km/h</li>
-      </ul>
-    </section>
-
-    <section class="panel">
-      <h2>Modes</h2>
-      <h3>⏱️ Chrono simple</h3>
-      <ul>
-        <li>Saisir identité (Nom, Prénom, Classe, Sexe)</li>
-        <li>Option : suivre la <strong>distance</strong> (longueur de tour, +¼/+½/+¾, +/−m)</li>
-        <li>Arrêt : QR avec <em>distance</em>, <em>vitesse moyenne</em>, <em>VMA</em> (=vitesse si non calculée autrement)</li>
-      </ul>
-      <h3>⏳ Minuteur</h3>
-      <ul>
-        <li>Choisir la <strong>durée</strong> (ex : 6′ / 12′ / perso)</li>
-        <li>Suivre la distance pendant le décompte</li>
-        <li>Fin : QR identique au Chrono simple</li>
-      </ul>
-      <h3>🏁 Chrono avec temps intermédiaire</h3>
-      <ul>
-        <li>Conserve ton <strong>script existant</strong> (non modifié).</li>
-        <li>Ergonomie revue (CSS).</li>
-        <li>QR spécifique conservé (temps final, tours, cumuls).</li>
-      </ul>
-      <h3>🧪 VMA</h3>
-      <ul>
-        <li>Tests : Cooper (12′), 6′/Astrand, Léger‑Boucher (palier), VAMEVAL (palier), Libre.</li>
-        <li>Saisie distance <em>ou</em> palier selon test. Distance peut aussi venir du suivi par tours.</li>
-        <li>Calcul VMA ; QR au format ScanProf.</li>
-      </ul>
-      <h3>⚔️ Duel</h3>
-      <ul>
-        <li>Deux élèves en parallèle, chacun son suivi distance.</li>
-        <li>Un QR avec les deux élèves (ou un QR par élève).</li>
-      </ul>
-      <h3>👥 Multi</h3>
-      <ul>
-        <li>Jusqu’à <strong>4</strong> élèves en parallèle.</li>
-        <li>Un QR groupé (ou un par élève au choix).</li>
-      </ul>
-    </section>
-
-    <section class="panel">
-      <h2>Boutons & couleurs</h2>
-      <ul>
-        <li><span class="tag green">Démarrer</span>, <span class="tag red">Stop</span>, <span class="tag blue">Calculer</span>, 
-            <span class="tag orange">+ Tour</span>, <span class="tag gray">Réinitialiser</span>, <span class="tag violet">Aide</span></li>
-      </ul>
-    </section>
-
-    <section class="panel">
-      <h2>Conseils d’utilisation</h2>
-      <ul>
-        <li>Sur piste : renseigner la <em>longueur d’un tour</em> (ex : 200 m) pour accélérer la saisie.</li>
-        <li>En VMA 6′ ou 12′ : le suivi par tours donne la <em>distance</em> automatiquement.</li>
-        <li>Le QR peut être généré <em>groupé</em> ou <em>un par élève</em>.</li>
-      </ul>
-    </section>
-  </main>
-
-  <footer class="app-footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-    <a class="btn btn-help" href="index.html">⬅️ Retour</a>
-  </footer>
+<h2>Aide pour les élèves</h2>
+<p>- Choisissez votre mode de chronométrage.<br>
+- Saisissez vos infos avant de commencer.<br>
+- Lancez le chrono et suivez vos distances.<br>
+- Scannez le QR code avec ScanProf à la fin.</p>
+<button onclick="location.href='menu.html'">Retour</button>
+<footer>ChronoVitesse - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

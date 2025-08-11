@@ -1,126 +1,13 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChronoVitesse • EPS</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- QRCode library (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<meta charset="UTF-8">
+<title>Chrono Vitesse EPS</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>ChronoVitesse • EPS</h1>
-    <nav class="top-nav">
-      <a class="nav-btn" href="index.html">Accueil</a>
-      <a class="nav-btn" href="aide.html">❓ Aide</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <section class="mode-picker">
-      <button class="mode-btn" data-mode="chrono">⏱️ Chrono simple</button>
-      <button class="mode-btn" data-mode="minuteur">⏳ Minuteur</button>
-      <a class="mode-btn link" href="intermediaire.html">🏁 Chrono avec temps intermédiaire</a>
-      <button class="mode-btn" data-mode="vma">🧪 VMA (Cooper / 6′ / Léger / VAMEVAL)</button>
-      <button class="mode-btn" data-mode="duel">⚔️ Duel (2 élèves)</button>
-      <button class="mode-btn" data-mode="multi">👥 Multi (jusqu’à 4)</button>
-    </section>
-
-    <!-- Panneau dynamique (modes hors "intermédiaire") -->
-    <section id="panel" class="panel hidden">
-      <h2 id="panel-title">Mode</h2>
-
-      <!-- Identité élève / élèves -->
-      <div id="identiteZone" class="identite-zone"></div>
-
-      <!-- Timer principal (ou timers multiples) -->
-      <div id="timersZone" class="timers-zone"></div>
-
-      <!-- Suivi distance universel (mono élève); pour duel/multi ce sera par-carte -->
-      <div id="distanceZone" class="distance-zone hidden">
-        <h3>Suivi distance</h3>
-        <div class="grid two">
-          <label>Longueur d’un tour (m)
-            <input id="tourLen" type="number" min="1" step="1" placeholder="ex: 200" />
-          </label>
-          <label>Distance manuelle (m) ±
-            <div class="inline">
-              <button id="minus10" type="button" class="btn">−10</button>
-              <button id="plus10" type="button" class="btn">+10</button>
-              <input id="manualAdjust" type="number" step="1" placeholder="ex: 37" />
-              <button id="applyAdjust" type="button" class="btn">Appliquer</button>
-            </div>
-          </label>
-        </div>
-        <div class="controls wrap">
-          <button id="addLap" class="btn btn-primary">+1 tour</button>
-          <button id="add14" class="btn">+¼</button>
-          <button id="add12" class="btn">+½</button>
-          <button id="add34" class="btn">+¾</button>
-          <button id="undoLap" class="btn btn-reset">Annuler</button>
-        </div>
-        <div class="muted">Tours: <span id="lapsCount">0</span> • Distance: <strong id="distTotal">0</strong> m</div>
-      </div>
-
-      <!-- Zone VMA spécifique -->
-      <div id="vmaZone" class="vma-zone hidden">
-        <h3>Type de test VMA</h3>
-        <div class="grid two">
-          <label>Test
-            <select id="vmaType">
-              <option value="cooper">Cooper (12 min)</option>
-              <option value="six">Demi‑Cooper / Astrand (6 min)</option>
-              <option value="leger">Léger‑Boucher (navette 20 m)</option>
-              <option value="vameval">VAMEVAL</option>
-              <option value="libre">Libre (distance & durée)</option>
-            </select>
-          </label>
-          <label id="distanceField">Distance (m)
-            <input id="distanceInput" type="number" min="0" step="1" placeholder="ex: 2400" />
-          </label>
-          <label id="dureeField">Durée (s)
-            <input id="dureeInput" type="number" min="0" step="1" placeholder="auto selon test" />
-          </label>
-          <div id="palierFields" class="grid two hidden">
-            <label>Palier
-              <input id="palierInput" type="number" min="1" step="1" placeholder="ex: 9" />
-            </label>
-            <label>Navettes (option)
-              <input id="navettesInput" type="number" min="0" step="1" placeholder="ex: 10" />
-            </label>
-          </div>
-        </div>
-        <div class="controls">
-          <button id="calcVMA" class="btn btn-primary">Calculer la VMA</button>
-          <div class="vma-readout hidden" id="vmaReadout">
-            <span class="big" id="vmaValue">--</span> km/h
-            <div class="muted" id="vmaExplain"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions globales -->
-      <div class="controls wrap" id="mainControls"></div>
-
-      <!-- QR ScanProf -->
-      <div id="qrZoneScanProf" class="qr-zone hidden">
-        <h3>QR compatible ScanProf</h3>
-        <div class="qr-grid" id="qrGrid"></div>
-        <div class="controls">
-          <label><input id="qrPerStudent" type="checkbox" /> Un QR par élève</label>
-          <button id="downloadAllQR" class="btn">Télécharger les QR</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="app-footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-    <a class="btn btn-help" href="aide.html">❓ Aide</a>
-  </footer>
-
-  <script src="app.js"></script>
+<h1>Chrono Vitesse EPS</h1>
+<button onclick="location.href='params.html'">Commencer</button>
+<footer>ChronoVitesse - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

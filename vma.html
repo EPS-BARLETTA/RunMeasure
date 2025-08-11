@@ -1,0 +1,143 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VMA • ChronoVitesse</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>🧪 VMA</h1>
+    <div class="header-actions"><a class="btn" href="menu.html">⬅️ Modes</a> <a class="btn" href="aide.html">❓ Aide</a></div>
+  </header>
+
+  <main class="container">
+    <section class="panel center">
+      <div class="timer" id="timer">00:00.0</div>
+    </section>
+
+    <section class="panel compact">
+      <h2>Test</h2>
+      <div class="grid two">
+        <label>Type de test
+          <select id="vmaType">
+            <option value="cooper">Cooper (12 min)</option>
+            <option value="six">Demi-Cooper / Astrand (6 min)</option>
+            <option value="leger">Léger-Boucher (palier)</option>
+            <option value="vameval">VAMEVAL (palier)</option>
+            <option value="libre">Libre (distance & durée)</option>
+          </select>
+        </label>
+        <label id="distanceField">Distance (m)
+          <input id="distanceInput" type="number" min="0" step="1" placeholder="ex: 2400" />
+        </label>
+        <label id="dureeField">Durée (s)
+          <input id="dureeInput" type="number" min="0" step="1" placeholder="auto" />
+        </label>
+      </div>
+      <div id="palierFields" class="grid two hidden">
+        <label>Palier <input id="palierInput" type="number" min="1" step="1" placeholder="ex: 9" /></label>
+        <label>Navettes (option) <input id="navettesInput" type="number" min="0" step="1" placeholder="ex: 10" /></label>
+      </div>
+      <div class="controls">
+        <button id="calcVMA" class="btn btn-primary">Calculer la VMA</button>
+        <div id="vmaReadout" class="hidden"><span class="big" id="vmaValue">--</span> km/h</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Distance (si suivi par tours)</h2>
+      <div class="lap-bar">
+        <label>Tour (m) <input id="tourLen" type="number" min="0" step="1"></label>
+        <button id="addLap" class="btn btn-primary">+1 tour</button>
+        <button id="add14" class="btn">+¼</button>
+        <button id="add12" class="btn">+½</button>
+        <button id="add34" class="btn">+¾</button>
+        <button id="minus10" class="btn">−10 m</button>
+        <button id="plus10" class="btn">+10 m</button>
+        <input id="manualAdjust" type="number" step="1" placeholder="+/− m">
+        <button id="applyAdjust" class="btn">OK</button>
+        <button id="undoLap" class="btn btn-reset">Annuler</button>
+        <div class="small">Tours: <span id="lapsCount">0</span> • Distance: <strong id="distTotal">0</strong> m</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="controls center">
+        <button id="start" class="btn btn-start btn-large">Démarrer</button>
+        <button id="stop" class="btn btn-stop btn-large" disabled>Stop</button>
+        <button id="reset" class="btn btn-reset" disabled>Réinitialiser</button>
+      </div>
+    </section>
+
+    <section id="qrZone" class="panel qr-zone hidden">
+      <h2>QR compatible ScanProf</h2>
+      <div id="qrGrid" class="qr-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
+  </footer>
+
+  <script src="common.js"></script>
+  <script>
+    const p = requireParams();
+
+    bindDistanceUI(document);
+
+    const typeSel = document.getElementById('vmaType');
+    const distF = document.getElementById('distanceField');
+    const durF = document.getElementById('dureeField');
+    const palF = document.getElementById('palierFields');
+
+    function syncFields(){
+      const t = typeSel.value;
+      distF.classList.toggle('hidden', t==='leger'||t==='vameval');
+      palF.classList.toggle('hidden', !(t==='leger'||t==='vameval'));
+      durF.classList.toggle('hidden', !(t==='cooper'||t==='six'||t==='libre'));
+      if (t==='cooper') dureeInput.value = 720;
+      else if (t==='six') dureeInput.value = 360;
+      else if (t!=='libre') dureeInput.value = '';
+    }
+    typeSel.addEventListener('change', syncFields); syncFields();
+
+    let t0=null, tick=null;
+    const timer = document.getElementById('timer');
+
+    start.onclick=()=>{ t0=Date.now(); tick=setInterval(()=> timer.textContent = formatMs(Date.now()-t0), 100);
+      start.disabled=true; stop.disabled=false; reset.disabled=true; };
+    stop.onclick=()=>{
+      clearInterval(tick); stop.disabled=true; reset.disabled=false;
+      const duree_s = Math.round((Date.now()-t0)/1000);
+      // if a computed VMA is present, use it; else fallback to distance/time
+      let vmaK = Number((document.getElementById('vmaValue').textContent||'').replace(',','.')) || 0;
+      if (!vmaK){
+        vmaK = vmaFromDistanceTime(dist.total || Number(distanceInput.value||0), (typeSel.value==='cooper'||typeSel.value==='six') ? Number(dureeInput.value||0) : duree_s);
+      }
+      const item = buildScanProfItem({ nom:p.nom, prenom:p.prenom, classe:p.classe, sexe:p.sexe,
+        distance_m: dist.total || Number(distanceInput.value||0),
+        duree_s: (typeSel.value==='cooper'||typeSel.value==='six') ? Number(dureeInput.value||0) : duree_s,
+        vma_kmh: vmaK });
+      renderQRArray([item]);
+    };
+    reset.onclick=()=>{ clearInterval(tick); timer.textContent='00:00.0'; start.disabled=false; stop.disabled=true; reset.disabled=true;
+      dist.history=[]; updateDistUI(); document.getElementById('qrZone').classList.add('hidden'); };
+
+    calcVMA.onclick=()=>{
+      const t = typeSel.value;
+      let v=0;
+      if (t==='cooper'){ const d=Number(distanceInput.value||dist.total); v=vmaCooper(d); }
+      else if (t==='six'){ const d=Number(distanceInput.value||dist.total); v=vmaSixMin(d); }
+      else if (t==='leger'){ const pPal=Number(palierInput.value||0); v=vmaLegerFromPalier(pPal); }
+      else if (t==='vameval'){ const pPal=Number(palierInput.value||0); v=vmaVamevalFromPalier(pPal); }
+      else { const d=Number(distanceInput.value||dist.total), s=Number(dureeInput.value||0); v=vmaFromDistanceTime(d,s); }
+      document.getElementById('vmaValue').textContent = v.toFixed(2);
+      document.getElementById('vmaReadout').classList.remove('hidden');
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Duel • ChronoVitesse</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>⚔️ Duel (2 élèves)</h1>
+    <div class="header-actions"><a class="btn" href="menu.html">⬅️ Modes</a> <a class="btn" href="aide.html">❓ Aide</a></div>
+  </header>
+
+  <main class="container">
+    <section class="panel grid two">
+      <div class="panel compact" id="cardA">
+        <h2>Élève A</h2>
+        <div class="grid two">
+          <label>Nom <input class="nom" type="text"></label>
+          <label>Prénom <input class="prenom" type="text"></label>
+          <label>Classe <input class="classe" type="text"></label>
+          <label>Sexe
+            <select class="sexe"><option value="">Choix</option><option value="F">Fille</option><option value="M">Garçon</option><option value="Autre">Autre</option></select>
+          </label>
+        </div>
+        <div class="center"><div class="timer timer-min t">00:00.0</div></div>
+        <div class="controls">
+          <button class="btn btn-start s">Démarrer</button>
+          <button class="btn btn-stop p" disabled>Stop</button>
+          <button class="btn btn-reset r" disabled>Réinitialiser</button>
+        </div>
+        <div class="lap-bar">
+          <label>Tour (m) <input class="tour" type="number" min="0" step="1"></label>
+          <button class="btn btn-primary l1">+1 tour</button>
+          <button class="btn q1">+¼</button>
+          <button class="btn h1">+½</button>
+          <button class="btn t3">+¾</button>
+          <button class="btn m-">−10 m</button>
+          <button class="btn p+">+10 m</button>
+          <input class="man" type="number" step="1" placeholder="+/− m"><button class="btn ok">OK</button>
+          <button class="btn btn-reset u">Annuler</button>
+          <div class="small">Tours: <span class="laps">0</span> • Distance: <strong class="dist">0</strong> m</div>
+        </div>
+      </div>
+
+      <div class="panel compact" id="cardB">
+        <h2>Élève B</h2>
+        <div class="grid two">
+          <label>Nom <input class="nom" type="text"></label>
+          <label>Prénom <input class="prenom" type="text"></label>
+          <label>Classe <input class="classe" type="text"></label>
+          <label>Sexe
+            <select class="sexe"><option value="">Choix</option><option value="F">Fille</option><option value="M">Garçon</option><option value="Autre">Autre</option></select>
+          </label>
+        </div>
+        <div class="center"><div class="timer timer-min t">00:00.0</div></div>
+        <div class="controls">
+          <button class="btn btn-start s">Démarrer</button>
+          <button class="btn btn-stop p" disabled>Stop</button>
+          <button class="btn btn-reset r" disabled>Réinitialiser</button>
+        </div>
+        <div class="lap-bar">
+          <label>Tour (m) <input class="tour" type="number" min="0" step="1"></label>
+          <button class="btn btn-primary l1">+1 tour</button>
+          <button class="btn q1">+¼</button>
+          <button class="btn h1">+½</button>
+          <button class="btn t3">+¾</button>
+          <button class="btn m-">−10 m</button>
+          <button class="btn p+">+10 m</button>
+          <input class="man" type="number" step="1" placeholder="+/− m"><button class="btn ok">OK</button>
+          <button class="btn btn-reset u">Annuler</button>
+          <div class="small">Tours: <span class="laps">0</span> • Distance: <strong class="dist">0</strong> m</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel center">
+      <button id="stopAll" class="btn btn-large">Stop général + QR</button>
+    </section>
+
+    <section id="qrZone" class="panel qr-zone hidden">
+      <h2>QR compatible ScanProf</h2>
+      <div id="qrGrid" class="qr-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
+  </footer>
+
+  <script src="common.js"></script>
+  <script>
+    function attachCard(card){
+      let t0=null, tick=null;
+      const timer = card.querySelector('.t');
+      const tracker = { tourLen:0, history:[], get total(){ return Math.max(0, Math.round(this.history.reduce((s,h)=>s+h.value_m,0))); } };
+      function render(){ card.querySelector('.dist').textContent = tracker.total.toString();
+        card.querySelector('.laps').textContent = tracker.history.filter(h=>h.type==='lap').length.toString(); }
+      card.querySelector('.tour').addEventListener('input', e=> tracker.tourLen = Number(e.target.value||0));
+      const add = v=>{ if(v!=='manual' && !tracker.tourLen) return alert('Définir la longueur de tour.'); tracker.history.push(v==='manual'?{type:'manual', value_m:Number(card.querySelector('.man').value||0)}:v); render(); };
+      card.querySelector('.l1').onclick=()=> add({type:'lap', value_m:tracker.tourLen});
+      card.querySelector('.q1').onclick=()=> add({type:'frac', value_m:tracker.tourLen*0.25});
+      card.querySelector('.h1').onclick=()=> add({type:'frac', value_m:tracker.tourLen*0.5});
+      card.querySelector('.t3').onclick=()=> add({type:'frac', value_m:tracker.tourLen*0.75});
+      card.querySelector('.m-').onclick=()=> add({type:'manual', value_m:-10});
+      card.querySelector('.p+').onclick=()=> add({type:'manual', value_m:+10});
+      card.querySelector('.ok').onclick=()=> add('manual');
+      card.querySelector('.u').onclick=()=>{ tracker.history.pop(); render(); };
+
+      card.querySelector('.s').onclick=()=>{ t0=Date.now(); tick=setInterval(()=> timer.textContent = formatMs(Date.now()-t0), 100);
+        card.querySelector('.s').disabled=true; card.querySelector('.p').disabled=false; card.querySelector('.r').disabled=true; card._t0=t0; card._tick=tick; card._tracker=tracker; };
+      card.querySelector('.p').onclick=()=>{ clearInterval(card._tick); card.querySelector('.p').disabled=true; card.querySelector('.r').disabled=false; };
+      card.querySelector('.r').onclick=()=>{ clearInterval(card._tick); timer.textContent='00:00.0'; card.querySelector('.s').disabled=false; card.querySelector('.p').disabled=true; card.querySelector('.r').disabled=true; tracker.history=[]; render(); };
+    }
+    const cardA = document.getElementById('cardA'), cardB = document.getElementById('cardB');
+    attachCard(cardA); attachCard(cardB);
+
+    stopAll.onclick=()=>{
+      const cards=[cardA,cardB];
+      const results = cards.map(c=>{
+        const nom=c.querySelector('.nom').value.trim();
+        const prenom=c.querySelector('.prenom').value.trim();
+        const classe=c.querySelector('.classe').value.trim();
+        const sexe=c.querySelector('.sexe').value.trim();
+        const t0=c._t0||Date.now(); const duree_s=Math.round((Date.now()-t0)/1000);
+        const dm=c._tracker?c._tracker.total:0; const vma=vmaFromDistanceTime(dm, duree_s);
+        return { nom, prenom, classe, sexe, distance_m:dm, duree_s, vma_kmh:vma };
+      });
+      renderQRArray(results);
+    };
+  </script>
+</body>
+</html>

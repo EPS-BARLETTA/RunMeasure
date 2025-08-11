@@ -1,17 +1,45 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Aide</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aide (Élèves) • ChronoVitesse</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<h2>Aide pour les élèves</h2>
-<p>- Choisissez votre mode de chronométrage.<br>
-- Saisissez vos infos avant de commencer.<br>
-- Lancez le chrono et suivez vos distances.<br>
-- Scannez le QR code avec ScanProf à la fin.</p>
-<button onclick="location.href='menu.html'">Retour</button>
-<footer>ChronoVitesse - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+  <header class="app-header">
+    <h1>Aide — pour les élèves</h1>
+    <div class="header-actions"><a class="btn" href="index.html">⬅️ Accueil</a></div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>Comment ça marche ?</h2>
+      <ol>
+        <li>Appuie sur <strong>Commencer</strong>.</li>
+        <li>Remplis tes infos (Nom, Prénom, Classe, Sexe) et la <em>longueur d’un tour</em> si besoin.</li>
+        <li>Choisis un <strong>mode</strong> (Chrono, Minuteur, Intermédiaires, VMA, Duel, Multi).</li>
+        <li>À la fin, montre le <strong>QR code</strong> au prof.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>Les boutons</h2>
+      <p><span class="btn btn-start">Démarrer</span> <span class="btn btn-stop">Stop</span> <span class="btn btn-lap">Intermédiaire / +Tour</span> <span class="btn btn-reset">Réinitialiser</span></p>
+    </section>
+
+    <section class="panel">
+      <h2>Conseils</h2>
+      <ul>
+        <li>Sur piste : entre la <strong>longueur d’un tour</strong> (ex : 200 m) pour gagner du temps.</li>
+        <li>Reste concentré(e) sur ta course, les boutons sont <em>gros</em> exprès.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
+  </footer>
 </body>
 </html>

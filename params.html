@@ -7,21 +7,24 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header><h1>Paramètres</h1><a class="btn" href="index.html">⬅️ Accueil</a></header>
+<header>
+  <h1>Paramètres</h1>
+  <div class="header-right"><a class="btn" href="index.html">Accueil</a><a class="btn" href="aide.html">Aide</a></div>
+</header>
 <main class="container">
   <section class="panel">
     <h2>Identité</h2>
     <div class="grid three">
       <label>Nom <input id="nom"></label>
       <label>Prénom <input id="prenom"></label>
-      <label>Classe <input id="classe" placeholder="ex: 2ndeC"></label>
+      <label>Classe <input id="classe" placeholder="ex: 4C"></label>
     </div>
     <div class="row center" style="margin-top:12px">
-      <button class="btn btn-primary btn-lg" id="go">Enregistrer et continuer ➜</button>
+      <a class="btn btn-primary btn-lg" id="go">Enregistrer et continuer ➜</a>
     </div>
   </section>
 </main>
-<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB</div>
 <script src="common.js"></script>
 <script>
   const p=loadParams(); if(p.nom) nom.value=p.nom; if(p.prenom) prenom.value=p.prenom; if(p.classe) classe.value=p.classe;

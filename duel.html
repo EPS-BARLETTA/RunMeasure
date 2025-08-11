@@ -8,46 +8,65 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-<header><h1>⚔️ Duel</h1><a class="btn" href="menu.html">⬅️ Modes</a></header>
+<header>
+  <h1>⚔️ Duel</h1>
+  <div class="header-right"><a class="btn" href="menu.html">Modes</a><a class="btn" href="aide.html">Aide</a></div>
+</header>
 <main class="container">
+  <section class="panel center">
+    <div class="action-bar">
+      <button id="startBoth" class="btn btn-start btn-lg">Démarrer les deux</button>
+      <button id="genQR" class="btn btn-primary btn-lg">📱 Générer QR</button>
+    </div>
+  </section>
+
   <section class="panel grid two">
     <div class="panel" id="A">
       <h2>Élève A</h2>
-      <div class="grid two">
-        <label>Nom <input class="nom"></label><label>Prénom <input class="prenom"></label><label>Classe <input class="classe"></label>
-      </div>
+      <div class="grid two"><label>Nom <input class="nom"></label><label>Prénom <input class="prenom"></label><label>Classe <input class="classe"></label></div>
       <div class="center"><div class="timer timer-min t">00:00.0</div></div>
-      <div class="action-bar"><button class="btn btn-start s">Démarrer</button><button class="btn btn-stop p" disabled>Stop</button><button class="btn btn-reset r" disabled>Reset</button></div>
+      <div class="action-bar">
+        <button class="btn btn-a p">Stop A</button>
+        <button class="btn btn-reset r">Reset A</button>
+      </div>
     </div>
     <div class="panel" id="B">
       <h2>Élève B</h2>
-      <div class="grid two">
-        <label>Nom <input class="nom"></label><label>Prénom <input class="prenom"></label><label>Classe <input class="classe"></label>
-      </div>
+      <div class="grid two"><label>Nom <input class="nom"></label><label>Prénom <input class="prenom"></label><label>Classe <input class="classe"></label></div>
       <div class="center"><div class="timer timer-min t">00:00.0</div></div>
-      <div class="action-bar"><button class="btn btn-start s">Démarrer</button><button class="btn btn-stop p" disabled>Stop</button><button class="btn btn-reset r" disabled>Reset</button></div>
+      <div class="action-bar">
+        <button class="btn btn-b p">Stop B</button>
+        <button class="btn btn-reset r">Reset B</button>
+      </div>
     </div>
   </section>
-  <section class="panel center"><button id="stopAll" class="btn btn-lg">Stop général + QR</button></section>
+
   <section id="qr" class="panel qr hidden"><h2>QR compatible ScanProf</h2><div id="qrBox" class="qr-box"></div></section>
 </main>
-<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB</div>
+
 <script src="common.js"></script>
 <script>
-function attach(id){
-  const el=document.getElementById(id);
-  let t0=null,tick=null;
-  el.querySelector('.s').onclick=()=>{ t0=Date.now(); tick=setInterval(()=> el.querySelector('.t').textContent=formatMs(Date.now()-t0), 100); el.querySelector('.s').disabled=true; el.querySelector('.p').disabled=false; el.querySelector('.r').disabled=true; };
-  el.querySelector('.p').onclick=()=>{ clearInterval(tick); el.querySelector('.p').disabled=true; el.querySelector('.r').disabled=false; };
-  el.querySelector('.r').onclick=()=>{ clearInterval(tick); el.querySelector('.t').textContent='00:00.0'; el.querySelector('.s').disabled=false; el.querySelector('.p').disabled=true; el.querySelector('.r').disabled=true; };
-  el._getRes=()=>{
-    const duree_s=Math.round((Date.now()-(t0||Date.now()))/1000);
-    return { nom:el.querySelector('.nom').value.trim(), prenom:el.querySelector('.prenom').value.trim(), classe:el.querySelector('.classe').value.trim(), sexe:'', distance_m:0, duree_s, vma_kmh:0 };
-  };
+function attach(cardId){
+  const el=document.getElementById(cardId);
+  let t0=null, tick=null, running=false;
+  function start(){ if(running) return; t0=Date.now(); tick=setInterval(()=> el.querySelector('.t').textContent=formatMs(Date.now()-t0), 100); running=true; }
+  function stop(){ if(!running) return; clearInterval(tick); running=false; }
+  function reset(){ clearInterval(tick); running=false; el.querySelector('.t').textContent='00:00.0'; t0=null; }
+  el._start=start; el._stop=stop; el._reset=reset; el._getTime=()=> Math.round((Date.now()-(t0||Date.now()))/1000);
+  el.querySelector('.p').onclick=stop;
+  el.querySelector('.r').onclick=reset;
   return el;
 }
 const A=attach('A'), B=attach('B');
-stopAll.onclick=()=>{ showQR([ A._getRes(), B._getRes() ]); };
+document.getElementById('startBoth').onclick=()=>{ A._start(); B._start(); };
+document.getElementById('genQR').onclick=()=>{
+  const res=[A,B].map((el)=>{
+    const duree_s=el._getTime();
+    return { nom:el.querySelector('.nom').value.trim(), prenom:el.querySelector('.prenom').value.trim(), classe:el.querySelector('.classe').value.trim(), sexe:'', distance_m:0, duree_s, vma_kmh:0 };
+  });
+  showQR(res);
+};
 </script>
 </body>
 </html>

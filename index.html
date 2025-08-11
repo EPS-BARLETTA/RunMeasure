@@ -1,1 +1,33 @@
-<html><body><h1>MultiChrono - Accueil</h1></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MultiChrono</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="style.css">
+  <script defer src="ui.js"></script>
+</head>
+<body>
+<header class="mc-header">
+  <h1>MultiChrono</h1>
+  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+</header>
+<main class="mc-container">
+  <section class="mc-card">
+    <h2>Modules</h2>
+    <div class="mc-row">
+      <a class="mc-btn mc-blue" href="6min.html">⏱️ 6 minutes</a>
+      <a class="mc-btn mc-blue" href="12min.html">⏱️ 12 minutes</a>
+      <a class="mc-btn mc-blue" href="libre.html">⏱️ Chrono libre</a>
+      <a class="mc-btn mc-red" href="duel.html">⚔️ Duel</a>
+      <a class="mc-btn mc-yellow" href="prof.html">🎛️ Espace Prof (PIN)</a>
+    </div>
+    <p class="mc-hint">QR codes compatibles ScanProf. Export CSV disponible sur chaque mode.</p>
+  </section>
+</main>
+<footer class="mc-footer">
+  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
+</footer>
+</body>
+</html>

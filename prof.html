@@ -1,1 +1,58 @@
-<html><body><h1>Tests VMA - Prof</h1></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MultiChrono — Espace Prof</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="style.css">
+  <script defer src="ui.js"></script>
+  <script defer src="prof.js"></script>
+</head>
+<body>
+<header class="mc-header">
+  <a class="mc-back" href="index.html">← Accueil</a>
+  <h1>Espace Prof (PIN)</h1>
+  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+</header>
+<main class="mc-container">
+  <section id="gate" class="mc-card">
+    <h2>Code PIN</h2>
+    <div class="mc-row">
+      <label class="mc-field"><span>Entrer le PIN</span><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="57"></label>
+    </div>
+    <div class="mc-controls"><button id="unlock" class="mc-btn mc-blue">Déverrouiller</button></div>
+    <p class="mc-hint">Par défaut : <strong>57</strong>.</p>
+  </section>
+
+  <section id="panel" class="mc-card" style="display:none">
+    <h2>Tests VMA (bips)</h2>
+    <div class="mc-row">
+      <div class="mc-card" style="flex:1">
+        <h3>Vameval</h3>
+        <p class="mc-hint">Paliers de 1 min, vitesse initiale 8 km/h, +0,5 km/h par minute. Bips tous les plots.</p>
+        <label class="mc-field"><span>Distance entre plots (m)</span><input id="plotsLen" type="number" value="20"></label>
+        <div id="dispV" class="mc-time">Prêt</div>
+        <div class="mc-controls">
+          <button id="startV" class="mc-btn mc-blue">Démarrer</button>
+          <button id="stopV" class="mc-btn mc-red">Stop</button>
+        </div>
+      </div>
+      <div class="mc-card" style="flex:1">
+        <h3>Luc Léger 20 m</h3>
+        <p class="mc-hint">Navettes de 20 m, vitesse qui augmente par niveaux. Bips à chaque navette.</p>
+        <div id="dispL" class="mc-time">Prêt</div>
+        <div class="mc-controls">
+          <button id="startL" class="mc-btn mc-blue">Démarrer</button>
+          <button id="stopL" class="mc-btn mc-red">Stop</button>
+        </div>
+      </div>
+    </div>
+    <p class="mc-hint">⚠️ Cliquez une fois sur “Démarrer” pour autoriser l’audio (Safari/iPad exige une interaction).</p>
+  </section>
+</main>
+<footer class="mc-footer">
+  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
+</footer>
+</body>
+</html>

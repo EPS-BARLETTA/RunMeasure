@@ -2,106 +2,90 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Temps intermédiaires • ChronoVitesse</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Temps intermédiaires</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <header class="app-header">
-    <h1>🏁 Temps intermédiaires</h1>
-    <div class="header-actions"><a class="btn" href="menu.html">⬅️ Modes</a> <a class="btn" href="aide.html">❓ Aide</a></div>
-  </header>
+<header><h1>🏁 Temps intermédiaires</h1><a class="btn" href="menu.html">⬅️ Modes</a></header>
+<main class="container">
+  <section class="panel center"><div id="timer" class="timer">00:00.0</div></section>
+  <section class="panel center">
+    <div class="action-bar">
+      <button id="start" class="btn btn-start btn-lg">Démarrer</button>
+      <button id="mark" class="btn btn-lg" disabled>Intermédiaire</button>
+      <button id="stop" class="btn btn-stop btn-lg" disabled>Stop</button>
+      <button id="reset" class="btn btn-reset" disabled>Réinitialiser</button>
+      <button id="openSettings" class="btn">⚙️</button>
+    </div>
+    <div class="kpi" style="margin-top:8px">
+      <span class="tag">Distance totale: <strong id="totalM">0</strong> m</span>
+      <span class="tag">Pas: <strong id="splitM">0</strong> m</span>
+      <span class="tag">Mode: <strong id="modeLbl">—</strong></span>
+    </div>
+  </section>
 
-  <main class="container">
-    <section class="panel center">
-      <div class="timer" id="timer">00:00.0</div>
-    </section>
+  <section class="panel">
+    <h2>Intermédiaires</h2>
+    <div id="list" class="grid"></div>
+  </section>
 
-    <section class="panel">
-      <div class="controls center">
-        <button id="start" class="btn btn-start btn-large">Démarrer</button>
-        <button id="lap" class="btn btn-lap btn-large" disabled>Intermédiaire</button>
-        <button id="stop" class="btn btn-stop btn-large" disabled>Stop</button>
-        <button id="reset" class="btn btn-reset" disabled>Réinitialiser</button>
-      </div>
-    </section>
+  <section id="qr" class="panel qr hidden"><h2>QR compatible ScanProf</h2><div id="qrBox" class="qr-box"></div></section>
+</main>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
 
-    <section class="panel">
-      <h2>Intermédiaires</h2>
-      <div id="lapsList" class="grid"></div>
-    </section>
+<div id="modal" class="modal">
+  <div class="card">
+    <h2>Paramètres</h2>
+    <div class="grid two">
+      <label>Distance totale (m) <input id="total" type="number" min="100" step="50" value="800"></label>
+      <label>Temps intermédiaire tous les (m) <input id="step" type="number" min="25" step="25" value="200"></label>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <label class="row"><input type="radio" name="mode" value="diff" checked> Temps au tour (différences)</label>
+      <label class="row"><input type="radio" name="mode" value="cum"> Temps cumulés</label>
+    </div>
+    <hr>
+    <div class="row"><button class="btn cancel">Annuler</button><button class="btn btn-primary save">Enregistrer</button></div>
+  </div>
+</div>
 
-    <section class="panel">
-      <h2>Distance (option)</h2>
-      <div class="lap-bar">
-        <label>Tour (m) <input id="tourLen" type="number" min="0" step="1"></label>
-        <button id="addLap" class="btn btn-primary">+1 tour</button>
-        <button id="add14" class="btn">+¼</button>
-        <button id="add12" class="btn">+½</button>
-        <button id="add34" class="btn">+¾</button>
-        <button id="minus10" class="btn">−10 m</button>
-        <button id="plus10" class="btn">+10 m</button>
-        <input id="manualAdjust" type="number" step="1" placeholder="+/− m">
-        <button id="applyAdjust" class="btn">OK</button>
-        <button id="undoLap" class="btn btn-reset">Annuler</button>
-        <div class="small">Tours: <span id="lapsCount">0</span> • Distance: <strong id="distTotal">0</strong> m</div>
-      </div>
-    </section>
-
-    <section id="qrZone" class="panel qr-zone hidden">
-      <h2>QR compatible ScanProf</h2>
-      <div id="qrGrid" class="qr-grid"></div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-  </footer>
-
-  <script src="common.js"></script>
-  <script>
-    const p = requireParams();
-    bindDistanceUI(document);
-
-    let t0=null, tick=null, lastLapMs=null;
-    const timer = document.getElementById('timer');
-    const list = document.getElementById('lapsList');
-    const laps = [];
-
-    function addLap(){
-      const now = Date.now();
-      const cum = now - t0;
-      const split = lastLapMs ? (now - lastLapMs) : cum;
-      lastLapMs = now;
-      laps.push({ splitMs: split, cumMs: cum });
-      const row = document.createElement('div');
-      row.className = 'panel';
-      row.innerHTML = `<div><strong>Intermédiaire ${laps.length}</strong> — Split: ${formatMs(split)} • Cumul: ${formatMs(cum)}</div>`;
-      list.appendChild(row);
-    }
-
-    start.onclick=()=>{
-      t0 = Date.now(); lastLapMs = null; list.innerHTML=''; laps.length=0;
-      tick = setInterval(()=> timer.textContent = formatMs(Date.now()-t0), 100);
-      start.disabled=true; lap.disabled=false; stop.disabled=false; reset.disabled=true;
-      document.getElementById('qrZone').classList.add('hidden');
-    };
-    lap.onclick=addLap;
-    stop.onclick=()=>{
-      clearInterval(tick);
-      stop.disabled=true; reset.disabled=false; lap.disabled=true;
-      const duree_s = Math.round((Date.now()-t0)/1000);
-      const baseItem = buildScanProfItem({ nom:p.nom, prenom:p.prenom, classe:p.classe, sexe:p.sexe,
-        distance_m: dist.total, duree_s, vma_kmh: vmaFromDistanceTime(dist.total, duree_s) });
-      const detailed = { ...baseItem, details: { splits: laps.map(l=>Math.round(l.splitMs)), cumul: laps.map(l=>Math.round(l.cumMs)) } };
-      renderQRArray([detailed]);
-    };
-    reset.onclick=()=>{
-      clearInterval(tick); timer.textContent='00:00.0'; start.disabled=false; lap.disabled=true; stop.disabled=true; reset.disabled=true;
-      dist.history=[]; updateDistUI(); list.innerHTML=''; document.getElementById('qrZone').classList.add('hidden');
-    };
-  </script>
+<script src="common.js"></script>
+<script>
+const p=requireParams();
+let t0=null,tick=null,lastMs=null, total=800, step=200, mode='diff', splits=[], currentMeters=0;
+const timer=document.getElementById('timer'); const list=document.getElementById('list');
+function renderKPI(){ totalM.textContent=total; splitM.textContent=step; modeLbl.textContent = (mode==='diff'?'Temps au tour':'Temps cumulés'); }
+bindModal('modal','openSettings',()=>{ total=Math.max(100,Number(document.getElementById('total').value||800)); step=Math.max(25,Number(document.getElementById('step').value||200)); mode=document.querySelector('input[name=mode]:checked').value; renderKPI(); });
+function addSplit(){
+  const now=Date.now(); const cum=now-t0; const split = (mode==='diff') ? (lastMs? now-lastMs : cum) : cum;
+  const index=splits.length+1; const distAt=Math.min(index*step, total);
+  const stepMs = (mode==='diff')? split : (lastMs? (now-lastMs) : cum); // ms du pas courant
+  const vInst = +( (step / (stepMs/1000)) * 3.6 ).toFixed(2); // km/h
+  splits.push({splitMs:split, cumMs:cum, vInst, distAt}); lastMs=now;
+  const row=document.createElement('div'); row.className='split-row';
+  row.innerHTML = `<div><strong>${distAt} m</strong></div>
+                   <div class="kpi">
+                     <span class="tag">${mode==='diff'?'Tour':'Cumul'}: ${formatMs(split)}</span>
+                     <span class="tag">Vitesse: ${isFinite(vInst)?vInst:0} km/h</span>
+                   </div>`;
+  list.appendChild(row);
+  if (distAt>=total){ stop.click(); }
+}
+start.onclick=()=>{ t0=Date.now(); lastMs=null; splits=[]; list.innerHTML=''; currentMeters=0;
+  tick=setInterval(()=> timer.textContent=formatMs(Date.now()-t0), 100);
+  start.disabled=true; mark.disabled=false; stop.disabled=false; reset.disabled=true; document.getElementById('qr').classList.add('hidden'); };
+mark.onclick=addSplit;
+stop.onclick=()=>{
+  clearInterval(tick); stop.disabled=true; reset.disabled=false; mark.disabled=true;
+  const totalTimeS=Math.round((Date.now()-t0)/1000); const avgV=vitesse(total, totalTimeS);
+  const base=buildScanProfItem({ nom:p.nom, prenom:p.prenom, classe:p.classe, sexe:p.sexe, distance_m:total, duree_s:totalTimeS, vma_kmh:avgV });
+  const detailed={ ...base, details: { mode, step_m: step, splits_ms: splits.map(s=>Math.round(mode==='diff'?s.splitMs:s.cumMs)), cumul_ms: splits.map(s=>Math.round(s.cumMs)), v_inst_kmh: splits.map(s=>s.vInst) } };
+  showQR([detailed]);
+};
+reset.onclick=()=>{ clearInterval(tick); timer.textContent='00:00.0'; start.disabled=false; stop.disabled=true; reset.disabled=true; mark.disabled=true; splits=[]; list.innerHTML=''; document.getElementById('qr').classList.add('hidden'); };
+renderKPI();
+</script>
 </body>
 </html>

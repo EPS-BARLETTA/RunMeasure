@@ -2,68 +2,34 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Paramètres • ChronoVitesse</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paramètres</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>Paramètres</h1>
-    <div class="header-actions"><a class="btn" href="index.html">⬅️ Accueil</a></div>
-  </header>
-
-  <main class="container">
-    <section class="panel compact">
-      <h2>Identité</h2>
-      <div class="grid two">
-        <label>Nom <input id="nom" type="text" autocomplete="family-name"></label>
-        <label>Prénom <input id="prenom" type="text" autocomplete="given-name"></label>
-        <label>Classe <input id="classe" type="text" placeholder="ex: 2ndeC"></label>
-        <label>Sexe
-          <select id="sexe">
-            <option value="">Choix</option>
-            <option value="F">Fille</option>
-            <option value="M">Garçon</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </label>
-      </div>
-    </section>
-
-    <section class="panel compact">
-      <h2>Course</h2>
-      <div class="grid two">
-        <label>Longueur d’un tour (m) <input id="tourLen" type="number" min="0" step="1" placeholder="ex: 200"></label>
-        <label>Durée du minuteur (minutes) <input id="minuteurMin" type="number" min="1" step="1" value="6"></label>
-      </div>
-      <div class="small">Tu pourras changer ces valeurs plus tard.</div>
-    </section>
-
-    <div class="controls center">
-      <button class="btn btn-primary btn-large" id="saveGo">Enregistrer et continuer ➜</button>
+<header><h1>Paramètres</h1><a class="btn" href="index.html">⬅️ Accueil</a></header>
+<main class="container">
+  <section class="panel">
+    <h2>Identité</h2>
+    <div class="grid three">
+      <label>Nom <input id="nom"></label>
+      <label>Prénom <input id="prenom"></label>
+      <label>Classe <input id="classe" placeholder="ex: 2ndeC"></label>
     </div>
-  </main>
-
-  <footer class="footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-  </footer>
-
-  <script src="common.js"></script>
-  <script>
-    document.getElementById('saveGo').addEventListener('click', ()=>{
-      const p = {
-        nom: nom.value.trim(),
-        prenom: prenom.value.trim(),
-        classe: classe.value.trim(),
-        sexe: sexe.value.trim(),
-        tourLen: Number(tourLen.value||0),
-        minuteurMin: Math.max(1, Number(minuteurMin.value||6))
-      };
-      if(!p.nom||!p.prenom||!p.classe||!p.sexe){ alert("Merci de renseigner toutes les infos."); return; }
-      saveParams(p);
-      location.href = 'menu.html';
-    });
-  </script>
+    <div class="row center" style="margin-top:12px">
+      <button class="btn btn-primary btn-lg" id="go">Enregistrer et continuer ➜</button>
+    </div>
+  </section>
+</main>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
+<script src="common.js"></script>
+<script>
+  const p=loadParams(); if(p.nom) nom.value=p.nom; if(p.prenom) prenom.value=p.prenom; if(p.classe) classe.value=p.classe;
+  document.getElementById('go').addEventListener('click', ()=>{
+    const data={nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:''};
+    if(!data.nom||!data.prenom||!data.classe){ alert('Merci de renseigner tous les champs.'); return; }
+    saveParams(data); location.href='menu.html';
+  });
+</script>
 </body>
 </html>

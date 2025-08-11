@@ -2,77 +2,64 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chrono simple • ChronoVitesse</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chrono simple</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <header class="app-header">
-    <h1>⏱️ Chrono simple</h1>
-    <div class="header-actions"><a class="btn" href="menu.html">⬅️ Modes</a> <a class="btn" href="aide.html">❓ Aide</a></div>
-  </header>
+<header><h1>⏱️ Chrono simple</h1><a class="btn" href="menu.html">⬅️ Modes</a></header>
+<main class="container">
+  <section class="panel center"><div id="timer" class="timer">00:00.0</div></section>
+  <section class="panel center">
+    <div class="action-bar">
+      <button id="start" class="btn btn-start btn-lg">Démarrer</button>
+      <button id="stop" class="btn btn-stop btn-lg" disabled>Stop</button>
+      <button id="reset" class="btn btn-reset" disabled>Réinitialiser</button>
+      <button id="openSettings" class="btn">⚙️</button>
+    </div>
+    <div class="kpi" style="margin-top:8px">
+      <span class="tag">Distance: <strong id="dist">0</strong> m</span>
+      <span class="tag">Tours: <strong id="laps">0</strong></span>
+    </div>
+  </section>
+  <section id="qr" class="panel qr hidden"><h2>QR compatible ScanProf</h2><div id="qrBox" class="qr-box"></div></section>
+</main>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
 
-  <main class="container">
-    <section class="panel center">
-      <div class="timer" id="timer">00:00.0</div>
-    </section>
-
-    <section class="panel">
-      <h2>Distance</h2>
-      <div class="grid two">
-        <label>Longueur d’un tour (m) <input id="tourLen" type="number" min="0" step="1" /></label>
-        <div class="lap-bar">
-          <button id="addLap" class="btn btn-primary">+1 tour</button>
-          <button id="add14" class="btn">+¼</button>
-          <button id="add12" class="btn">+½</button>
-          <button id="add34" class="btn">+¾</button>
-          <button id="minus10" class="btn">−10 m</button>
-          <button id="plus10" class="btn">+10 m</button>
-          <input id="manualAdjust" type="number" step="1" placeholder="+/− m">
-          <button id="applyAdjust" class="btn">OK</button>
-          <button id="undoLap" class="btn btn-reset">Annuler</button>
-        </div>
-        <div class="small">Tours: <span id="lapsCount">0</span> • Distance: <strong id="distTotal">0</strong> m</div>
+<div id="modal" class="modal">
+  <div class="card">
+    <h2>Paramètres chrono</h2>
+    <label>Longueur d’un tour (m) <input id="tourLen" type="number" min="0" step="1" placeholder="ex: 200"></label>
+    <div class="row" style="justify-content:space-between;margin-top:10px">
+      <div class="row">
+        <button id="lapBtn" class="btn">+1 tour</button>
+        <button id="halfBtn" class="btn">+½</button>
       </div>
-    </section>
-
-    <section class="panel">
-      <div class="controls center">
-        <button id="start" class="btn btn-start btn-large">Démarrer</button>
-        <button id="stop" class="btn btn-stop btn-large" disabled>Stop</button>
-        <button id="reset" class="btn btn-reset" disabled>Réinitialiser</button>
+      <div class="row">
+        <button class="btn cancel">Annuler</button>
+        <button class="btn btn-primary save">Enregistrer</button>
       </div>
-    </section>
+    </div>
+  </div>
+</div>
 
-    <section id="qrZone" class="panel qr-zone hidden">
-      <h2>QR compatible ScanProf</h2>
-      <div id="qrGrid" class="qr-grid"></div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-  </footer>
-
-  <script src="common.js"></script>
-  <script>
-    const p = requireParams();
-    if(p){ tourLen.value = p.tourLen||0; dist.tourLen = p.tourLen||0; }
-    bindDistanceUI(document);
-
-    let t0=null, tick=null;
-    const timer = document.getElementById('timer');
-
-    start.onclick=()=>{ t0=Date.now(); tick=setInterval(()=> timer.textContent=formatMs(Date.now()-t0),100);
-      start.disabled=true; stop.disabled=false; reset.disabled=true; };
-    stop.onclick=()=>{ clearInterval(tick); stop.disabled=true; reset.disabled=false;
-      const duree_s = Math.round((Date.now()-t0)/1000);
-      const item = buildScanProfItem({ nom:p.nom, prenom:p.prenom, classe:p.classe, sexe:p.sexe, distance_m:dist.total, duree_s, vma_kmh:vmaFromDistanceTime(dist.total, duree_s) });
-      renderQRArray([item]); };
-    reset.onclick=()=>{ clearInterval(tick); timer.textContent='00:00.0'; start.disabled=false; stop.disabled=true; reset.disabled=true;
-      dist.history=[]; updateDistUI(); document.getElementById('qrZone').classList.add('hidden'); };
-  </script>
+<script src="common.js"></script>
+<script>
+const p=requireParams();
+let t0=null,tick=null,totalDist=0,tour=0,laps=0;
+const timer=document.getElementById('timer'); const distEl=document.getElementById('dist'); const lapsEl=document.getElementById('laps');
+function applyDistance(v){ totalDist=Math.max(0, Math.round(totalDist+v)); distEl.textContent=totalDist; }
+bindModal('modal','openSettings',()=>{ tour=Number(document.getElementById('tourLen').value||0); });
+document.getElementById('lapBtn').addEventListener('click',()=>{ if(!tour){alert('Indique d’abord la longueur d’un tour.');return;} laps++; lapsEl.textContent=laps; applyDistance(tour); });
+document.getElementById('halfBtn').addEventListener('click',()=>{ if(!tour){alert('Indique d’abord la longueur d’un tour.');return;} applyDistance(tour*0.5); });
+start.onclick=()=>{ t0=Date.now(); tick=setInterval(()=> timer.textContent=formatMs(Date.now()-t0),100); start.disabled=true; stop.disabled=false; reset.disabled=true; };
+stop.onclick=()=>{ clearInterval(tick); stop.disabled=true; reset.disabled=false;
+  const duree_s=Math.round((Date.now()-t0)/1000);
+  const item=buildScanProfItem({ nom:p.nom, prenom:p.prenom, classe:p.classe, sexe:p.sexe, distance_m:totalDist, duree_s, vma_kmh:null });
+  showQR([item]);
+};
+reset.onclick=()=>{ clearInterval(tick); timer.textContent='00:00.0'; start.disabled=false; stop.disabled=true; reset.disabled=true; totalDist=0;laps=0;distEl.textContent=0;lapsEl.textContent=0; document.getElementById('qr').classList.add('hidden'); };
+</script>
 </body>
 </html>

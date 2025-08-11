@@ -2,48 +2,27 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Modes • ChronoVitesse</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>Choisir un mode</h1>
-    <div class="header-actions"><a class="btn" href="aide.html">❓ Aide</a></div>
-  </header>
-
-  <main class="container">
-    <section class="panel">
-      <div id="ident" class="small"></div>
-      <div class="grid two" style="margin-top:10px">
-        <a class="btn btn-large btn-primary center" href="chrono.html">⏱️ Chrono simple</a>
-        <a class="btn btn-large btn-primary center" href="minuteur.html">⏳ Minuteur</a>
-      </div>
-      <div class="grid two" style="margin-top:10px">
-        <a class="btn btn-large btn-primary center" href="intermediaire.html">🏁 Temps intermédiaires</a>
-        <a class="btn btn-large btn-primary center" href="vma.html">🧪 VMA</a>
-      </div>
-      <div class="grid two" style="margin-top:10px">
-        <a class="btn btn-large btn-primary center" href="duel.html">⚔️ Duel (2 élèves)</a>
-        <a class="btn btn-large btn-primary center" href="multi.html">👥 Multi (jusqu’à 4)</a>
-      </div>
-      <div class="controls center" style="margin-top:16px">
-        <a class="btn" href="params.html">Modifier mes paramètres</a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    ChronoVitesse — Équipe EPS Lycée Vauban — LUXEMBOURG — JB
-  </footer>
-
-  <script src="common.js"></script>
-  <script>
-    const p = requireParams();
-    if(p){
-      document.getElementById('ident').textContent = `${p.prenom} ${p.nom} — ${p.classe}`;
-    }
-  </script>
+<header><h1>Choisir un mode</h1><a class="btn" href="aide.html">❓ Aide</a></header>
+<main class="container">
+  <section class="panel">
+    <div id="ident" class="small"></div>
+    <div class="menu-grid" style="margin-top:10px">
+      <a class="btn btn-primary btn-lg" href="chrono.html">⏱️ Chrono simple</a>
+      <a class="btn btn-primary btn-lg" href="minuteur.html">⏳ Minuteur</a>
+      <a class="btn btn-primary btn-lg" href="intermediaire.html">🏁 Temps intermédiaires</a>
+      <a class="btn btn-primary btn-lg" href="vma.html">🧪 VMA</a>
+      <a class="btn btn-lg" href="duel.html">⚔️ Duel</a>
+      <a class="btn btn-lg" href="multi.html">👥 Multi</a>
+    </div>
+  </section>
+</main>
+<div class="footer">ChronoVitesse — Équipe EPS Lycée Vauban — LUX — JB</div>
+<script src="common.js"></script>
+<script>const p=requireParams(); if(p){ident.textContent=`${p.prenom} ${p.nom} — ${p.classe}`}</script>
 </body>
 </html>

@@ -1,1 +1,63 @@
-<div>ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 minutes (VMA)</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="container">
+<header><h1>🕕 6 minutes — VMA</h1><div class="actions"><a class="btn" href="eleve.html">⬅️ Retour</a></div></header>
+<div class="card"><div class="content center" style="gap:18px;flex-direction:column">
+  <div class="grid-3" style="width:100%">
+    <div><label>Piste (m)</label><input class="input" id="lapm" type="number" value="200"></div>
+    <div class="kpi"><div class="big" id="laps">0</div><div class="label">Tours</div></div>
+    <div class="kpi"><div class="big" id="dist">0 m</div><div class="label">Distance</div></div>
+  </div>
+  <div class="timer" id="circle"><div class="center"><div class="time" id="time">06:00.000</div><div class="hint">Test 6 minutes</div></div><div class="hand" id="hand"></div></div>
+  <div class="actions"><button class="btn ok big" id="start">▶️ Start</button><button class="btn warn big" id="pause">⏸ Pause</button><button class="btn danger big" id="reset">⟲ Reset</button><button class="btn" id="addLap">+ 1 tour</button></div>
+  <div class="grid-3" style="width:100%">
+    <div class="kpi"><div class="big" id="vma">—</div><div class="label">VMA estimée (km/h)</div></div>
+    <div class="kpi"><div class="big" id="vit">—</div><div class="label">Vitesse moyenne</div></div>
+    <div class="kpi"><div class="big" id="done">0%</div><div class="label">Progression</div></div>
+  </div>
+  <div class="qrbox"><div id="qr"></div><div class="actions"><button class="btn ok" id="makeQR">🧾 QR</button><button class="btn primary" id="saveQR">⬇️ PNG</button></div></div>
+</div></div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = (id)=>document.getElementById(id);
+function qs(key){ return new URLSearchParams(location.search).get(key)||''; }
+function identity(){ return { nom:qs('nom'), prenom:qs('prenom'), classe:qs('classe'), sexe:qs('sexe')||'M' }; }
+function payloadDistance({distance=0, tempsMs=0, vma=0}){
+  const hours = tempsMs>0 ? (tempsMs/3600000) : 0;
+  const vitesse = hours>0 ? (distance/1000)/hours : 0;
+  const id = identity();
+  return [{
+    nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe,
+    distance: Math.round(distance),
+    vitesse: Number(vitesse.toFixed(2)),
+    vma: Number((vma||0).toFixed(2))
+  }];
+}
+function showQR(boxId, dataArray){
+  const txt = JSON.stringify(dataArray);
+  const box = $(boxId); box.innerHTML='';
+  new QRCode(box, {text:txt, width:220, height:220}); return txt;
+}
+function downloadQR(boxId, name='qr-scanprof.png'){
+  const el=document.querySelector('#'+boxId+' canvas, #'+boxId+' img'); if(!el){ alert('Générer le QR d\'abord.'); return; }
+  let url; if(el.tagName.toLowerCase()==='canvas'){ url=el.toDataURL('image/png'); } else { const c=document.createElement('canvas'); c.width=el.naturalWidth; c.height=el.naturalHeight; c.getContext('2d').drawImage(el,0,0); url=c.toDataURL('image/png'); }
+  const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+}
+function setTimerCircle(elemId, pct){
+  const deg=Math.max(0,Math.min(100,pct))*3.6; const el=$(elemId); el.style.background=`conic-gradient(var(--accent) ${deg}deg, #e5e7eb ${deg}deg)`;
+}
+function formatMS(ms){ const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000), z=Math.floor(ms%1000); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(z).padStart(3,'0'); }
+</script>
+
+<script>
+let total=6*60000, running=false, start=0, elapsed=0, laps=0, dist=0;
+function update(ms){ const left=Math.max(0,total-ms); document.getElementById('time').textContent=formatMS(left); const pct=(ms/total)*100; setTimerCircle('circle',pct); document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${((ms/1000)%60)/60*360}deg)`; document.getElementById('done').textContent=Math.round(pct)+'%'; if(left<=0) running=false; }
+function loop(){ if(!running) return; const t=performance.now()-start+elapsed; update(t); requestAnimationFrame(loop); }
+document.getElementById('start').onclick=()=>{ if(!running){ running=true; start=performance.now(); loop(); } };
+document.getElementById('pause').onclick=()=>{ if(running){ elapsed += performance.now()-start; running=false; } };
+document.getElementById('reset').onclick=()=>{ running=false; start=0; elapsed=0; laps=0; dist=0; document.getElementById('laps').textContent='0'; document.getElementById('dist').textContent='0 m'; document.getElementById('vma').textContent='—'; document.getElementById('vit').textContent='—'; update(0); };
+document.getElementById('addLap').onclick=()=>{ const m=Number(document.getElementById('lapm').value||0); laps++; dist+=m; document.getElementById('laps').textContent=String(laps); document.getElementById('dist').textContent=dist+' m'; };
+function compute(){ const hours = 0.1; const vit = dist/1000 / hours; document.getElementById('vit').textContent = vit>0? vit.toFixed(2):'—'; document.getElementById('vma').textContent=document.getElementById('vit').textContent; }
+document.getElementById('makeQR').onclick=()=>{ compute(); const data = payloadDistance({distance:dist, tempsMs: total, vma: Number(document.getElementById('vma').textContent)||0}); const txt=showQR('qr', data); navigator.clipboard?.writeText(txt); };
+document.getElementById('saveQR').onclick=()=>downloadQR('qr');
+</script></body></html>

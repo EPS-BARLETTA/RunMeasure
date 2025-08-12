@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classe</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="container">
+<header><h1>🧑‍🏫 Classe — Préparer & Lancer</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a></div></header>
+<div class="card"><div class="content">
+  <div class="grid-3">
+    <div><label>Nom</label><input id="nom" class="input"></div>
+    <div><label>Prénom</label><input id="prenom" class="input"></div>
+    <div><label>Classe</label><input id="classeIn" class="input" value="4C"></div>
+    <div><label>Sexe</label><select id="sexe" class="input"><option>M</option><option>F</option></select></div>
+    <div><label>Observateur ?</label><select id="obs" class="input"><option value="non">non</option><option value="oui">oui</option></select></div>
+    <div class="actions"><button class="btn ok" id="add">➕ Ajouter</button></div>
+  </div>
+  <div class="actions"><label class="btn">📥 Import CSV<input type="file" id="csv" accept=".csv" style="display:none"></label><button class="btn" id="save">💾 Sauvegarder</button><button class="btn danger" id="clear">🗑️ Vider</button></div>
+</div></div>
+
+<div class="card"><div class="content"><h2>Liste</h2><div id="list"></div></div></div>
+
+<div class="card"><div class="content">
+  <h2>Lancer un test</h2>
+  <div class="actions">
+    <a class="btn primary big" href="prof-navette-20m.html">🎵 Navette 20 m</a>
+    <a class="btn primary big" href="prof-45-15.html">⏱️ 45/15</a>
+  </div>
+  <p class="help small">La liste est partagée automatiquement avec les pages test (stockée localement).</p>
+</div></div>
+</div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script>
+let roster = JSON.parse(localStorage.getItem('cv_roster')||'[]');
+function render(){
+  const box=document.getElementById('list'); box.innerHTML='';
+  if(roster.length===0){ box.innerHTML='<p class="help">Aucun élève.</p>'; return; }
+  roster.forEach((s,i)=>{
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<div class="name">${s.nom} ${s.prenom}</div><div class="small">${s.classe}</div><div class="tag">${s.sexe}</div><div class="tag">${s.obs?'observateur':'coureur'}</div><div><button class="btn danger" data-del="${i}">Supprimer</button></div>`;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ roster.splice(Number(b.dataset.del),1); render(); });
+}
+document.getElementById('add').onclick=()=>{
+  const s={nom:document.getElementById('nom').value.trim(), prenom:document.getElementById('prenom').value.trim(), classe:document.getElementById('classeIn').value.trim(), sexe:document.getElementById('sexe').value, obs:document.getElementById('obs').value==='oui'};
+  if(!s.nom||!s.prenom||!s.classe) return alert('Nom, Prénom, Classe requis');
+  roster.push(s); render();
+};
+document.getElementById('save').onclick=()=>{ localStorage.setItem('cv_roster', JSON.stringify(roster)); alert('Liste sauvegardée'); };
+document.getElementById('clear').onclick=()=>{ if(confirm('Vider la liste ?')){ roster=[]; render(); localStorage.removeItem('cv_roster'); } };
+document.getElementById('csv').addEventListener('change',(e)=>{
+  const f=e.target.files[0]; if(!f) return; const reader=new FileReader(); reader.onload=()=>{
+    const lines=reader.result.split(/\r?\n/).filter(x=>x.trim()); const out=[];
+    for(const line of lines.slice(1)){ const [nom,prenom,classe,sexe,obs]=line.split(',').map(x=>x?x.trim():'');
+      if(nom&&prenom&&classe) out.push({nom,prenom,classe,sexe:sexe||'M',obs:(obs||'non').toLowerCase().startsWith('o')});
+    } roster=out; render();
+  }; reader.readAsText(f);
+});
+render();
+</script></body></html>

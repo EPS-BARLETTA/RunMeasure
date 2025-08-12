@@ -1,1 +1,36 @@
-<div>ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VAMEVAL — Prof</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="container" id="root">
+<header><h1>🎧 VAMEVAL — Prof</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a><button class="btn" id="fs">⛶ Plein écran</button></div></header>
+<div class="card"><div class="content">
+  <div class="grid-3">
+    <div><label>Départ (km/h)</label><input class="input" id="start" type="number" value="8.0" step="0.5"></div>
+    <div><label>Incrément (+km/h/min)</label><input class="input" id="inc" type="number" value="0.5" step="0.5"></div>
+    <div><label>Balise (m)</label><input class="input" id="balise" type="number" value="20"></div>
+  </div>
+  <div class="actions" style="margin-top:10px"><button class="btn ok" id="startBtn">▶️ Start</button><button class="btn warn" id="pauseBtn">⏸ Pause</button><button class="btn danger" id="resetBtn">⟲ Reset</button><label>Volume <input id="vol" type="range" min="0" max="1" step="0.05" value="0.6" class="input"></label></div>
+</div></div>
+<div class="grid" style="align-items:stretch">
+  <section class="card"><div class="content" style="display:flex;gap:24px;align-items:center">
+    <div class="timer" id="circle" style="width:320px;height:320px"><div class="center"><div class="time" id="speed" style="font-size:54px">8.0</div><div class="hint">km/h (Palier)</div></div></div>
+    <div class="kpi" style="flex:1;min-height:160px"><div class="big" id="status">Prêt</div><div class="label">État</div></div>
+  </div></section>
+  <section class="card"><div class="content"><h2>Prochaine balise</h2><div class="progressBar"><div class="progressInner" id="bar"></div></div><div class="help" id="nextSec">— s</div></div></section>
+</div>
+</div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script>
+let ctx,gain; let running=false; let palier=0; let speed=8; let minuteIv=null, lapIv=null, raf=null; let circleStart=0;
+function audioInit(){ if(ctx) return; ctx = new (window.AudioContext||window.webkitAudioContext)(); gain = ctx.createGain(); gain.gain.value = Number(document.getElementById('vol').value||0.6); gain.connect(ctx.destination); }
+function beep(freq=880, dur=0.1){ if(!ctx) audioInit(); const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=freq; const g=ctx.createGain(); g.gain.value=Number(document.getElementById('vol').value||0.6); o.connect(g).connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000); }
+function kmh_to_mps(v){ return v*1000/3600; }
+function lapSeconds(){ const m = Number(document.getElementById('balise').value||20); return m / kmh_to_mps(speed); }
+function setCircle(pct){ const deg=Math.max(0,Math.min(100,pct))*3.6; document.getElementById('circle').style.background=`conic-gradient(var(--accent) ${deg}deg, #e5e7eb ${deg}deg)`; }
+function tick(){ if(!running) return; const now=performance.now(); const pct = ((now-circleStart)%60000)/600; setCircle(pct); const ls=lapSeconds()*1000; const p=((now-circleStart)%ls)/ls*100; document.getElementById('bar').style.width=p+'%'; raf=requestAnimationFrame(tick); }
+function schedule(){ minuteIv=setInterval(()=>{ palier+=1; speed += Number(document.getElementById('inc').value||0.5); beep(1200,0.15); circleStart=performance.now(); document.getElementById('speed').textContent=speed.toFixed(1); },60000);
+  function setLap(){ const iv=lapSeconds()*1000; document.getElementById('nextSec').textContent=iv.toFixed(2)+' s'; lapIv=setInterval(()=>beep(800,0.06),iv); } setLap(); const res=setInterval(()=>{ if(!running){ clearInterval(res); return; } clearInterval(lapIv); setLap(); },60000); }
+document.getElementById('startBtn').onclick=()=>{ audioInit(); if(running) return; running=true; palier=0; speed=Number(document.getElementById('start').value||8); document.getElementById('speed').textContent=speed.toFixed(1); circleStart=performance.now(); schedule(); tick(); document.getElementById('status').textContent='En cours'; };
+document.getElementById('pauseBtn').onclick=()=>{ if(!running) return; running=false; clearInterval(minuteIv); clearInterval(lapIv); cancelAnimationFrame(raf); document.getElementById('status').textContent='Pause'; };
+document.getElementById('resetBtn').onclick=()=>{ running=false; clearInterval(minuteIv); clearInterval(lapIv); cancelAnimationFrame(raf); document.getElementById('status').textContent='Prêt'; setCircle(0); document.getElementById('bar').style.width='0%'; };
+document.getElementById('fs').onclick=async()=>{ const el=document.getElementById('root'); if(document.fullscreenElement) await document.exitFullscreen(); else await el.requestFullscreen().catch(()=>{}); };
+document.getElementById('vol').oninput=()=>{ if(gain) gain.gain.value=Number(document.getElementById('vol').value||0.6); };
+</script></body></html>

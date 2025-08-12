@@ -1,1 +1,37 @@
-<div>ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChronoVitesse — Élève</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="container">
+<header><h1>Élève — Choisir un mode</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a></div></header>
+<div class="card"><div class="content">
+  <h2>Identité</h2>
+  <div class="grid-2">
+    <div><label>Nom</label><input id="nom" class="input" placeholder="Martin"></div>
+    <div><label>Prénom</label><input id="prenom" class="input" placeholder="Julie"></div>
+    <div><label>Classe</label><input id="classe" class="input" placeholder="4C"></div>
+    <div><label>Sexe</label><select id="sexe" class="input"><option value="M">M</option><option value="F">F</option></select></div>
+  </div>
+  <p class="help">Ces infos seront reprises dans chaque mode et dans le QR.</p>
+</div></div>
+<div class="grid">
+  <section class="card"><div class="content"><h2>⏱️ Chrono simple</h2><a class="btn primary big" id="go1" href="#">Ouvrir</a></div></section>
+  <section class="card"><div class="content"><h2>⏳ Minuteur</h2><a class="btn primary big" id="go2" href="#">Ouvrir</a></div></section>
+  <section class="card"><div class="content"><h2>🎯 Intervalles</h2><a class="btn primary big" id="go3" href="#">Ouvrir</a></div></section>
+  <section class="card"><div class="content"><h2>🕛 12 minutes</h2><a class="btn primary big" id="go4" href="#">Ouvrir</a></div></section>
+  <section class="card"><div class="content"><h2>🕕 6 minutes</h2><a class="btn primary big" id="go5" href="#">Ouvrir</a></div></section>
+  <section class="card"><div class="content"><h2>🧬 Vameval (palier)</h2><a class="btn primary big" id="go6" href="#">Ouvrir</a></div></section>
+</div>
+</div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script>
+function route(to){
+  const nom=document.getElementById('nom').value.trim();
+  const prenom=document.getElementById('prenom').value.trim();
+  const classe=document.getElementById('classe').value.trim();
+  const sexe=document.getElementById('sexe').value;
+  if(!nom||!prenom||!classe){ alert('Renseigner Nom, Prénom, Classe.'); return; }
+  const q = new URLSearchParams({nom,prenom,classe,sexe}).toString();
+  location.href = to + '?' + q;
+}
+['go1','go2','go3','go4','go5','go6'].forEach((id,i)=>{
+  document.getElementById(id).onclick=(e)=>{ e.preventDefault(); const map=['chrono-simple.html','minuteur.html','chrono-intervals.html','vma-12.html','vma-6.html','vameval-eleve.html']; route(map[i]); };
+});
+</script></body></html>

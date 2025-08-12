@@ -1,7 +1,8 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>45/15 — Prof</title><link rel="stylesheet" href="styles.css"></head>
 <body><div class="container" id="root">
-<header><h1>⏱️ 45 / 15 — Classe entière</h1><div class="actions"><a class="btn" href="classe.html">👥 Classe</a><button class="btn" id="fs">⛶ Plein écran</button></div></header>
+<header><h1>⏱️ 45 / 15 — Classe entière</h1><div class="actions"><a class="btn" href="prof.html">👥 Classe</a><button class="btn" id="fs">⛶ Plein écran</button></div></header>
+
 <div class="grid">
   <section class="card"><div class="content">
     <div class="grid-3">
@@ -9,19 +10,32 @@
       <div><label>Incrément/palier</label><input id="inc" class="input" type="number" value="0.5" step="0.5"></div>
       <div><label>Travail/Repos (s)</label><div class="grid-2"><input id="work" class="input" type="number" value="45"><input id="rest" class="input" type="number" value="15"></div></div>
     </div>
-    <div class="actions" style="margin-top:8px"><button class="btn ok" id="startBtn">▶️ Start</button><button class="btn warn" id="pauseBtn">⏸ Pause</button><button class="btn danger" id="resetBtn">⟲ Reset</button><label>Volume <input id="vol" type="range" min="0" max="1" step="0.05" value="0.8" class="input" style="width:160px"></label></div>
-  </div></div>
-  <section class="card"><div class="content center" style="gap:18px;align-items:center">
-    <div class="timer" id="circle"><div class="center"><div class="time" id="time">00:45</div><div class="hint" id="phase">Travail — 10.0 km/h</div></div><div class="hand" id="hand"></div></div>
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn ok" id="startBtn">▶️ Start</button>
+      <button class="btn warn" id="pauseBtn">⏸ Pause</button>
+      <button class="btn danger" id="resetBtn">⟲ Reset</button>
+      <div class="toggle"><input id="prep" type="checkbox" checked> <label for="prep">compte à rebours 5s</label></div>
+      <div class="toggle"><input id="tick" type="checkbox"> <label for="tick">bip toutes les 5s (travail)</label></div>
+    </div>
+  </div></section>
+
+  <section class="card"><div class="content stage">
+    <div class="timer phase-work" id="circle"><div class="center">
+      <div class="time" id="time">00:45</div>
+      <div class="hint"><span id="phase">Travail</span> — <span id="speed">10.0</span> km/h</div>
+      <div class="badge">Palier <span id="palier">1</span></div>
+    </div><div class="hand" id="hand"></div></div>
     <div style="flex:1">
       <div class="progressBar"><div class="progressInner" id="bar"></div></div>
       <div class="help" id="status">Prêt</div>
+      <div class="sep"></div>
+      <div class="keytips">⎵ Espace = Start/Pause • Couleur verte = travail / bleue = repos</div>
     </div>
   </div></section>
 </div>
 
 <div class="card"><div class="content">
-  <h2>Élèves (cliquez pour enregistrer la VMA à la sortie)</h2>
+  <h2>Élèves (cliquez pour enregistrer la VMA)</h2>
   <div id="roster"></div>
   <div class="actions" style="margin-top:10px"><button class="btn primary" id="exportCSV">⬇️ Export CSV</button></div>
 </div></div>
@@ -41,49 +55,47 @@
 </div>
 
 </div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-let ctx,gain; let running=false, paused=false; let speed=10, palier=1; let phase='work'; let w=45, r=15; let t0=0, raf;
-let results=[];
-function audioInit(){ if(ctx) return; ctx=new (window.AudioContext||window.webkitAudioContext)(); gain=ctx.createGain(); gain.gain.value=Number(document.getElementById('vol').value||0.8); gain.connect(ctx.destination); }
-function beep(freq=880, dur=0.1){ if(!ctx) audioInit(); const o=ctx.createOscillator(); o.frequency.value=freq; const g=ctx.createGain(); g.gain.value=Number(document.getElementById('vol').value||0.8); o.connect(g).connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000); }
-function setCircle(pct){ const deg=Math.max(0,Math.min(100,pct))*3.6; document.getElementById('circle').style.background=`conic-gradient(var(--accent) ${deg}deg, #e5e7eb ${deg}deg)`; }
+const $ = (id)=>document.getElementById(id);
+let ctx,gain; function audioInit(){ if(ctx) return; ctx=new (window.AudioContext||window.webkitAudioContext)(); gain=ctx.createGain(); gain.gain.value=0.9; gain.connect(ctx.destination); }
+function beep(freq=880, dur=0.08){ if(!ctx) audioInit(); const o=ctx.createOscillator(); o.frequency.value=freq; const g=ctx.createGain(); g.gain.value=0.9; o.connect(g).connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000); }
+function setCircle(pct){ const deg=Math.max(0,Math.min(100,pct))*3.6; document.getElementById('circle').style.background=`conic-gradient(var(--accent) ${deg}deg, #1f2937 ${deg}deg)`; }
 function fmt(sec){ const m=Math.floor(sec/60), s=Math.floor(sec%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
-function stepLabel(){ document.getElementById('phase').textContent=(phase==='work'?'Travail':'Repos')+' — '+speed.toFixed(1)+' km/h'; }
-function loop(){ if(!running) return; const now=performance.now(); const elapsed=(now-t0); const cycle=(phase==='work'?w:r)*1000; const rem=Math.max(0, cycle - (elapsed % cycle));
-  document.getElementById('time').textContent=fmt(rem/1000); const pct=((elapsed % cycle)/cycle)*100; setCircle(pct); document.getElementById('bar').style.width=pct+'%';
-  document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${((elapsed/1000)%60)/60*360}deg)`;
-  // boundary
-  if(Math.floor(elapsed/cycle)!==Math.floor((elapsed-16)/cycle)){
-    if(phase==='work'){ phase='rest'; beep(600,0.15); document.getElementById('status').textContent='Repos'; }
-    else{ phase='work'; speed += Number(document.getElementById('inc').value||0.5); palier+=1; beep(1000,0.2); document.getElementById('status').textContent='Palier '+palier; }
-    stepLabel(); t0=performance.now();
-  }
-  raf=requestAnimationFrame(loop);
-}
-document.getElementById('startBtn').onclick=()=>{ audioInit(); if(running) return; running=true; paused=false; speed=Number(document.getElementById('start').value||10); palier=1; w=Number(document.getElementById('work').value||45); r=Number(document.getElementById('rest').value||15); phase='work'; t0=performance.now(); stepLabel(); loop(); document.getElementById('status').textContent='En cours'; };
-document.getElementById('pauseBtn').onclick=()=>{ if(!running) return; running=false; cancelAnimationFrame(raf); document.getElementById('status').textContent='Pause'; };
-document.getElementById('resetBtn').onclick=()=>{ running=false; cancelAnimationFrame(raf); speed=Number(document.getElementById('start').value||10); palier=1; phase='work'; setCircle(0); document.getElementById('bar').style.width='0%'; document.getElementById('time').textContent=fmt(w); document.getElementById('status').textContent='Prêt'; };
+function setPhase(ph){ document.getElementById('phase').textContent=(ph==='work'?'Travail':'Repos'); document.getElementById('circle').className='timer '+(ph==='work'?'phase-work':'phase-rest'); }
+let running=false, phase='work', palier=1, speed=10.0, w=45, r=15, startMS=0, startTotal=0, raf=null, tickIv=null;
+function update(ms){ const base=(phase==='work'?w:r)*1000; const rem=Math.max(0, base - (ms % base)); document.getElementById('time').textContent=fmt(rem/1000); const pct=((ms % base)/base)*100; setCircle(pct); document.getElementById('bar').style.width=pct+'%'; document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${((ms/1000)%60)/60*360}deg)`; }
+function loop(){ if(!running) return; const now=performance.now(); const ms=now-startMS; update(ms); if(Math.floor(ms/((phase==='work'?w:r)*1000))!==Math.floor((ms-16)/((phase==='work'?w:r)*1000))){ if(phase==='work'){ setPhase('rest'); beep(600,0.14); } else { setPhase('work'); speed+=Number(document.getElementById('inc').value||0.5); palier+=1; document.getElementById('palier').textContent=palier; document.getElementById('speed').textContent=speed.toFixed(1); beep(1000,0.2); if(document.getElementById('tick').checked){ if(tickIv) clearInterval(tickIv); tickIv=setInterval(()=>beep(820,0.05),5000); } } startMS=performance.now(); } raf=requestAnimationFrame(loop); }
+function startRun(){ audioInit(); if(running) return; running=true; speed=Number(document.getElementById('start').value||10); palier=1; w=Number(document.getElementById('work').value||45); r=Number(document.getElementById('rest').value||15); document.getElementById('palier').textContent=palier; document.getElementById('speed').textContent=speed.toFixed(1); setPhase('work'); document.getElementById('status').textContent='En cours'; startMS=performance.now(); startTotal=performance.now(); if(document.getElementById('tick').checked){ tickIv=setInterval(()=>beep(820,0.05),5000); } loop(); }
+document.getElementById('startBtn').onclick=()=>{ if(document.getElementById('prep').checked && !running){ let c=5; document.getElementById('status').textContent='Départ dans '+c+'…'; const iv=setInterval(()=>{ c--; beep(400+(5-c)*120,0.08); document.getElementById('status').textContent='Départ dans '+c+'…'; if(c<=0){ clearInterval(iv); startRun(); } },1000); } else { startRun(); } };
+document.getElementById('pauseBtn').onclick=()=>{ if(!running) return; running=false; cancelAnimationFrame(raf); if(tickIv){ clearInterval(tickIv); tickIv=null; } document.getElementById('status').textContent='Pause'; };
+document.getElementById('resetBtn').onclick=()=>{ running=false; cancelAnimationFrame(raf); if(tickIv){ clearInterval(tickIv); tickIv=null; } setCircle(0); document.getElementById('bar').style.width='0%'; document.getElementById('status').textContent='Prêt'; palier=1; document.getElementById('palier').textContent=palier; };
+document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); if(running) document.getElementById('pauseBtn').click(); else document.getElementById('startBtn').click(); } });
 document.getElementById('fs').onclick=async()=>{ const el=document.getElementById('root'); if(document.fullscreenElement) await document.exitFullscreen(); else await el.requestFullscreen().catch(()=>{}); };
 
-// Roster & modal
-const roster = JSON.parse(localStorage.getItem('cv_roster')||'[]');
-function renderRoster(){ const box=document.getElementById('roster'); box.innerHTML=''; if(roster.length===0){ box.innerHTML='<p class="help">Aucun élève.</p>'; return; }
-  roster.forEach((s,idx)=>{ const r=results.find(x=>x.idx===idx); const vtxt=r? (r.vma.toFixed(1)+' km/h'):'<span class="small">En cours…</span>';
-    const row=document.createElement('div'); row.className='row'; row.innerHTML=`<div class="name">${s.nom} ${s.prenom}</div><div class="small">${s.classe}</div><div class="tag">${s.sexe}</div><div class="tag">${s.obs?'observateur':'coureur'}</div><div>${vtxt}</div>`;
-    row.onclick=()=>openModal(idx,s); box.appendChild(row); }); }
+// Roster + capture
+const roster = JSON.parse(localStorage.getItem('cv_roster')||'[]'); let results=[];
+function renderRoster(){ const box=document.getElementById('roster'); box.innerHTML=''; if(roster.length===0){ box.innerHTML='<p class="help">Aucun élève. Retournez dans Espace Prof &gt; Classe.</p>'; return; }
+  roster.forEach((s,idx)=>{ const r=results.find(x=>x.idx===idx); const vtxt=r? (r.vma.toFixed(1)+' km/h') : '<span class="help">En cours…</span>';
+    const row=document.createElement('div'); row.className='row'+(r?' done':'');
+    row.innerHTML=`<div class="name">${s.nom} ${s.prenom}</div><div class="pill">${s.classe}</div><div class="tag">${s.sexe}</div><div class="tag">${s.obs?'observateur':'coureur'}</div><div>${vtxt}</div>`;
+    row.onclick=()=>openModal(idx, s); box.appendChild(row);
+  });
+}
 renderRoster();
-const modal=$('modal'), mTitle=$('mTitle'), mVma=$('mVma'), mObs=$('mObs'), mQRBox=$('mQRBox');
-$('mClose').onclick=()=>{ modal.style.display='none'; mQRBox.innerHTML=''; };
+
+const modal=document.getElementById('modal'), mTitle=document.getElementById('mTitle'), mVma=document.getElementById('mVma'), mObs=document.getElementById('mObs'), mQRBox=document.getElementById('mQRBox');
+document.getElementById('mClose').onclick=()=>{ modal.style.display='none'; mQRBox.innerHTML=''; };
 function openModal(idx,s){ mTitle.textContent=s.nom+' '+s.prenom+' — '+speed.toFixed(1)+' km/h'; mVma.value=speed.toFixed(1); mObs.value=''; mQRBox.innerHTML=''; modal.style.display='flex';
-  $('mSave').onclick=()=>{ const v=Number(mVma.value||speed); const ex=results.find(r=>r.idx===idx);
+  document.getElementById('mSave').onclick=()=>{ const v=Number(mVma.value||speed); const ex=results.find(r=>r.idx===idx);
     if(ex){ ex.vma=v; ex.observateurs=mObs.value; } else { results.push({idx, nom:s.nom, prenom:s.prenom, classe:s.classe, sexe:s.sexe, vma:v, test:'45-15', observateurs:mObs.value}); }
     modal.style.display='none'; renderRoster();
   };
-  $('mQR').onclick=()=>{ mQRBox.innerHTML=''; const payload=[{nom:s.nom, prenom:s.prenom, classe:s.classe, sexe:s.sexe, distance:0, vitesse:Number((mVma.value||speed).toFixed(1)), vma:Number((mVma.value||speed).toFixed(1))}]; const div=document.createElement('div'); div.id='tmpQR'; mQRBox.appendChild(div); new QRCode(div, {text:JSON.stringify(payload), width:220, height:220}); };
+  document.getElementById('mQR').onclick=()=>{ mQRBox.innerHTML=''; const payload=[{nom:s.nom, prenom:s.prenom, classe:s.classe, sexe:s.sexe, distance:0, vitesse:Number((mVma.value||speed).toFixed(1)), vma:Number((mVma.value||speed).toFixed(1))}]; const div=document.createElement('div'); div.id='tmpQR'; mQRBox.appendChild(div); new QRCode(div, {text:JSON.stringify(payload), width:220, height:220}); };
 }
+
 // Export CSV
-$('exportCSV').onclick=()=>{ const full=roster.map((s,idx)=>{ const r=results.find(x=>x.idx===idx); const v=r? r.vma:speed; const obs=r? (r.observateurs||''):''; return {nom:s.nom, prenom:s.prenom, classe:s.classe, sexe:s.sexe, test:'45-15', vitesse:v.toFixed(1), vma:v.toFixed(1), observateurs:obs}; });
-  const head='nom,prenom,classe,sexe,test,vitesse,vma,observateurs\n'; const rows=full.map(o=>[o.nom,o.prenom,o.classe,o.sexe,o.test,o.vitesse,o.vma,o.observateurs].join(',')).join('\n');
-  const blob=new Blob([head+rows], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='resultats_45-15.csv'; a.click(); URL.revokeObjectURL(a.href);
+document.getElementById('exportCSV').onclick=()=>{ const full=roster.map((s,idx)=>{ const r=results.find(x=>x.idx===idx); const v=r? r.vma : speed; const obs=r? (r.observateurs||'') : ''; return {nom:s.nom,prenom:s.prenom,classe:s.classe,sexe:s.sexe,test:'45-15',vitesse=v.toFixed(1),vma=v.toFixed(1),observateurs:obs}; });
+  const head='nom,prenom,classe,sexe,test,vitesse,vma,observateurs\n'; const rows=full.map(o=>[o.nom,o.prenom,o.classe,o.sexe,o.test,o.vitesse,o.vma,o.observateurs].join(',')).join('\n'); const blob=new Blob([head+rows], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='resultats_45-15.csv'; a.click(); URL.revokeObjectURL(a.href);
 };
 </script></body></html>

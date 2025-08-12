@@ -1,81 +1,64 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MultiChrono — Espace Prof</title>
-  <meta name="color-scheme" content="light dark" />
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .vma-board{background:#0b1020;color:#fff;border-radius:18px;padding:16px;display:grid;gap:10px}
-    .vma-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .vma-time{font-weight:900;font-size:clamp(42px,10vw,120px);text-align:center}
-    .vma-sub{font-size:clamp(18px,3vw,28px);text-align:center;opacity:.9}
-    .vma-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-    .vma-chip{padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-weight:800}
-    .vma-bar{height:14px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden}
-    .vma-bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#eab308);transition:width .2s}
-    .fs-btn{position:absolute;right:16px;top:16px;padding:10px 12px;border-radius:12px;border:1px solid #334155;background:#111827;color:#fff;cursor:pointer}
-    .blink-red{animation:blinkred .7s steps(1,end) infinite}
-    @keyframes blinkred{50%{color:#ef4444}}
-  </style>
-  <script defer src="ui.js"></script>
-  <script defer src="prof.js"></script>
-</head>
-<body>
-<header class="mc-header">
-  <a class="mc-back" href="index.html">← Accueil</a>
-  <h1>Espace Prof (plein écran)</h1>
-  <label><input id="darkToggle" type="checkbox" /></label>
-</header>
-<main class="mc-container">
-  <section id="gate" class="mc-card">
-    <h2>Code PIN</h2>
-    <div class="mc-row">
-      <label class="mc-field"><span>Entrer le PIN</span><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="57"></label>
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace Prof — ChronoVitesse</title><link rel="stylesheet" href="styles.css"></head>
+<body><div class="container">
+<header><h1>🧑‍🏫 Espace Prof</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a></div></header>
+<div class="grid">
+  <section class="card"><div class="content">
+    <h2>Classe</h2>
+    <p class="help">Ajoutez vos élèves (ou import CSV), puis lancez un test. Pendant le test, cliquez un nom pour fixer sa VMA.</p>
+    <div class="grid-3">
+      <div><label>Nom</label><input id="nom" class="input"></div>
+      <div><label>Prénom</label><input id="prenom" class="input"></div>
+      <div><label>Classe</label><input id="classeIn" class="input" value="4C"></div>
+      <div><label>Sexe</label><select id="sexe" class="input"><option>M</option><option>F</option></select></div>
+      <div><label>Observateur ?</label><select id="obs" class="input"><option value="non">non</option><option value="oui">oui</option></select></div>
+      <div class="actions"><button class="btn ok" id="add">➕ Ajouter</button></div>
     </div>
-    <div class="mc-controls"><button id="unlock" class="mc-btn mc-blue">Déverrouiller</button></div>
-    <p class="mc-hint">Par défaut : <strong>57</strong>.</p>
-  </section>
-
-  <section id="panel" class="mc-card" style="display:none; position:relative">
-    <button id="fs" class="fs-btn">⤢ Plein écran</button>
-    <h2>Tests VMA</h2>
-    <div class="vma-board">
-      <div class="vma-grid">
-        <div>
-          <div class="vma-sub">VAMEVAL</div>
-          <div id="dispV" class="vma-time">Prêt</div>
-          <div class="vma-row">
-            <span class="vma-chip">Vitesse : <b id="speedV">8.0</b> km/h</span>
-            <span class="vma-chip">Palier : <b id="palierV">0</b></span>
-            <span class="vma-chip">Restant : <b id="remainV">60</b> s</span>
-          </div>
-          <div class="vma-bar"><span id="barV"></span></div>
-          <div class="mc-controls" style="justify-content:center;margin-top:8px">
-            <button id="startV" class="mc-btn mc-blue">Démarrer</button>
-            <button id="stopV" class="mc-btn mc-red">Stop</button>
-          </div>
-        </div>
-        <div>
-          <div class="vma-sub">LUC LÉGER 20 m</div>
-          <div id="dispL" class="vma-time">Prêt</div>
-          <div class="vma-row">
-            <span class="vma-chip">Vitesse : <b id="speedL">8.0</b> km/h</span>
-            <span class="vma-chip">Niveau : <b id="levelL">1</b></span>
-            <span class="vma-chip">Navettes : <b id="shuttleL">0</b></span>
-          </div>
-          <div class="vma-bar"><span id="barL"></span></div>
-          <div class="mc-controls" style="justify-content:center;margin-top:8px">
-            <button id="startL" class="mc-btn mc-blue">Démarrer</button>
-            <button id="stopL" class="mc-btn mc-red">Stop</button>
-          </div>
-        </div>
-      </div>
-      <p class="mc-hint" style="text-align:center;margin:8px 0 0">Conseil : connectez une enceinte. Une 1ère pression sur “Démarrer” autorise l’audio (Safari/iPad).</p>
+    <div class="toolbar" style="margin-top:10px">
+      <label class="btn">📥 Import CSV<input type="file" id="csv" accept=".csv" style="display:none"></label>
+      <button class="btn" id="save">💾 Sauvegarder</button>
+      <button class="btn danger" id="clear">🗑️ Vider</button>
     </div>
-  </section>
-</main>
-<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
-</body>
-</html>
+    <div class="sep"></div>
+    <div id="list"></div>
+  </div></section>
+  <section class="card"><div class="content">
+    <h2>Lancer un test</h2>
+    <div class="actions">
+      <a class="btn primary big" href="prof-navette-20m.html">🎵 Navette 20 m</a>
+      <a class="btn primary big" href="prof-45-15.html">⏱️ 45/15</a>
+      <a class="btn big" href="prof-minuteur.html">🕒 Cooper/Demi</a>
+    </div>
+    <p class="help">Conseil : chargez la classe puis ouvrez le test en plein écran.</p>
+  </div></section>
+</div>
+</div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+<script>
+let roster = JSON.parse(localStorage.getItem('cv_roster')||'[]');
+function render(){
+  const box=document.getElementById('list'); box.innerHTML='';
+  if(roster.length===0){ box.innerHTML='<p class="help">Aucun élève.</p>'; return; }
+  roster.forEach((s,i)=>{
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<div class="name">${s.nom} ${s.prenom}</div><div class="pill">${s.classe}</div><div class="tag">${s.sexe}</div><div class="tag">${s.obs?'observateur':'coureur'}</div><div><button class="btn danger" data-del="${i}">Supprimer</button></div>`;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ roster.splice(Number(b.dataset.del),1); render(); });
+}
+document.getElementById('add').onclick=()=>{
+  const s={nom:document.getElementById('nom').value.trim(), prenom:document.getElementById('prenom').value.trim(), classe:document.getElementById('classeIn').value.trim(), sexe:document.getElementById('sexe').value, obs:document.getElementById('obs').value==='oui'};
+  if(!s.nom||!s.prenom||!s.classe) return alert('Nom, Prénom, Classe requis');
+  roster.push(s); render();
+};
+document.getElementById('save').onclick=()=>{ localStorage.setItem('cv_roster', JSON.stringify(roster)); alert('Liste sauvegardée'); };
+document.getElementById('clear').onclick=()=>{ if(confirm('Vider la liste ?')){ roster=[]; render(); localStorage.removeItem('cv_roster'); } };
+document.getElementById('csv').addEventListener('change',(e)=>{
+  const f=e.target.files[0]; if(!f) return; const reader=new FileReader(); reader.onload=()=>{
+    const lines=reader.result.split(/\r?\n/).filter(x=>x.trim()); const out=[];
+    for(const line of lines.slice(1)){ const [nom,prenom,classe,sexe,observateur]=line.split(',').map(x=>x?x.trim():'');
+      if(nom&&prenom&&classe) out.push({nom,prenom,classe,sexe:sexe||'M',obs:(observateur||'non').toLowerCase().startsWith('o')});
+    } roster=out; render();
+  }; reader.readAsText(f);
+});
+render();
+</script></body></html>

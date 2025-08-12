@@ -3,10 +3,11 @@
 <body><div class="container">
 <header><h1>🧬 VAMEVAL — Élève</h1><div class="actions"><a class="btn" href="eleve.html">⬅️ Retour</a></div></header>
 <div class="card"><div class="content center" style="gap:18px;flex-direction:column">
-  <div class="timer" id="circle"><div class="center"><div class="time" id="palier">8.0</div><div class="hint">km/h (dernier palier tenu)</div></div></div>
-  <div class="actions"><button class="btn big" id="minus">−</button><span class="badge" id="val">8.0</span><button class="btn big" id="plus">+</button></div>
+  <div class="timer small" id="circle"><div class="center"><div class="time" id="palier">8.5</div><div class="hint">km/h (dernier palier tenu)</div></div></div>
+  <div class="bigbar"><button class="btn big" id="minus">−</button><span class="badge" id="val">8.5</span><button class="btn big" id="plus">+</button></div>
   <div class="qrbox"><div id="qr"></div><div class="actions"><button class="btn ok" id="makeQR">🧾 QR</button><button class="btn primary" id="saveQR">⬇️ PNG</button></div></div>
-</div></div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+</div></div>
+<div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const $ = (id)=>document.getElementById(id);
@@ -34,14 +35,13 @@ function downloadQR(boxId, name='qr-scanprof.png'){
   const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
 }
 function setTimerCircle(elemId, pct){
-  const deg=Math.max(0,Math.min(100,pct))*3.6; const el=$(elemId); el.style.background=`conic-gradient(var(--accent) ${deg}deg, #e5e7eb ${deg}deg)`;
+  const deg=Math.max(0,Math.min(100,pct))*3.6; const el=$(elemId); el.style.background=`conic-gradient(var(--accent) ${deg}deg, #1f2937 ${deg}deg)`;
 }
 function formatMS(ms){ const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000), z=Math.floor(ms%1000); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(z).padStart(3,'0'); }
 </script>
 
 <script>
-let v=8.0;
-function render(){ document.getElementById('palier').textContent=v.toFixed(1); document.getElementById('val').textContent=v.toFixed(1); setTimerCircle('circle',(v-8)/(24-8)*100); }
+let v=8.5; function render(){ document.getElementById('palier').textContent=v.toFixed(1); document.getElementById('val').textContent=v.toFixed(1); setTimerCircle('circle',(v-8.5)/(24-8.5)*100); }
 document.getElementById('minus').onclick=()=>{ v=Math.max(6, v-0.5); render(); };
 document.getElementById('plus').onclick=()=>{ v=Math.min(24, v+0.5); render(); };
 document.getElementById('makeQR').onclick=()=>{ const id=identity(); const data=[{nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe, distance:0, vitesse:Number(v.toFixed(1)), vma:Number(v.toFixed(1))}]; const txt=showQR('qr', data); navigator.clipboard?.writeText(txt); };

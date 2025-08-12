@@ -1,19 +1,21 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Minuteur — Prof</title><link rel="stylesheet" href="styles.css"></head>
 <body><div class="container" id="root">
-<header><h1>🧑‍🏫 Minuteur — Prof</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a><button class="btn" id="fs">⛶ Plein écran</button></div></header>
+<header><h1>🕒 Minuteur — Cooper/Demi</h1><div class="actions"><a class="btn" href="prof.html">🏠 Prof</a><button class="btn" id="fs">⛶ Plein écran</button></div></header>
 <div class="card"><div class="content center" style="gap:16px;flex-direction:column">
   <div class="actions"><button class="btn big" data-mins="12">Cooper 12:00</button><button class="btn big" data-mins="6">Demi‑Cooper 6:00</button></div>
-  <div class="timer" id="circle" style="width:380px;height:380px"><div class="center"><div class="time" id="time" style="font-size:56px">12:00.000</div><div class="hint">Plein écran recommandé</div></div><div class="hand" id="hand" style="height:170px;background:#111"></div></div>
-  <div class="actions"><button class="btn ok big" id="start">▶️ Start</button><button class="btn warn big" id="pause">⏸ Pause</button><button class="btn danger big" id="reset">⟲ Reset</button></div>
-</div></div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+  <div class="timer" id="circle" style="width:500px;height:500px"><div class="center"><div class="time" id="time" style="font-size:72px">12:00.000</div><div class="hint">Plein écran recommandé</div></div><div class="hand" id="hand" style="height:220px;background:#eaf2ff"></div></div>
+  <div class="bigbar"><button class="btn ok big" id="start">▶️ Démarrer</button><button class="btn warn big" id="stop">⏹️ Stop</button><button class="btn danger big" id="reset">⟲ Reset</button></div>
+</div></div>
+<div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
 <script>
 let total=12*60000, running=false, start=0, elapsed=0;
-function update(ms){ const left=Math.max(0,total-ms); document.getElementById('time').textContent=(new Date(left)).toISOString().substr(14,9); const pct=(ms/total)*100; document.getElementById('circle').style.background=`conic-gradient(var(--accent) ${pct*3.6}deg, #e5e7eb ${pct*3.6}deg)`; document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${((ms/1000)%60)/60*360}deg)`; if(left<=0) running=false; }
+function update(ms){ const left=Math.max(0,total-ms); document.getElementById('time').textContent=(new Date(left)).toISOString().substr(14,9); const pct=(ms/total)*100; document.getElementById('circle').style.background=`conic-gradient(var(--accent) ${pct*3.6}deg, #1f2937 ${pct*3.6}deg)`; document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${((ms/1000)%60)/60*360}deg)`; if(left<=0) running=false; }
 function loop(){ if(!running) return; const t=performance.now()-start+elapsed; update(t); requestAnimationFrame(loop); }
 document.querySelectorAll('[data-mins]').forEach(b=>b.onclick=()=>{ total=Number(b.dataset.mins)*60000; update(0); });
-document.getElementById('start').onclick=()=>{ if(!running){ running=true; start=performance.now(); loop(); } };
-document.getElementById('pause').onclick=()=>{ if(running){ elapsed+=performance.now()-start; running=false; } };
+function toggle(){ if(running){ elapsed+=performance.now()-start; running=false; } else { running=true; start=performance.now(); loop(); } }
+document.getElementById('start').onclick=()=>{ if(!running) toggle(); };
+document.getElementById('stop').onclick=()=>{ if(running) toggle(); };
 document.getElementById('reset').onclick=()=>{ running=false; start=0; elapsed=0; update(0); };
 document.getElementById('fs').onclick=async()=>{ const el=document.getElementById('root'); if(document.fullscreenElement){ await document.exitFullscreen(); } else { await el.requestFullscreen().catch(()=>{}); } };
 update(0);

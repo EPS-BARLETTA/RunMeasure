@@ -8,10 +8,16 @@
     <div><label>Piste (m)</label><input class="input" id="lapm" type="number" value="200"></div>
     <div class="kpi"><div class="big" id="dist">0 m</div><div class="label">Distance</div></div>
   </div>
-  <div class="timer" id="circle"><div class="center"><div class="time" id="time">06:00.000</div><div class="hint" id="idInfo"></div></div><div class="hand" id="hand"></div></div>
-  <div class="actions"><button class="btn ok big" id="start">▶️ Start</button><button class="btn warn big" id="pause">⏸ Pause</button><button class="btn danger big" id="reset">⟲ Reset</button><button class="btn" id="addLap">+ 1 tour</button></div>
+  <div class="timer" id="circle"><div class="center"><div class="time" id="time">06:00.000</div><div class="hint">Départ/Stop + bouton +1 tour côte à côte</div></div><div class="hand" id="hand"></div></div>
+  <div class="bigbar">
+    <button class="btn ok big" id="start">▶️ Démarrer</button>
+    <button class="btn warn big" id="stop">⏹️ Stop</button>
+    <button class="btn big" id="lap">➕ +1 tour</button>
+  </div>
+  <div class="help keytips">⎵ Espace = start/stop • L = +1 tour • F = plein écran</div>
   <div class="qrbox"><div id="qr"></div><div class="actions"><button class="btn ok" id="makeQR">🧾 QR</button><button class="btn primary" id="saveQR">⬇️ PNG</button></div></div>
-</div></div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+</div></div>
+<div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const $ = (id)=>document.getElementById(id);
@@ -39,22 +45,22 @@ function downloadQR(boxId, name='qr-scanprof.png'){
   const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
 }
 function setTimerCircle(elemId, pct){
-  const deg=Math.max(0,Math.min(100,pct))*3.6; const el=$(elemId); el.style.background=`conic-gradient(var(--accent) ${deg}deg, #e5e7eb ${deg}deg)`;
+  const deg=Math.max(0,Math.min(100,pct))*3.6; const el=$(elemId); el.style.background=`conic-gradient(var(--accent) ${deg}deg, #1f2937 ${deg}deg)`;
 }
 function formatMS(ms){ const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000), z=Math.floor(ms%1000); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(z).padStart(3,'0'); }
 </script>
 
 <script>
-const id = identity(); document.getElementById('idInfo').textContent=id.nom+' '+id.prenom+' — '+id.classe;
 let total=Number(document.getElementById('mins').value||6)*60000; let running=false, start=0, elapsed=0, dist=0;
 function update(ms){ const left=Math.max(0,total-ms); document.getElementById('time').textContent=formatMS(left); const pct=(ms/total)*100; setTimerCircle('circle',pct); const sec=(ms/1000)%60; document.getElementById('hand').style.transform=`translate(-50%,-100%) rotate(${sec/60*360}deg)`; if(left<=0) running=false; }
-function loop(){ if(!running) return; const t=performance.now()-start+elapsed; update(t); if(t>=total){ running=false; } else requestAnimationFrame(loop); }
+function loop(){ if(!running) return; const t=performance.now()-start+elapsed; update(t); if(t<total) requestAnimationFrame(loop); }
 document.getElementById('mins').oninput=()=>{ total=Number(document.getElementById('mins').value||6)*60000; update(0); };
-document.getElementById('start').onclick=()=>{ if(!running){ running=true; start=performance.now(); loop(); } };
-document.getElementById('pause').onclick=()=>{ if(running){ elapsed+=performance.now()-start; running=false; } };
-document.getElementById('reset').onclick=()=>{ running=false; start=0; elapsed=0; dist=0; document.getElementById('dist').textContent='0 m'; update(0); };
-document.getElementById('addLap').onclick=()=>{ const m=Number(document.getElementById('lapm').value||0); dist+=m; document.getElementById('dist').textContent=dist+' m'; };
+function toggle(){ if(running){ elapsed+=performance.now()-start; running=false; } else { running=true; start=performance.now(); loop(); } }
+document.getElementById('start').onclick=()=>{ if(!running) toggle(); };
+document.getElementById('stop').onclick=()=>{ if(running) toggle(); };
+document.getElementById('lap').onclick=()=>{ const m=Number(document.getElementById('lapm').value||0); dist+=m; document.getElementById('dist').textContent=dist+' m'; };
 document.getElementById('makeQR').onclick=()=>{ const data = payloadDistance({distance:dist, tempsMs: total}); const txt=showQR('qr', data); navigator.clipboard?.writeText(txt); };
 document.getElementById('saveQR').onclick=()=>downloadQR('qr');
+document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); toggle(); } if(e.key.toLowerCase()==='l'){ e.preventDefault(); document.getElementById('lap').click(); } if(e.key.toLowerCase()==='f'){ document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); } });
 update(0);
 </script></body></html>

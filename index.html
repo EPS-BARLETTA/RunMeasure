@@ -3,47 +3,87 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chrono/Vitesse EPS — Accueil</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0b1020;--card:#121933;--muted:#9fb3ff;--text:#e8edff;--accent:#4f7cff;--ok:#22c55e;--warn:#ffb020}
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:900px;margin:0 auto;padding:32px}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-    h1{margin:0;font-size:32px;font-weight:800;letter-spacing:.3px}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:24px}
-    @media(min-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}
-    .card{background:var(--card);border:1px solid #1b2751;border-radius:16px;padding:20px;text-align:center}
-    a.btn{display:inline-block;width:100%;text-decoration:none;color:var(--text);background:var(--accent);padding:14px 16px;border-radius:12px;font-weight:700}
-    .footer{margin-top:28px;text-align:center;color:#9fb3ff80;font-size:12px}
-  </style>
+  <title>ChronoVitesse — Accueil</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="wrap">
+  <div class="container">
     <header>
-      <h1>Chrono/Vitesse EPS</h1>
+      <h1>ChronoVitesse</h1>
     </header>
-
     <div class="grid">
-      <div class="card">
-        <h2>⏱️ Chrono</h2>
-        <p>Regroupe uniquement les modes chrono.</p>
-        <a class="btn" href="chrono.html">Ouvrir</a>
-      </div>
-      <div class="card">
-        <h2>🧬 Test VMA Élève</h2>
-        <p>Cooper, Demi‑Cooper, VAMEVAL + QR compatible ScanProf.</p>
-        <a class="btn" href="tests-vma-eleve.html">Ouvrir</a>
-      </div>
-      <div class="card">
-        <h2>🎧 VMA Prof</h2>
-        <p>Protocole VAMEVAL audio + plein écran (palier auto).</p>
-        <a class="btn" href="vma-prof.html">Ouvrir</a>
+      <section class="card">
+        <div class="content">
+          <h2>⏱️ Chrono</h2>
+          <p>Regroupe uniquement les chronos (Simple, Tours/Intermédiaires, Duel).</p>
+          <div class="actions">
+            <a class="btn primary" href="chrono.html">Ouvrir</a>
+            <button class="btn ghost" id="helpAccueil">❓ Explications</button>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="content">
+          <h2>🧬 Tests VMA — Élève</h2>
+          <p>Cooper (12 min), Demi‑Cooper (6 min), VAMEVAL (palier). QR JSON compatible ScanProf.</p>
+          <div class="actions">
+            <a class="btn primary" href="tests-eleves.html">Ouvrir</a>
+            <button class="btn ghost" id="helpEleve">❓ Explications</button>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="content">
+          <h2>🎧 VMA — Prof (Audio)</h2>
+          <p>VAMEVAL officiel : départ 8,0 km/h, +0,5 km/h/min, bips toutes les 20 m. Plein écran.</p>
+          <div class="actions">
+            <a class="btn primary" href="vma-prof.html">Ouvrir</a>
+            <button class="btn ghost" id="helpProf">❓ Explications</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer>ChronoVitesse — Équipe EPS Lycée Vauban — Luxembourg — JB</footer>
+  </div>
+
+  <div class="modal" id="modalAccueil">
+    <div class="box">
+      <header><strong>Chrono</strong><span class="close" data-close="modalAccueil">✖</span></header>
+      <div class="content">
+        <p>Accès aux chronos : <strong>Simple</strong>, <strong>Tours/Intermédiaires</strong> (avec longueur de tour et fractions 1/4, 1/2, 3/4), et <strong>Duel</strong>.</p>
       </div>
     </div>
-
-    <div class="footer">Chrono/Vitesse EPS — Équipe EPS Lycée Vauban — Luxembourg — JB</div>
   </div>
+  <div class="modal" id="modalEleve">
+    <div class="box">
+      <header><strong>Tests VMA — Élève</strong><span class="close" data-close="modalEleve">✖</span></header>
+      <div class="content">
+        <ul>
+          <li><strong>Cooper (12 min)</strong> : distance libre, calcul vitesse = distance/12min, VMA ≈ vitesse.</li>
+          <li><strong>Demi‑Cooper (6 min)</strong> : même principe sur 6 min.</li>
+          <li><strong>VAMEVAL (palier)</strong> : vitesse atteinte = VMA. Utilisez les gros boutons +/- palier.</li>
+        </ul>
+        <p>Un QR code <em>ScanProf</em> est généré au format JSON standard.</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modalProf">
+    <div class="box">
+      <header><strong>VAMEVAL — Prof</strong><span class="close" data-close="modalProf">✖</span></header>
+      <div class="content">
+        <p>Protocole : départ <strong>8,0 km/h</strong>, incrément <strong>+0,5 km/h par minute</strong>, balises <strong>tous les 20 m</strong>, bip à chaque balise, bip long au changement de palier (chaque minute). Affichage plein écran avec anneau de progression (minute) + barre de cadence (vers la prochaine balise).</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const open = (id)=>document.getElementById(id).style.display='flex';
+    const close = (id)=>document.getElementById(id).style.display='none';
+    document.getElementById('helpAccueil').onclick=()=>open('modalAccueil');
+    document.getElementById('helpEleve').onclick=()=>open('modalEleve');
+    document.getElementById('helpProf').onclick=()=>open('modalProf');
+    document.querySelectorAll('.close').forEach(x=>x.onclick=()=>close(x.dataset.close));
+    document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.style.display='none'; }));
+  </script>
 </body>
 </html>

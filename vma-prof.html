@@ -3,188 +3,170 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VMA Prof — VAMEVAL Audio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0b1020;--card:#121933;--muted:#9fb3ff;--text:#e8edff;--accent:#4f7cff;--ok:#22c55e;--warn:#ffb020;--danger:#ef4444}
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:900px;margin:0 auto;padding:24px}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    h1{margin:0;font-size:28px;font-weight:800}
-    .card{background:var(--card);border:1px solid #1b2751;border-radius:16px;padding:16px;margin-top:12px}
-    label{font-size:14px;color:var(--muted);font-weight:600}
-    input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #26336e;background:#0d1430;color:var(--text)}
-    .row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .btn{appearance:none;border:0;background:#1a2452;color:#fff;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
-    .btn.primary{background:var(--accent)} .btn.ok{background:var(--ok);color:#08241a} .btn.warn{background:var(--warn);color:#191200} .btn.danger{background:var(--danger)}
-    .screen{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-    .tile{background:#0d1430;border:1px dashed #2a3870;border-radius:14px;padding:18px;text-align:center}
-    .big{font-size:56px;font-weight:800}
-    .mid{font-size:20px;color:#c9d4ff}
-    footer{text-align:center;margin-top:18px;color:#9fb3ff80;font-size:12px}
-  </style>
+  <title>ChronoVitesse — VMA Prof (VAMEVAL)</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="wrap" id="root">
+  <div class="container" id="root">
     <header>
-      <h1>VMA Prof — VAMEVAL Audio</h1>
-      <div class="controls">
+      <h1>🎧 VAMEVAL — Prof</h1>
+      <div class="actions">
         <a class="btn" href="index.html">🏠 Accueil</a>
-        <button class="btn" id="fullscreenBtn">⛶ Plein écran</button>
+        <button class="btn" id="fs">⛶ Plein écran</button>
+        <button class="btn ghost" id="help">❓ Protocole</button>
       </div>
     </header>
 
     <div class="card">
-      <div class="row">
-        <div>
-          <label>Vitesse départ (km/h)</label>
-          <input id="startSpeed" type="number" value="8" min="6" max="16" step="0.5">
+      <div class="content">
+        <div class="grid-3">
+          <div>
+            <label>Départ (km/h)</label>
+            <input class="input" id="start" type="number" value="8.0" min="6" max="12" step="0.5">
+          </div>
+          <div>
+            <label>Incrément (+km/h/min)</label>
+            <input class="input" id="inc" type="number" value="0.5" min="0.5" max="1" step="0.5">
+          </div>
+          <div>
+            <label>Balise (m)</label>
+            <input class="input" id="balise" type="number" value="20" min="10" step="1">
+          </div>
         </div>
-        <div>
-          <label>Incrément (+km/h / min)</label>
-          <input id="inc" type="number" value="0.5" step="0.1" min="0.1" max="1">
+
+        <div class="actions" style="margin-top:10px">
+          <button class="btn ok" id="startBtn">▶️ Start</button>
+          <button class="btn warn" id="pauseBtn">⏸ Pause</button>
+          <button class="btn danger" id="resetBtn">⟲ Reset</button>
+          <button class="btn" id="countdownBtn">⏳ Pré‑départ 10s</button>
+          <label style="display:flex;align-items:center;gap:8px">
+            Volume <input class="input" id="vol" type="range" min="0" max="1" step="0.05" value="0.6">
+          </label>
         </div>
-        <div>
-          <label>Longueur balise (m)</label>
-          <input id="lap" type="number" value="20" min="10" step="1">
-        </div>
-        <div>
-          <label>Volume (0–1)</label>
-          <input id="volume" type="number" value="0.6" min="0" max="1" step="0.05">
-        </div>
-      </div>
-      <div class="controls">
-        <button class="btn ok" id="startBtn">▶️ Start</button>
-        <button class="btn warn" id="pauseBtn">⏸ Pause</button>
-        <button class="btn danger" id="resetBtn">⟲ Reset</button>
       </div>
     </div>
 
-    <div class="screen">
-      <div class="tile">
-        <div class="mid">Palier / Vitesse</div>
-        <div class="big" id="speedLabel">8.0</div>
-        <div class="mid">km/h</div>
-      </div>
-      <div class="tile">
-        <div class="mid">Temps palier</div>
-        <div class="big" id="timeLabel">00:00</div>
-        <div class="mid" id="statusLabel">Prêt</div>
-      </div>
+    <div class="grid" style="align-items:stretch">
+      <section class="card">
+        <div class="content" style="display:flex;gap:24px;align-items:center">
+          <div class="circle">
+            <div class="inner"><div class="fill" id="circleFill"></div></div>
+            <div class="center" id="minuteProgress">0%</div>
+          </div>
+          <div class="kpi" style="flex:1;min-height:160px">
+            <div class="big" id="speed">8.0</div>
+            <div class="label">km/h (Palier)</div>
+            <div class="help" id="status">Prêt</div>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="content">
+          <h2>Prochaine balise</h2>
+          <div class="progressWrap">
+            <div class="progressBar"><div class="progressInner" id="bar"></div></div>
+            <span class="badge" id="nextSec">0.00 s</span>
+          </div>
+          <div class="help">Bip court à chaque balise (~20 m), bip long à chaque changement de palier.</div>
+        </div>
+      </section>
     </div>
 
-    <div class="card">
-      <div class="mid">Bip balise toutes les <span id="cadenceLabel">9.00</span> s (20 m)</div>
-    </div>
+    <footer>ChronoVitesse — Équipe EPS Lycée Vauban — Luxembourg — JB</footer>
+  </div>
 
-    <footer>Chrono/Vitesse EPS — Équipe EPS Lycée Vauban — Luxembourg — JB</footer>
+  <div class="modal" id="modalHelp">
+    <div class="box">
+      <header><strong>Protocole VAMEVAL (enseignant)</strong><span class="close" data-close="modalHelp">✖</span></header>
+      <div class="content">
+        <ul>
+          <li>Départ <strong>8,0 km/h</strong>, augmentation <strong>+0,5 km/h</strong> toutes les <strong>60 s</strong>.</li>
+          <li>Balisage <strong>tous les 20 m</strong>. Les coureurs doivent être à la balise au bip.</li>
+          <li><strong>Bip court</strong> = balise ; <strong>bip long</strong> = changement de palier (chaque minute).</li>
+          <li>VMA ≈ vitesse du dernier palier tenu complètement.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <script>
     const $ = (id)=>document.getElementById(id);
-    let ctx, osc, gain;
-    let running = false, paused = false;
-    let startTs = 0, elapsed = 0, minuteTimer = null, lapTimer = null;
-    let currentSpeed = 8.0, palier = 0;
+    let ctx,gain; let running=false,paused=false; let t0=0,elapsed=0; let palier=0; let speed=8;
+    let minuteIv=null, lapIv=null, raf=null; let circleDeg=0, barPct=0;
+    let preCountdown=false, cdTimer=null, cdLeft=0;
 
-    function ms(){ return performance.now(); }
-    function fmt(t){ const s = Math.floor(t/1000); const m = Math.floor(s/60); const r = s%60; return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0'); }
-    function kph_to_mps(v){ return v*1000/3600; }
-    function lap_interval_seconds(speed_kph, lap_m){ const v = kph_to_mps(speed_kph); return lap_m / v; } // seconds
-
-    function updateScreen(){
-      $('speedLabel').textContent = currentSpeed.toFixed(1);
-      $('timeLabel').textContent = fmt(elapsed);
-      const lapS = lap_interval_seconds(currentSpeed, Number($('lap').value||20));
-      $('cadenceLabel').textContent = lapS.toFixed(2);
+    function audioInit(){
+      if(ctx) return;
+      ctx = new (window.AudioContext||window.webkitAudioContext)();
+      gain = ctx.createGain(); gain.gain.value = Number($('vol').value||0.6); gain.connect(ctx.destination);
     }
-
-    function beep(tone=880, duration=0.08){
-      if(!ctx){ ctx = new (window.AudioContext||window.webkitAudioContext)(); }
-      gain = ctx.createGain(); gain.gain.value = Number($('volume').value||0.5);
-      osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=tone;
-      osc.connect(gain).connect(ctx.destination);
-      osc.start();
-      setTimeout(()=>{ osc.stop(); }, duration*1000);
+    function beep(freq=880, dur=0.1){
+      if(!ctx) audioInit();
+      const o = ctx.createOscillator(); o.type='sine'; o.frequency.value=freq;
+      const g = ctx.createGain(); g.gain.value = Number($('vol').value||0.6);
+      o.connect(g).connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000);
     }
-
-    function scheduleTimers(){
-      // minute timer for palier increase
-      minuteTimer = setInterval(()=>{
-        palier += 1;
-        currentSpeed = Number(currentSpeed) + Number($('inc').value||0.5);
-        beep(1200, 0.12); // palier beep
+    function kmh_to_mps(v){ return v*1000/3600; }
+    function lapSeconds(){ const m = Number($('balise').value||20); return m / kmh_to_mps(speed); }
+    function updateUI(){
+      $('speed').textContent = speed.toFixed(1);
+      const sec = lapSeconds(); $('nextSec').textContent = sec.toFixed(2)+' s';
+    }
+    function setCircle(pct){
+      const deg = Math.max(0, Math.min(100,pct))*3.6;
+      $('circleFill').style.background = `conic-gradient(var(--accent) ${deg}deg, transparent ${deg}deg)`;
+      $('minuteProgress').textContent = Math.round(pct)+'%';
+    }
+    function setBar(pct){
+      $('bar').style.width = Math.max(0, Math.min(100,pct))+'%';
+    }
+    function schedule(){
+      minuteIv = setInterval(()=>{
+        palier += 1; speed += Number($('inc').value||0.5);
+        beep(1200,0.15);
+        circleStart = performance.now();
       }, 60*1000);
-
-      // lap timer based on current speed; reschedule each minute when speed changes
-      function setLapTimer(){
-        const lap_m = Number($('lap').value||20);
-        const iv = lap_interval_seconds(currentSpeed, lap_m)*1000;
-        lapTimer = setInterval(()=>{ beep(800,0.06); }, iv);
+      function setLap(){
+        const iv = lapSeconds()*1000;
+        lapIv = setInterval(()=>beep(800,0.06), iv);
       }
-      setLapTimer();
-
-      // reschedule lap timer every minute to follow speed increase
-      const rescheduler = setInterval(()=>{
-        if(!running){ clearInterval(rescheduler); return; }
-        if(lapTimer) clearInterval(lapTimer);
-        setLapTimer();
-      }, 60*1000);
+      setLap();
+      const res = setInterval(()=>{ if(!running){ clearInterval(res); return; } clearInterval(lapIv); setLap(); }, 60*1000);
     }
-
-    function start(){
-      if(running && paused){ paused=false; startTs = ms()-elapsed; $('statusLabel').textContent='Reprise'; return; }
-      if(running) return;
-      running = true; paused = false;
-      currentSpeed = Number($('startSpeed').value||8);
-      palier = 0; elapsed = 0; startTs = ms();
-      $('statusLabel').textContent='En cours';
-      updateScreen();
-      scheduleTimers();
-      tick();
-    }
-
-    function pause(){
-      if(!running || paused) return;
-      paused = true;
-      elapsed = ms()-startTs;
-      $('statusLabel').textContent='En pause';
-      if(minuteTimer) clearInterval(minuteTimer);
-      if(lapTimer) clearInterval(lapTimer);
-    }
-
-    function reset(){
-      running=false; paused=false;
-      if(minuteTimer) clearInterval(minuteTimer);
-      if(lapTimer) clearInterval(lapTimer);
-      elapsed=0; currentSpeed = Number($('startSpeed').value||8);
-      $('statusLabel').textContent='Prêt';
-      updateScreen();
-    }
-
+    let circleStart=0;
     function tick(){
       if(!running) return;
       if(!paused){
-        elapsed = ms()-startTs;
-        updateScreen();
+        const now = performance.now();
+        elapsed = now - t0;
+        const pct = ((now - circleStart) % (60*1000)) / 600;
+        setCircle(pct);
+        const ls = lapSeconds()*1000;
+        const p = ((now - circleStart) % ls) / ls * 100;
+        setBar(p);
+        $('status').textContent = 'Palier ' + (palier+1) + ' — ' + speed.toFixed(1) + ' km/h';
       }
-      requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick);
+    }
+    function startCore(){
+      if(running){ if(paused){ paused=false; t0 = performance.now() - elapsed; $('status').textContent='Reprise'; } return; }
+      running = true; paused=false;
+      speed = Number($('start').value||8); palier = 0;
+      t0 = performance.now(); elapsed=0; circleStart = performance.now();
+      $('status').textContent='En cours';
+      schedule(); updateUI(); tick(); beep(1000,0.2);
     }
 
-    $('startBtn').addEventListener('click', start);
-    $('pauseBtn').addEventListener('click', pause);
-    $('resetBtn').addEventListener('click', reset);
-
-    $('fullscreenBtn').addEventListener('click', async()=>{
-      const el = document.getElementById('root');
-      if(document.fullscreenElement){ await document.exitFullscreen(); }
-      else { await el.requestFullscreen().catch(()=>{}); }
-    });
-
-    ['startSpeed','inc','lap','volume'].forEach(id=>$(id).addEventListener('input', updateScreen));
-    updateScreen();
+    $('startBtn').onclick=()=>{ audioInit(); if(preCountdown){ cdLeft=10; $('status').textContent='Départ dans '+cdLeft+' s'; beep(600,0.1); cdTimer=setInterval(()=>{ cdLeft--; $('status').textContent='Départ dans '+cdLeft+' s'; beep(600,0.08); if(cdLeft<=0){ clearInterval(cdTimer); startCore(); } }, 1000); } else { startCore(); } };
+    $('pauseBtn').onclick=()=>{ if(!running||paused) return; paused=true; $('status').textContent='Pause'; clearInterval(minuteIv); clearInterval(lapIv); };
+    $('resetBtn').onclick=()=>{ running=false; paused=false; clearInterval(minuteIv); clearInterval(lapIv); cancelAnimationFrame(raf); elapsed=0; palier=0; speed=Number($('start').value||8); updateUI(); setCircle(0); setBar(0); $('status').textContent='Prêt'; };
+    $('countdownBtn').onclick=()=>{ preCountdown = !preCountdown; document.getElementById('countdownBtn').classList.toggle('primary', preCountdown); };
+    $('fs').onclick=async()=>{ const el=document.getElementById('root'); if(document.fullscreenElement){ await document.exitFullscreen(); } else { await el.requestFullscreen().catch(()=>{}); } };
+    $('start').oninput=updateUI; $('inc').oninput=updateUI; $('balise').oninput=updateUI; $('vol').oninput=()=>{ if(gain) gain.gain.value=Number($('vol').value||0.6); };
+    $('help').onclick=()=>document.getElementById('modalHelp').style.display='flex';
+    document.querySelectorAll('.close').forEach(x=>x.onclick=()=>document.getElementById(x.dataset.close).style.display='none');
+    document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.style.display='none'; }));
+    updateUI(); setCircle(0); setBar(0);
   </script>
 </body>
 </html>

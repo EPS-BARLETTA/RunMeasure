@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chrono — Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1020;--card:#121933;--text:#e8edff;--accent:#4f7cff}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:28px}
+    h1{margin:0 0 12px;font-size:28px;font-weight:800}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}
+    .card{background:var(--card);border:1px solid #1b2751;border-radius:16px;padding:18px;text-align:center}
+    a.btn{display:inline-block;width:100%;text-decoration:none;color:var(--text);background:var(--accent);padding:12px;border-radius:12px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>⏱️ Chrono — Hub</h1>
+    <p>Regroupez ici uniquement vos modes chrono (ex. simple, tours/intermédiaires, duel). Liez vos pages existantes ou utilisez celles de votre projet.</p>
+    <div class="grid">
+      <div class="card">
+        <h2>Chrono simple</h2>
+        <a class="btn" href="chrono-simple.html">Ouvrir</a>
+      </div>
+      <div class="card">
+        <h2>Chrono tours & intermédiaires</h2>
+        <a class="btn" href="chrono-tours.html">Ouvrir</a>
+      </div>
+      <div class="card">
+        <h2>Chrono duel</h2>
+        <a class="btn" href="chrono-duel.html">Ouvrir</a>
+      </div>
+    </div>
+    <p style="opacity:.7;margin-top:10px">Vous pouvez simplement changer ces liens pour pointer vers les fichiers déjà présents dans votre dépôt.</p>
+    <p><a class="btn" href="index.html" style="display:inline-block;width:auto">🏠 Retour accueil</a></p>
+  </div>
+</body>
+</html>

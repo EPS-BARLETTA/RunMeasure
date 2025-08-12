@@ -3,50 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MultiChrono — Accueil</title>
-  <meta name="color-scheme" content="light dark" />
-  <link rel="stylesheet" href="style.css">
-  <script defer src="ui.js"></script>
+  <title>Chrono/Vitesse EPS — Accueil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1020;--card:#121933;--muted:#9fb3ff;--text:#e8edff;--accent:#4f7cff;--ok:#22c55e;--warn:#ffb020}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:32px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    h1{margin:0;font-size:32px;font-weight:800;letter-spacing:.3px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:24px}
+    @media(min-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}
+    .card{background:var(--card);border:1px solid #1b2751;border-radius:16px;padding:20px;text-align:center}
+    a.btn{display:inline-block;width:100%;text-decoration:none;color:var(--text);background:var(--accent);padding:14px 16px;border-radius:12px;font-weight:700}
+    .footer{margin-top:28px;text-align:center;color:#9fb3ff80;font-size:12px}
+  </style>
 </head>
 <body>
-<header class="mc-header">
-  <h1>MultiChrono</h1>
-  <label><input id="darkToggle" type="checkbox" /></label>
-</header>
-<main class="mc-container">
-  <section class="mc-card">
-    <h2>Chronomètres</h2>
-    <div class="mc-row">
-      <a class="mc-btn mc-blue" href="6min.html">⏱️ 6 minutes</a>
-      <a class="mc-btn mc-blue" href="12min.html">⏱️ 12 minutes</a>
-      <a class="mc-btn mc-blue" href="demi-cooper.html">🏃‍♂️ Demi‑Cooper (6')</a>
-      <a class="mc-btn mc-blue" href="libre.html">⏱️ Chrono libre</a>
-      <a class="mc-btn mc-blue" href="tour.html">🏁 Chrono Tour (laps)</a>
-      <a class="mc-btn mc-red" href="duel.html">⚔️ Duel</a>
-    </div>
-  </section>
+  <div class="wrap">
+    <header>
+      <h1>Chrono/Vitesse EPS</h1>
+    </header>
 
-  <section class="mc-card">
-    <h2>VMA & Prof</h2>
-    <div class="mc-row">
-      <a class="mc-btn mc-yellow" href="vma.html">📈 Tests VMA + QR</a>
-      <a class="mc-btn mc-yellow" href="prof.html">🎧 Espace Prof (plein écran)</a>
+    <div class="grid">
+      <div class="card">
+        <h2>⏱️ Chrono</h2>
+        <p>Regroupe uniquement les modes chrono.</p>
+        <a class="btn" href="chrono.html">Ouvrir</a>
+      </div>
+      <div class="card">
+        <h2>🧬 Test VMA Élève</h2>
+        <p>Cooper, Demi‑Cooper, VAMEVAL + QR compatible ScanProf.</p>
+        <a class="btn" href="tests-vma-eleve.html">Ouvrir</a>
+      </div>
+      <div class="card">
+        <h2>🎧 VMA Prof</h2>
+        <p>Protocole VAMEVAL audio + plein écran (palier auto).</p>
+        <a class="btn" href="vma-prof.html">Ouvrir</a>
+      </div>
     </div>
-  </section>
 
-  <section class="mc-card">
-    <h2>Aide & documentation</h2>
-    <div class="mc-row">
-      <a class="mc-btn" href="aide.html">📘 Aide (générale)</a>
-      <a class="mc-btn" href="aide-6min.html">❓ Aide 6'</a>
-      <a class="mc-btn" href="aide-12min.html">❓ Aide 12'</a>
-      <a class="mc-btn" href="aide-libre.html">❓ Aide Libre</a>
-      <a class="mc-btn" href="aide-tour.html">❓ Aide Chrono Tour</a>
-      <a class="mc-btn" href="aide-duel.html">❓ Aide Duel</a>
-      <a class="mc-btn" href="aide-vma.html">❓ Aide VMA</a>
-    </div>
-  </section>
-</main>
-<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+    <div class="footer">Chrono/Vitesse EPS — Équipe EPS Lycée Vauban — Luxembourg — JB</div>
+  </div>
 </body>
 </html>

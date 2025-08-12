@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tests VMA — Élève • Chrono/Vitesse EPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121933; --muted:#9fb3ff; --text:#e8edff; --accent:#4f7cff; --ok:#22c55e; --warn:#ffb020; --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    h1{font-size:28px;margin:0;font-weight:800;letter-spacing:.3px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid transparent;background:var(--card);color:var(--text);padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+    .btn:hover{transform:translateY(-1px);border-color:#2a3870}
+    .btn.primary{background:var(--accent)}
+    .btn.ok{background:var(--ok);color:#08121c}
+    .btn.secondary{background:#1a2452}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+    .card{background:var(--card);border:1px solid #1b2751;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card h2{margin:0;padding:16px 18px;border-bottom:1px solid #1b2751;font-size:20px}
+    .card .content{padding:16px 18px}
+    label{font-weight:600;font-size:14px;color:var(--muted)}
+    input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #26336e;background:#0d1430;color:#text}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .result{padding:8px 12px;border-radius:10px;background:#0d1430;border:1px dashed #2a3870}
+    .qr{display:flex;align-items:center;justify-content:center;min-height:240px;background:#0d1430;border:1px dashed #2a3870;border-radius:12px}
+    .note{font-size:12px;color:#b9c6ff}
+    footer{margin-top:20px;text-align:center;color:#9fb3ff70;font-size:12px}
+    .pill{font-size:12px;padding:2px 8px;border-radius:999px;background:#1e2a61;display:inline-block}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tests VMA — Élève <span class="pill">QR compatible ScanProf</span></h1>
+      <div class="actions">
+        <a class="btn" href="index.html">🏠 Accueil</a>
+        <button class="btn secondary" id="resetAll">🔄 Réinitialiser</button>
+        <button class="btn ok" id="makeQr">🧾 Générer le QR</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1) Identité</h2>
+        <div class="content">
+          <div class="row">
+            <div>
+              <label>Nom</label>
+              <input id="nom" placeholder="Martin" required>
+            </div>
+            <div>
+              <label>Prénom</label>
+              <input id="prenom" placeholder="Julie" required>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Classe</label>
+              <input id="classe" placeholder="4C" required>
+            </div>
+            <div>
+              <label>Sexe</label>
+              <select id="sexe">
+                <option value="M">Garçon (M)</option>
+                <option value="F">Fille (F)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2) Choix du test</h2>
+        <div class="content">
+          <div class="row">
+            <div>
+              <label>Test</label>
+              <select id="test">
+                <option value="cooper">Cooper (12 min)</option>
+                <option value="demi">Demi‑Cooper (6 min)</option>
+                <option value="vameval">VAMEVAL (palier/vitesse)</option>
+              </select>
+            </div>
+            <div>
+              <label id="lblDist">Distance (m)</label>
+              <input id="distance" type="number" min="0" step="1" placeholder="ex. 2100">
+            </div>
+          </div>
+          <div class="row" id="vamevalRow" style="display:none">
+            <div>
+              <label>Vitesse atteinte (km/h) <span class="note">(= palier)</span></label>
+              <input id="vitesseVameval" type="number" min="6" max="24" step="0.5" placeholder="ex. 14.5">
+            </div>
+            <div>
+              <label>Distance (optionnel, m)</label>
+              <input id="distanceVameval" type="number" min="0" step="1" placeholder="laisser vide si inconnue">
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="result" id="calc">
+            <div><strong>Résultats provisoires</strong></div>
+            <div id="resume">—</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3) QR Code compatible ScanProf</h2>
+        <div class="content">
+          <div class="qr" id="qrcode">QR généré ici…</div>
+          <div style="margin-top:10px" class="row">
+            <button class="btn ok" id="btnShowJson">👀 Voir le JSON</button>
+            <button class="btn primary" id="btnSavePng">⬇️ Télécharger le QR (PNG)</button>
+          </div>
+          <p class="note" style="margin-top:8px">Format strict: tableau d'élèves [{nom, prenom, classe, sexe, distance, vitesse, vma}]</p>
+        </div>
+      </section>
+    </div>
+
+    <footer>Chrono/Vitesse EPS — Équipe EPS Lycée Vauban — Luxembourg — JB</footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const $ = (id)=>document.getElementById(id);
+
+    const testEl = $('test');
+    const distEl = $('distance');
+    const vitesseVamevalEl = $('vitesseVameval');
+    const distanceVamevalEl = $('distanceVameval');
+    const vamevalRow = $('vamevalRow');
+    const resumeEl = $('resume');
+
+    function calc(){
+      const test = testEl.value;
+      let distance = null, vitesse = null, vma = null, tempsMin = null;
+
+      if(test==='cooper' || test==='demi'){
+        const d = Number(distEl.value||0);
+        distance = Math.max(0, Math.round(d));
+        tempsMin = (test==='cooper')?12:6;
+        const heures = tempsMin/60;
+        vitesse = distance/1000 / heures;
+        vma = vitesse;
+      } else if(test==='vameval'){
+        vma = Number(vitesseVamevalEl.value||0);
+        vitesse = vma;
+        const dv = distanceVamevalEl.value? Number(distanceVamevalEl.value): 0;
+        distance = Math.max(0, Math.round(dv));
+        tempsMin = null;
+      }
+
+      const fmt = (n)=> isFinite(n)&&n!==null? n.toFixed(2).replace('.', ',') : '—';
+      const ttxt = tempsMin? `${tempsMin} min` : '—';
+      resumeEl.textContent = `Temps: ${ttxt} • Distance: ${distance??'—'} m • Vitesse: ${fmt(vitesse)} km/h • VMA: ${fmt(vma)} km/h`;
+      return {distance, vitesse: vitesse? Number(vitesse.toFixed(2)) : 0, vma: vma? Number(vma.toFixed(2)) : 0};
+    }
+
+    testEl.addEventListener('change', ()=>{
+      const t = testEl.value;
+      if(t==='vameval'){
+        vamevalRow.style.display='grid';
+        $('lblDist').textContent = 'Distance (m) — Cooper/Demi-Cooper';
+        distEl.disabled = true; distEl.value='';
+      } else {
+        vamevalRow.style.display='none';
+        $('lblDist').textContent = 'Distance (m)';
+        distEl.disabled = false;
+      }
+      calc();
+    });
+
+    ['distance','vitesseVameval','distanceVameval'].forEach(id=>{
+      $(id).addEventListener('input', calc);
+    });
+
+    $('resetAll').addEventListener('click', ()=>{
+      ['nom','prenom','classe','sexe','distance','vitesseVameval','distanceVameval'].forEach(id=>$(id).value='');
+      testEl.value='cooper';
+      vamevalRow.style.display='none';
+      distEl.disabled=false;
+      resumeEl.textContent='—';
+      qrcode.clear();
+      $('qrcode').textContent='QR généré ici…';
+    });
+
+    function buildPayload(){
+      const {distance,vitesse,vma} = calc();
+      const payload = [{
+        nom: $('nom').value.trim(),
+        prenom: $('prenom').value.trim(),
+        classe: $('classe').value.trim(),
+        sexe: $('sexe').value,
+        distance: Number(distance||0),
+        vitesse: Number(vitesse||0),
+        vma: Number(vma||0)
+      }];
+      return JSON.stringify(payload);
+    }
+
+    const qrcode = new QRCode('qrcode', {text:'', width:220, height:220});
+
+    $('makeQr').addEventListener('click', ()=>{
+      const required = ['nom','prenom','classe'];
+      for(const id of required){
+        if(!$(id).value.trim()){
+          alert('Merci de renseigner Nom, Prénom et Classe.');
+          return;
+        }
+      }
+      const json = buildPayload();
+      qrcode.makeCode(json);
+    });
+
+    $('btnShowJson').addEventListener('click', ()=>{
+      const json = buildPayload();
+      navigator.clipboard?.writeText(json).catch(()=>{});
+      alert(json);
+    });
+
+    $('btnSavePng').addEventListener('click', ()=>{
+      const el = document.querySelector('#qrcode canvas, #qrcode img');
+      if(!el){ alert('Génère le QR d\'abord.'); return; }
+      let dataURL;
+      if(el.tagName.toLowerCase()==='canvas'){
+        dataURL = el.toDataURL('image/png');
+      } else {
+        const canvas = document.createElement('canvas');
+        canvas.width = el.naturalWidth; canvas.height = el.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(el,0,0);
+        dataURL = canvas.toDataURL('image/png');
+      }
+      const a = document.createElement('a');
+      a.href = dataURL; a.download = 'qr-scanprof.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    calc();
+  </script>
+</body>
+</html>

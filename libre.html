@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chrono libre</title>
+  <title>Chrono libre — MultiChrono</title>
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="style.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script defer src="ui.js"></script>
   <script defer src="csv.js"></script>
   <script defer src="qr.js"></script>
+  <script defer src="libre.js"></script>
 </head>
 <body>
 <header class="mc-header">
   <a class="mc-back" href="index.html">← Accueil</a>
   <h1>Chrono libre</h1>
-  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+  <label><input id="darkToggle" type="checkbox" /></label>
 </header>
 <main class="mc-container">
-
   <section class="mc-card">
     <h2>Identité</h2>
     <div class="mc-row">
@@ -29,7 +29,7 @@
   </section>
   <section class="mc-card">
     <h2>Paramètres</h2>
-    <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" value="200"></label>
+    <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" inputmode="numeric" value="200"></label>
   </section>
   <section class="mc-card">
     <h2>Chronomètre</h2>
@@ -40,10 +40,10 @@
       <button id="resetBtn" class="mc-btn" disabled>Reset</button>
     </div>
     <div class="mc-increments">
-      <button data-inc="0.25" class="mc-chip" disabled>+¼ tour</button>
-      <button data-inc="0.5" class="mc-chip" disabled>+½ tour</button>
-      <button data-inc="0.75" class="mc-chip" disabled>+¾ tour</button>
-      <button data-inc="1" class="mc-chip" disabled>+1 tour</button>
+      <button class="mc-chip" data-inc="0.25" disabled>+¼ tour</button>
+      <button class="mc-chip" data-inc="0.5"  disabled>+½ tour</button>
+      <button class="mc-chip" data-inc="0.75" disabled>+¾ tour</button>
+      <button class="mc-chip" data-inc="1"    disabled>+1 tour</button>
     </div>
   </section>
   <section class="mc-card">
@@ -51,11 +51,7 @@
     <div id="qrcode" class="mc-qrcode"></div>
     <button id="saveCsv" class="mc-btn">Exporter CSV</button>
   </section>
-<script defer src="libre.js"></script>
-
 </main>
-<footer class="mc-footer">
-  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
-</footer>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

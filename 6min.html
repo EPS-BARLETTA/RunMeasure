@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chrono 6 minutes</title>
+  <title>Chrono 6 minutes — MultiChrono</title>
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="style.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script defer src="ui.js"></script>
   <script defer src="csv.js"></script>
   <script defer src="qr.js"></script>
+  <script defer src="chrono6.js"></script>
 </head>
 <body>
 <header class="mc-header">
   <a class="mc-back" href="index.html">← Accueil</a>
-  <h1>Chrono 6 minutes</h1>
-  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+  <h1>6 minutes</h1>
+  <label><input id="darkToggle" type="checkbox" /></label>
 </header>
 <main class="mc-container">
-
   <section class="mc-card">
     <h2>Identité</h2>
     <div class="mc-row">
@@ -29,7 +29,10 @@
   </section>
   <section class="mc-card">
     <h2>Paramètres</h2>
-    <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" value="200"></label>
+    <div class="mc-row">
+      <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" inputmode="numeric" value="200"></label>
+    </div>
+    <p class="mc-hint">Durée fixe 6:00. Distance tour modifiable. Incréments pendant la course, corrections après.</p>
   </section>
   <section class="mc-card">
     <h2>Chronomètre</h2>
@@ -38,24 +41,42 @@
       <button id="startBtn" class="mc-btn mc-blue">Démarrer</button>
       <button id="stopBtn" class="mc-btn mc-red" disabled>Stop</button>
       <button id="resetBtn" class="mc-btn" disabled>Reset</button>
+      <button id="lapBtn" class="mc-btn" disabled>Intermédiaire</button>
     </div>
     <div class="mc-increments">
-      <button data-inc="0.25" class="mc-chip" disabled>+¼ tour</button>
-      <button data-inc="0.5" class="mc-chip" disabled>+½ tour</button>
-      <button data-inc="0.75" class="mc-chip" disabled>+¾ tour</button>
-      <button data-inc="1" class="mc-chip" disabled>+1 tour</button>
+      <button class="mc-chip" data-inc="0.25" disabled>+¼ tour</button>
+      <button class="mc-chip" data-inc="0.5"  disabled>+½ tour</button>
+      <button class="mc-chip" data-inc="0.75" disabled>+¾ tour</button>
+      <button class="mc-chip" data-inc="1"    disabled>+1 tour</button>
+    </div>
+    <div class="mc-table-wrap" style="margin-top:10px">
+      <table class="mc-table"><thead><tr><th>#</th><th>Temps</th><th>ms</th></tr></thead><tbody id="splitsBody"></tbody></table>
+    </div>
+  </section>
+  <section class="mc-card">
+    <h2>Corrections fin de course</h2>
+    <div class="mc-increments">
+      <button class="mc-chip" data-fraction="0.25" disabled>+¼ tour</button>
+      <button class="mc-chip" data-fraction="0.5"  disabled>+½ tour</button>
+      <button class="mc-chip" data-fraction="0.75" disabled>+¾ tour</button>
+    </div>
+    <div class="mc-row">
+      <label class="mc-field"><span>Distance manuelle à ajouter (m)</span><input id="manualExtra" type="number" inputmode="numeric" value="0" disabled></label>
     </div>
   </section>
   <section class="mc-card">
     <h2>Résultat</h2>
+    <div class="mc-row">
+      <div class="mc-field"><span>Distance totale</span><input id="totalDistance" type="text" disabled></div>
+      <div class="mc-field"><span>Tours complets</span><input id="lapsCount" type="text" disabled></div>
+      <div class="mc-field"><span>Fraction ajoutée (m)</span><input id="fractionAdded" type="text" disabled></div>
+    </div>
     <div id="qrcode" class="mc-qrcode"></div>
-    <button id="saveCsv" class="mc-btn">Exporter CSV</button>
+    <div class="mc-controls">
+      <button id="saveCsv" class="mc-btn">Exporter CSV</button>
+    </div>
   </section>
-<script defer src="chrono6.js"></script>
-
 </main>
-<footer class="mc-footer">
-  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
-</footer>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

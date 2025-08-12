@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tests VMA — MultiChrono</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="ui.js"></script>
+  <script defer src="qr.js"></script>
+  <script defer src="vma.js"></script>
+</head>
+<body>
+<header class="mc-header">
+  <a class="mc-back" href="index.html">← Accueil</a>
+  <h1>Tests VMA</h1>
+  <label><input id="darkToggle" type="checkbox" /></label>
+</header>
+<main class="mc-container">
+  <section class="mc-card">
+    <h2>Choisir un test</h2>
+    <div class="mc-row">
+      <div class="mc-card">
+        <h3>Vameval</h3>
+        <p class="mc-hint">Paliers d'1 min, départ 8 km/h, +0,5 km/h par minute. Mesure : dernier palier complété et VMA estimée.</p>
+      </div>
+      <div class="mc-card">
+        <h3>Luc Léger 20 m</h3>
+        <p class="mc-hint">Navettes 20 m entre deux plots. Mesure : niveau/navette atteints et VMA estimée.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mc-card">
+    <h2>Identité élève</h2>
+    <div class="mc-row">
+      <label class="mc-field"><span>Nom</span><input id="v_nom" type="text"></label>
+      <label class="mc-field"><span>Prénom</span><input id="v_prenom" type="text"></label>
+      <label class="mc-field"><span>Classe</span><input id="v_classe" type="text"></label>
+      <label class="mc-field">
+        <span>Sexe</span>
+        <select id="v_sexe">
+          <option value="">—</option>
+          <option>F</option>
+          <option>M</option>
+          <option>Autre</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="mc-card">
+    <h2>Paramètres & saisie</h2>
+    <div class="mc-row">
+      <label class="mc-field">
+        <span>Type de test</span>
+        <select id="testType">
+          <option value="vameval">Vameval (palier)</option>
+          <option value="leger">Luc Léger 20 m (niveau/navette)</option>
+          <option value="direct">Saisie directe VMA (km/h)</option>
+        </select>
+      </label>
+      <label class="mc-field" data-vameval>
+        <span>Palier atteint</span>
+        <input id="palier" type="number" min="0" value="0" inputmode="numeric">
+      </label>
+      <div class="mc-row" data-leger>
+        <label class="mc-field"><span>Niveau</span><input id="niv" type="number" min="1" value="1" inputmode="numeric"></label>
+        <label class="mc-field"><span>Navette</span><input id="nav" type="number" min="1" value="1" inputmode="numeric"></label>
+      </div>
+      <label class="mc-field" data-direct>
+        <span>VMA directe (km/h)</span>
+        <input id="vma" type="number" min="0" step="0.1" inputmode="decimal" placeholder="ex: 14.2">
+      </label>
+    </div>
+    <p class="mc-hint">Le QR contiendra : nom, prénom, classe, sexe, type de test, VMA (km/h).</p>
+  </section>
+
+  <section class="mc-card">
+    <h2>QR Code</h2>
+    <div id="qr_vma" class="mc-qrcode"></div>
+    <div class="mc-controls">
+      <button id="genVMA" class="mc-btn mc-blue">Générer QR</button>
+    </div>
+  </section>
+</main>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+</body>
+</html>

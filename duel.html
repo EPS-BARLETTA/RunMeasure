@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Duel</title>
+  <title>Duel — MultiChrono</title>
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="style.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script defer src="ui.js"></script>
   <script defer src="csv.js"></script>
   <script defer src="qr.js"></script>
+  <script defer src="duel.js"></script>
 </head>
 <body>
 <header class="mc-header">
   <a class="mc-back" href="index.html">← Accueil</a>
   <h1>Duel</h1>
-  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+  <label><input id="darkToggle" type="checkbox" /></label>
 </header>
 <main class="mc-container">
-
   <section class="mc-card">
     <h2>Paramètres</h2>
     <div class="mc-row">
-      <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" value="200"></label>
+      <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" inputmode="numeric" value="200"></label>
     </div>
-    <p class="mc-hint">Les deux chronos démarrent ensemble, chaque coureur s'arrête individuellement.</p>
+    <p class="mc-hint">Start commun, arrêts indépendants A/B, incréments séparés.</p>
   </section>
   <section class="mc-card">
     <div class="mc-row">
@@ -71,11 +71,7 @@
     <div id="qrcode" class="mc-qrcode"></div>
     <button id="saveCsv" class="mc-btn">Exporter CSV</button>
   </section>
-<script defer src="duel.js"></script>
-
 </main>
-<footer class="mc-footer">
-  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
-</footer>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

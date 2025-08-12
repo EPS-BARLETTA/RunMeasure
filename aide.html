@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aide — MultiChrono</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="style.css">
+  <script defer src="ui.js"></script>
+</head>
+<body>
+<header class="mc-header">
+  <a class="mc-back" href="index.html">← Accueil</a>
+  <h1>Aide</h1>
+  <label><input id="darkToggle" type="checkbox" /></label>
+</header>
+<main class="mc-container">
+  <section class="mc-card">
+    <h2>Prise en main</h2>
+    <p>Chaque page de chrono demande <strong>Nom, Prénom, Classe</strong>. Le QR code généré embarque ces champs, plus la distance/temps.</p>
+    <ul>
+      <li><strong>6' & 12'</strong> : durée fixe, ajoutez des tours pendant la course (+¼, +½, +¾, +1). A la fin, corrigez avec fractions/ajout manuel si besoin.</li>
+      <li><strong>Libre</strong> : compte vers le haut, ajoutez des tours pendant la course, QR à l'arrêt.</li>
+      <li><strong>Duel</strong> : départ commun, arrêts A/B séparés, QR avec <em>deux</em> élèves.</li>
+      <li><strong>Tests VMA</strong> : page dédiée avec QR (nom, prénom, classe, sexe, VMA en km/h).</li>
+    </ul>
+  </section>
+  <section class="mc-card">
+    <h2>Compatibilité ScanProf</h2>
+    <p>Les QR codent un <code>JSON</code> avec des clés simples (<code>nom, prenom, classe, duree_s, distance_m, vma_kmh...</code>). Le tableau ScanProf est dynamique et s’adapte aux champs présents.</p>
+  </section>
+</main>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+</body>
+</html>

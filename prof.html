@@ -6,13 +6,26 @@
   <title>MultiChrono — Espace Prof</title>
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="style.css">
+  <style>
+    .vma-board{background:#0b1020;color:#fff;border-radius:18px;padding:16px;display:grid;gap:10px}
+    .vma-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .vma-time{font-weight:900;font-size:clamp(42px,10vw,120px);text-align:center}
+    .vma-sub{font-size:clamp(18px,3vw,28px);text-align:center;opacity:.9}
+    .vma-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+    .vma-chip{padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-weight:800}
+    .vma-bar{height:14px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden}
+    .vma-bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#eab308);transition:width .2s}
+    .fs-btn{position:absolute;right:16px;top:16px;padding:10px 12px;border-radius:12px;border:1px solid #334155;background:#111827;color:#fff;cursor:pointer}
+    .blink-red{animation:blinkred .7s steps(1,end) infinite}
+    @keyframes blinkred{50%{color:#ef4444}}
+  </style>
   <script defer src="ui.js"></script>
   <script defer src="prof.js"></script>
 </head>
 <body>
 <header class="mc-header">
   <a class="mc-back" href="index.html">← Accueil</a>
-  <h1>Espace Prof (PIN)</h1>
+  <h1>Espace Prof (plein écran)</h1>
   <label><input id="darkToggle" type="checkbox" /></label>
 </header>
 <main class="mc-container">
@@ -25,30 +38,42 @@
     <p class="mc-hint">Par défaut : <strong>57</strong>.</p>
   </section>
 
-  <section id="panel" class="mc-card" style="display:none">
-    <h2>Tests VMA (bips)</h2>
-    <div class="mc-row">
-      <div class="mc-card" style="flex:1">
-        <h3>Vameval</h3>
-        <p class="mc-hint">Paliers de 1 min, départ 8 km/h, +0,5 km/h/min. Bips tous les plots.</p>
-        <label class="mc-field"><span>Distance entre plots (m)</span><input id="plotsLen" type="number" value="20"></label>
-        <div id="dispV" class="mc-time">Prêt</div>
-        <div class="mc-controls">
-          <button id="startV" class="mc-btn mc-blue">Démarrer</button>
-          <button id="stopV" class="mc-btn mc-red">Stop</button>
+  <section id="panel" class="mc-card" style="display:none; position:relative">
+    <button id="fs" class="fs-btn">⤢ Plein écran</button>
+    <h2>Tests VMA</h2>
+    <div class="vma-board">
+      <div class="vma-grid">
+        <div>
+          <div class="vma-sub">VAMEVAL</div>
+          <div id="dispV" class="vma-time">Prêt</div>
+          <div class="vma-row">
+            <span class="vma-chip">Vitesse : <b id="speedV">8.0</b> km/h</span>
+            <span class="vma-chip">Palier : <b id="palierV">0</b></span>
+            <span class="vma-chip">Restant : <b id="remainV">60</b> s</span>
+          </div>
+          <div class="vma-bar"><span id="barV"></span></div>
+          <div class="mc-controls" style="justify-content:center;margin-top:8px">
+            <button id="startV" class="mc-btn mc-blue">Démarrer</button>
+            <button id="stopV" class="mc-btn mc-red">Stop</button>
+          </div>
+        </div>
+        <div>
+          <div class="vma-sub">LUC LÉGER 20 m</div>
+          <div id="dispL" class="vma-time">Prêt</div>
+          <div class="vma-row">
+            <span class="vma-chip">Vitesse : <b id="speedL">8.0</b> km/h</span>
+            <span class="vma-chip">Niveau : <b id="levelL">1</b></span>
+            <span class="vma-chip">Navettes : <b id="shuttleL">0</b></span>
+          </div>
+          <div class="vma-bar"><span id="barL"></span></div>
+          <div class="mc-controls" style="justify-content:center;margin-top:8px">
+            <button id="startL" class="mc-btn mc-blue">Démarrer</button>
+            <button id="stopL" class="mc-btn mc-red">Stop</button>
+          </div>
         </div>
       </div>
-      <div class="mc-card" style="flex:1">
-        <h3>Luc Léger 20 m</h3>
-        <p class="mc-hint">Navettes 20 m, vitesse qui augmente par niveaux. Bips à chaque navette.</p>
-        <div id="dispL" class="mc-time">Prêt</div>
-        <div class="mc-controls">
-          <button id="startL" class="mc-btn mc-blue">Démarrer</button>
-          <button id="stopL" class="mc-btn mc-red">Stop</button>
-        </div>
-      </div>
+      <p class="mc-hint" style="text-align:center;margin:8px 0 0">Conseil : connectez une enceinte. Une 1ère pression sur “Démarrer” autorise l’audio (Safari/iPad).</p>
     </div>
-    <p class="mc-hint">⚠️ Sur iPad/Safari, il faut cliquer “Démarrer” pour autoriser l’audio.</p>
   </section>
 </main>
 <footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>

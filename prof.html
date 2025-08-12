@@ -13,7 +13,7 @@
 <header class="mc-header">
   <a class="mc-back" href="index.html">← Accueil</a>
   <h1>Espace Prof (PIN)</h1>
-  <label class="mc-dark-switch"><input id="darkToggle" type="checkbox" /></label>
+  <label><input id="darkToggle" type="checkbox" /></label>
 </header>
 <main class="mc-container">
   <section id="gate" class="mc-card">
@@ -30,7 +30,7 @@
     <div class="mc-row">
       <div class="mc-card" style="flex:1">
         <h3>Vameval</h3>
-        <p class="mc-hint">Paliers de 1 min, vitesse initiale 8 km/h, +0,5 km/h par minute. Bips tous les plots.</p>
+        <p class="mc-hint">Paliers de 1 min, départ 8 km/h, +0,5 km/h/min. Bips tous les plots.</p>
         <label class="mc-field"><span>Distance entre plots (m)</span><input id="plotsLen" type="number" value="20"></label>
         <div id="dispV" class="mc-time">Prêt</div>
         <div class="mc-controls">
@@ -40,7 +40,7 @@
       </div>
       <div class="mc-card" style="flex:1">
         <h3>Luc Léger 20 m</h3>
-        <p class="mc-hint">Navettes de 20 m, vitesse qui augmente par niveaux. Bips à chaque navette.</p>
+        <p class="mc-hint">Navettes 20 m, vitesse qui augmente par niveaux. Bips à chaque navette.</p>
         <div id="dispL" class="mc-time">Prêt</div>
         <div class="mc-controls">
           <button id="startL" class="mc-btn mc-blue">Démarrer</button>
@@ -48,11 +48,9 @@
         </div>
       </div>
     </div>
-    <p class="mc-hint">⚠️ Cliquez une fois sur “Démarrer” pour autoriser l’audio (Safari/iPad exige une interaction).</p>
+    <p class="mc-hint">⚠️ Sur iPad/Safari, il faut cliquer “Démarrer” pour autoriser l’audio.</p>
   </section>
 </main>
-<footer class="mc-footer">
-  MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB
-</footer>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 </body>
 </html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chrono Tour — MultiChrono</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="ui.js"></script>
+  <script defer src="csv.js"></script>
+  <script defer src="qr.js"></script>
+  <script defer src="tour.js"></script>
+  <style>
+    .delta-pos{color:#16a34a;font-weight:700}
+    .delta-neg{color:#dc2626;font-weight:700}
+  </style>
+</head>
+<body>
+<header class="mc-header">
+  <a class="mc-back" href="index.html">← Accueil</a>
+  <h1>Chrono Tour (laps)</h1>
+  <label><input id="darkToggle" type="checkbox" /></label>
+</header>
+<main class="mc-container">
+  <section class="mc-card">
+    <h2>Identité</h2>
+    <div class="mc-row">
+      <label class="mc-field"><span>Nom</span><input id="nom" type="text" required></label>
+      <label class="mc-field"><span>Prénom</span><input id="prenom" type="text" required></label>
+      <label class="mc-field"><span>Classe</span><input id="classe" type="text" required></label>
+    </div>
+  </section>
+  <section class="mc-card">
+    <h2>Paramètres</h2>
+    <div class="mc-row">
+      <label class="mc-field"><span>Distance totale (m)</span><input id="totalDist" type="number" inputmode="numeric" value="800"></label>
+      <label class="mc-field"><span>Distance d’un tour (m)</span><input id="lapLen" type="number" inputmode="numeric" value="200"></label>
+      <label class="mc-field"><span>Affichage</span>
+        <select id="affichage">
+          <option value="cumule">Temps cumulé</option>
+          <option value="inter">Temps intermédiaire (split)</option>
+        </select>
+      </label>
+    </div>
+    <p class="mc-hint">Exemple : 800 m total, tours de 200 m → 4 tours avec vitesse et Δ à chaque tour.</p>
+  </section>
+  <section class="mc-card">
+    <h2>Chronomètre</h2>
+    <div id="display" class="mc-time">00:00</div>
+    <div class="mc-controls">
+      <button id="startBtn" class="mc-btn mc-blue">Démarrer</button>
+      <button id="splitBtn" class="mc-btn" disabled>Marquer tour</button>
+      <button id="stopBtn" class="mc-btn mc-red" disabled>Stop</button>
+      <button id="resetBtn" class="mc-btn" disabled>Reset</button>
+    </div>
+    <div class="mc-table-wrap" style="margin-top:10px">
+      <table class="mc-table">
+        <thead><tr><th>#</th><th>Temps</th><th>Split (s)</th><th>Cumul (s)</th><th>Vitesse (km/h)</th><th>Δ vs préc. (s)</th></tr></thead>
+        <tbody id="lapsBody"></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="mc-card">
+    <h2>Résultat & Export</h2>
+    <div class="mc-row">
+      <label class="mc-field"><span>Tours prévus</span><input id="lapsPlanned" type="text" disabled></label>
+      <label class="mc-field"><span>Tours réalisés</span><input id="lapsDone" type="text" disabled></label>
+      <label class="mc-field"><span>Temps total</span><input id="totalTime" type="text" disabled></label>
+      <label class="mc-field"><span>Vitesse moyenne</span><input id="avgSpeed" type="text" disabled></label>
+    </div>
+    <div id="qrcode" class="mc-qrcode"></div>
+    <div class="mc-controls">
+      <button id="saveCsv" class="mc-btn">Exporter CSV</button>
+    </div>
+  </section>
+</main>
+<footer class="mc-footer">MultiChrono - L'Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+</body>
+</html>

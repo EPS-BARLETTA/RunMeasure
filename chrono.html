@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChronoVitesse • Chronos</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>ChronoVitesse</h1>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Informations élève</h2>
+      <form id="eleve-form" class="grid-2">
+        <label>Nom
+          <input type="text" id="nom" required />
+        </label>
+        <label>Prénom
+          <input type="text" id="prenom" required />
+        </label>
+        <label>Classe
+          <input type="text" id="classe" required />
+        </label>
+        <label>Sexe
+          <select id="sexe" required>
+            <option value="" disabled selected>—</option>
+            <option value="F">F</option>
+            <option value="M">M</option>
+          </select>
+        </label>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Choisir un mode</h2>
+      <div class="mode-buttons">
+        <button class="btn btn-blue" data-mode="intervalles">⏱️ Intermédiaires</button>
+        <button class="btn btn-green" data-mode="simple">⏱️ Chrono simple</button>
+        <button class="btn btn-amber" data-mode="tours">⏲️ Minuteur & Tours</button>
+        <button class="btn btn-purple" data-mode="demiCooper">6′ Demi‑Cooper</button>
+        <button class="btn btn-pink" data-mode="cooper">12′ Cooper</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 id="mode-title">Mode</h2>
+
+      <div id="params-intervalles" class="params hidden grid-3">
+        <label>Distance course (m)
+          <input type="number" id="ivl-distance" min="100" step="50" value="800" />
+        </label>
+        <label>Intervalle (m)
+          <input type="number" id="ivl-step" min="25" step="25" value="200" />
+        </label>
+        <label>&nbsp;
+          <button class="btn btn-outline" id="ivl-apply" type="button">Appliquer</button>
+        </label>
+      </div>
+
+      <div id="params-simple" class="params hidden grid-3">
+        <label>Distance (m)
+          <input type="number" id="simple-distance" min="50" step="50" value="500" />
+        </label>
+        <div></div><div></div>
+      </div>
+
+      <div id="params-tours" class="params hidden grid-3">
+        <label>Distance par tour (m)
+          <input type="number" id="lap-distance" min="25" step="25" value="200" />
+        </label>
+        <div></div><div></div>
+      </div>
+
+      <div id="params-demic" class="params hidden info-line">
+        Test à durée fixe : 6:00 (arrêt automatique).
+      </div>
+
+      <div id="params-cooper" class="params hidden info-line">
+        Test à durée fixe : 12:00 (arrêt automatique).
+      </div>
+
+      <div class="timer">
+        <div id="display" class="display">00:00.0</div>
+        <div class="controls">
+          <button id="btn-start" class="btn btn-primary btn-lg" type="button">Démarrer</button>
+          <button id="btn-lap" class="btn btn-accent btn-lg" type="button" disabled>Tour</button>
+          <button id="btn-reset" class="btn btn-danger btn-lg" type="button" disabled>Reset</button>
+        </div>
+      </div>
+
+      <div id="table-wrap" class="table-wrap hidden">
+        <table id="laps-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Distance tour (m)</th>
+              <th>Temps tour</th>
+              <th>Vitesse tour (km/h)</th>
+              <th>Temps cumulé</th>
+              <th>Distance cumulée (m)</th>
+              <th>Vitesse moyenne (km/h)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr id="row-total" class="strong hidden">
+              <td>Total</td>
+              <td>—</td>
+              <td id="total-time">—</td>
+              <td>—</td>
+              <td>—</td>
+              <td id="total-dist">—</td>
+              <td id="total-speed">—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div id="results" class="results hidden">
+        <h3>Résultat & Export</h3>
+        <div class="grid-2">
+          <div>
+            <pre id="json-preview" class="json-preview"></pre>
+            <div id="qrcode" class="qrcode"></div>
+          </div>
+          <div class="export-buttons">
+            <button id="btn-export-csv" class="btn btn-primary" type="button">Exporter CSV</button>
+            <button id="btn-reset-all" class="btn btn-danger" type="button">Nouveau</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
+  </footer>
+</body>
+</html>

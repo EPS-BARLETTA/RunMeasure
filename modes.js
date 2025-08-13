@@ -1,4 +1,4 @@
-// ChronoVitesse V6
+// RunMeasure V7
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -16,7 +16,7 @@
   };
   const kmh = (meters, ms) => (ms>0 ? +((meters/(ms/1000))*3.6).toFixed(2) : 0);
   const getMode = () => new URLSearchParams(location.search).get('mode') || 'intervalles';
-  const student = () => { try { return JSON.parse(localStorage.getItem('cv_student')||'{}'); } catch(e){ return {}; } };
+  const student = () => { try { return JSON.parse(localStorage.getItem('rm_student')||'{}'); } catch(e){ return {}; } };
 
   const state = {
     mode: getMode(),
@@ -48,6 +48,7 @@
   const qrcodeBox = $('#qrcode');
   const totalTime = $('#total-time');
   const totalSpeed = $('#total-speed');
+  const totalDistanceCell = $('#total-distance');
   const rowTotal = $('#row-total');
   const ivlExportBox = $('#intervalles-export');
   const btnGenQR = $('#btn-gen-qr');
@@ -61,14 +62,9 @@
   const recapBody = $('#recap-body');
   const CIRCUM = 2 * Math.PI * 54;
 
-  // Fullscreen helper
   async function tryFullscreen(){
     const el = document.documentElement;
-    try{
-      if(!document.fullscreenElement && el.requestFullscreen){
-        await el.requestFullscreen();
-      }
-    }catch(e){ /* ignore */ }
+    try{ if(!document.fullscreenElement && el.requestFullscreen){ await el.requestFullscreen(); } }catch(e){}
   }
 
   function renderParams(){
@@ -76,13 +72,13 @@
     circleWrap.classList.add('hidden');
     display.classList.remove('hidden');
     liveDistance.classList.add('hidden');
+    fractionTools.classList.add('hidden');
+    state.fractionAdded = 0;
 
     // defaults
     btnLap.classList.remove('hidden');
     btnStop.classList.add('hidden');
     tableWrap.classList.remove('hidden');
-    fractionTools.classList.add('hidden');
-    state.fractionAdded = 0;
 
     switch(state.mode){
       case 'intervalles':
@@ -131,7 +127,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Décompte + « Tour » pour ajouter la distance.</div>
+          <div class="info">Décompte + « Tour » pour ajouter la distance. Le tableau affiche la distance du tour et la cumulée.</div>
         `;
         state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
         state.lapDist = 100;
@@ -147,7 +143,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 6:00. « Tour » à chaque passage.</div>
+          <div class="info">Durée fixe 6:00. « Tour » à chaque passage. Le tableau affiche distance du tour et cumulée.</div>
         `;
         state.fixedDuration = 6*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -163,7 +159,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 12:00. « Tour » à chaque passage.</div>
+          <div class="info">Durée fixe 12:00. « Tour » à chaque passage. Le tableau affiche distance du tour et cumulée.</div>
         `;
         state.fixedDuration = 12*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -201,10 +197,11 @@
   }
 
   function updateRing(remaining, total){
+    const CIRCUM = 339.292;
     const ratio = Math.max(0, Math.min(1, (total? remaining/total : 0)));
     const offset = CIRCUM * (1 - ratio);
-    if(circleFG){ circleFG.style.strokeDasharray = CIRCUM; circleFG.style.strokeDashoffset = offset; }
-    if(circleText){ circleText.textContent = fmtMMSS(remaining); }
+    if($('#circle-fg')){ $('#circle-fg').style.strokeDasharray = CIRCUM; $('#circle-fg').style.strokeDashoffset = offset; }
+    if($('#circle-text')){ $('#circle-text').textContent = fmtMMSS(remaining); }
   }
   function mmssToMs(s){ const m = /^(\d{1,2}):(\d{2})$/.exec(s)||[0,0,0]; return ((parseInt(m[1],10)||0)*60 + (parseInt(m[2],10)||0))*1000; }
   function now(){ return performance.now(); }
@@ -214,6 +211,7 @@
     rowTotal.classList.add('hidden');
     totalTime.textContent='—';
     totalSpeed.textContent='—';
+    if(totalDistanceCell) totalDistanceCell.textContent='—';
   }
 
   function start(){
@@ -250,7 +248,6 @@
 
   function tick(){
     let t = state.elapsed + (now() - state.startTime);
-
     if(['tours','minuteurSimple'].includes(state.mode)){
       const remain = Math.max(0, state.countdownMs - t);
       updateRing(remain, state.ringTotal);
@@ -295,9 +292,10 @@
     const tr = document.createElement('tr');
     const idx = state.laps.length+1;
     const lapSpeed = lapDist? kmh(lapDist, lapMs) : 0;
-    tr.innerHTML = `<td>${idx}</td><td>${fmt(cumMs)}</td><td>${fmt(lapMs)}</td><td>${lapDist? lapSpeed.toFixed(2):'—'}</td>`;
+    const cumMetersNow = Math.round(state.cumDist); // after update
+    tr.innerHTML = `<td>${idx}</td><td>${fmt(cumMs)}</td><td>${fmt(lapMs)}</td><td>${lapDist? lapSpeed.toFixed(2):'—'}</td><td>${lapDist? Math.round(lapDist):'—'}</td><td>${(lapDist||state.mode==='intervalles')? cumMetersNow:'—'}</td>`;
     tbody.appendChild(tr);
-    state.laps.push({idx, cumMs, lapMs, lapDist: lapDist||0, lapSpeed});
+    state.laps.push({idx, cumMs, lapMs, lapDist: lapDist||0, lapSpeed, cumMeters: cumMetersNow});
   }
 
   function finish(){
@@ -320,7 +318,6 @@
       totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
       ivlExportBox.classList.remove('hidden');
     } else if(state.mode==='simple'){
-      // no QR
       qrcodeBox.innerHTML = '';
     } else if(state.mode==='simpleDistance'){
       totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
@@ -336,8 +333,9 @@
 
     totalTime.textContent = fmt(totalMs);
     totalSpeed.textContent = vAvg.toFixed(2);
+    if(totalDistanceCell) totalDistanceCell.textContent = (totalMeters? Math.round(totalMeters):'—');
 
-    // Recap for speed-related modes
+    // Recap
     recap.classList.add('hidden');
     recapBody.innerHTML='';
     const sRows = [];
@@ -360,25 +358,21 @@
       recapBody.innerHTML = sRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`).join('');
     }
 
-    // Generate QR except for simple and intervalles (needs button)
     if(state.mode!=='intervalles' && state.mode!=='simple'){
       generateQR();
     }
   }
 
   function applyFraction(frac){
-    // Only for tours/demi/cooper
     if(!['tours','demiCooper','cooper'].includes(state.mode)) return;
     const add = state.lapDist * frac;
     state.fractionAdded = add;
     liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded);
-    // Recompute and regenerate
     const totalMs = state.elapsed;
     const totalMeters = state.cumDist + state.fractionAdded;
     totalSpeed.textContent = kmh(totalMeters, totalMs).toFixed(2);
+    if(totalDistanceCell) totalDistanceCell.textContent = Math.round(totalMeters);
     generateQR();
-    // Update recap too
-    finish(); // reuse finish logic to update recap; but avoid infinite loop
   }
 
   function undoFraction(){
@@ -388,8 +382,8 @@
     const totalMs = state.elapsed;
     const totalMeters = state.cumDist;
     totalSpeed.textContent = kmh(totalMeters, totalMs).toFixed(2);
+    if(totalDistanceCell) totalDistanceCell.textContent = Math.round(totalMeters);
     generateQR();
-    finish();
   }
 
   function buildPayload(){
@@ -451,7 +445,6 @@
     }
   }
 
-  // Event wiring
   btnStart.addEventListener('click', start);
   btnStop.addEventListener('click', stop);
   btnLap.addEventListener('click', lap);
@@ -476,11 +469,13 @@
     liveDistVal.textContent = '0';
     recap.classList.add('hidden');
     recapBody.innerHTML='';
+    if(totalDistanceCell) totalDistanceCell.textContent='—';
     clearTable();
   });
   $('#btn-new').addEventListener('click', () => location.reload());
   if(btnGenQR) btnGenQR.addEventListener('click', generateQR);
   $('#btn-export-csv').addEventListener('click', () => {
+    // CSV structure unchanged to avoid breaking downstream: idx, t_cum, t_lap, v_lap
     const s = student();
     const lines = [];
     lines.push(['nom','prenom','classe','sexe','lap_index','t_cum','t_lap','v_lap_kmh']);
@@ -492,11 +487,11 @@
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `chronovitesse_${(student().nom||'')}_${(student().prenom||'')}.csv`;
+    a.href = url; a.download = `runmeasure_${(student().nom||'')}_${(student().prenom||'')}.csv`;
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   });
 
-  // Fraction buttons
+  // Fractions
   fractionTools?.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if(!btn) return;

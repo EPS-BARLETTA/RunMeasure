@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChronoVitesse • Élève & Modes</title>
+  <title>RunMeasure • Élève & Modes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
       const classe = document.getElementById('classe').value.trim();
       const sexe = document.getElementById('sexe').value;
       const obj = {nom, prenom, classe, sexe};
-      localStorage.setItem('cv_student', JSON.stringify(obj));
+      localStorage.setItem('rm_student', JSON.stringify(obj));
     };
     const go = (mode) => {
       saveStudent();
@@ -23,7 +23,7 @@
     };
     window.addEventListener('DOMContentLoaded', () => {
       try{
-        const s = JSON.parse(localStorage.getItem('cv_student')||'{}');
+        const s = JSON.parse(localStorage.getItem('rm_student')||'{}');
         if(s.nom) document.getElementById('nom').value = s.nom;
         if(s.prenom) document.getElementById('prenom').value = s.prenom;
         if(s.classe) document.getElementById('classe').value = s.classe;
@@ -34,7 +34,7 @@
 </head>
 <body>
   <header class="topbar colorful">
-    <h1>ChronoVitesse</h1>
+    <h1>RunMeasure</h1>
   </header>
 
   <main class="container">
@@ -87,7 +87,7 @@
   </main>
 
   <footer class="footer">
-    ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
+    RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
   </footer>
 </body>
 </html>

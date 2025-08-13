@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChronoVitesse • Élève & Modes</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    const saveStudent = () => {
+      const nom = document.getElementById('nom').value.trim();
+      const prenom = document.getElementById('prenom').value.trim();
+      const classe = document.getElementById('classe').value.trim();
+      const sexe = document.getElementById('sexe').value;
+      const obj = {nom, prenom, classe, sexe};
+      localStorage.setItem('cv_student', JSON.stringify(obj));
+    };
+    const go = (mode) => {
+      saveStudent();
+      location.href = 'mode.html?mode=' + encodeURIComponent(mode);
+    };
+    window.addEventListener('DOMContentLoaded', () => {
+      try{
+        const s = JSON.parse(localStorage.getItem('cv_student')||'{}');
+        if(s.nom) document.getElementById('nom').value = s.nom;
+        if(s.prenom) document.getElementById('prenom').value = s.prenom;
+        if(s.classe) document.getElementById('classe').value = s.classe;
+        if(s.sexe) document.getElementById('sexe').value = s.sexe;
+      }catch(e){}
+    });
+  </script>
+</head>
+<body>
+  <header class="topbar colorful">
+    <h1>ChronoVitesse</h1>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Informations élève</h2>
+      <form class="grid-2">
+        <label>Nom
+          <input type="text" id="nom" required />
+        </label>
+        <label>Prénom
+          <input type="text" id="prenom" required />
+        </label>
+        <label>Classe
+          <input type="text" id="classe" required />
+        </label>
+        <label>Sexe
+          <select id="sexe" required>
+            <option value="" disabled selected>—</option>
+            <option value="F">Fille</option>
+            <option value="M">Garçon</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </label>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Choisir un mode</h2>
+      <div class="mode-buttons">
+        <button class="btn btn-blue"    onclick="go('intervalles')">⏱️ Intermédiaires</button>
+        <button class="btn btn-green"   onclick="go('simple')">⏱️ Chrono</button>
+        <button class="btn btn-emerald" onclick="go('simpleDistance')">⏱️ Chrono + Distance</button>
+        <button class="btn btn-amber"   onclick="go('tours')">⏲️ Minuteur & Tours</button>
+        <button class="btn btn-purple"  onclick="go('demiCooper')">6′ Demi-Cooper</button>
+        <button class="btn btn-pink"    onclick="go('cooper')">12′ Cooper</button>
+        <button class="btn btn-accent"  onclick="go('minuteurSimple')">⏳ Minuteur simple</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
+  </footer>
+</body>
+</html>

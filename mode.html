@@ -43,6 +43,8 @@
           <button id="btn-stop" class="btn btn-amber btn-lg" type="button" disabled>Stop</button>
           <button id="btn-reset" class="btn btn-danger btn-lg" type="button" disabled>Reset</button>
         </div>
+
+        <div id="live-distance" class="live-distance hidden">Distance cumulée : <span id="live-dist-val">0</span> m</div>
       </div>
 
       <div id="table-wrap" class="table-wrap hidden">
@@ -68,6 +70,24 @@
       </div>
 
       <div id="results" class="results hidden">
+        <div id="fraction-tools" class="card info hidden" style="margin:0 0 1rem 0;">
+          <strong>Ajouter une fraction de tour :</strong>
+          <div class="fraction-row">
+            <button class="btn btn-outline" data-frac="0.25">+ 1/4 tour</button>
+            <button class="btn btn-outline" data-frac="0.5">+ 1/2 tour</button>
+            <button class="btn btn-outline" data-frac="0.75">+ 3/4 tour</button>
+            <button class="btn" id="btn-frac-undo">Annuler</button>
+          </div>
+          <small class="info">La distance totale et (si applicable) la VMA seront recalculées. Le QR sera regénéré.</small>
+        </div>
+
+        <div id="recap" class="card hidden">
+          <h3>Récapitulatif</h3>
+          <table class="recap-table">
+            <tbody id="recap-body"></tbody>
+          </table>
+        </div>
+
         <div id="intervalles-export" class="card info hidden" style="margin:0 0 1rem 0;">
           <strong>Exporter en QR :</strong>
           <label style="display:block;margin-top:.5rem">

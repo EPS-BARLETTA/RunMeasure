@@ -1,4 +1,4 @@
-// RunMeasure V7
+// RunMeasure V8 — auto-enriched QR for all modes
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -53,14 +53,11 @@
   const ivlExportBox = $('#intervalles-export');
   const btnGenQR = $('#btn-gen-qr');
   const circleWrap = $('#circle-wrap');
-  const circleFG = $('#circle-fg');
-  const circleText = $('#circle-text');
   const liveDistance = $('#live-distance');
   const liveDistVal = $('#live-dist-val');
   const fractionTools = $('#fraction-tools');
   const recap = $('#recap');
   const recapBody = $('#recap-body');
-  const CIRCUM = 2 * Math.PI * 54;
 
   async function tryFullscreen(){
     const el = document.documentElement;
@@ -188,7 +185,7 @@
     }
 
     const target = $('#p-target'); if(target) target.addEventListener('change', ()=> state.targetDist = parseFloat(target.value)||0);
-    const step   = $('#p-step');   if(step)   step.addEventListener('change', ()=> state.splitDist = parseFloat(step.value)||0);
+    const step   = $('#p-step');   if(step)   addEventListener('change', ()=> state.splitDist = parseFloat(step.value)||0);
     const lapd   = $('#p-lapdist');if(lapd)   lapd.addEventListener('change', ()=> state.lapDist = parseFloat(lapd.value)||0);
     const cdown  = $('#p-countdown'); if(cdown) cdown.addEventListener('change', ()=> {
       state.countdownMs = mmssToMs(cdown.value||'00:00'); state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
@@ -241,10 +238,7 @@
     tick();
   }
 
-  function stop(){
-    if(!state.running && state.elapsed===0) return;
-    finish();
-  }
+  function stop(){ if(!state.running && state.elapsed===0) return; finish(); }
 
   function tick(){
     let t = state.elapsed + (now() - state.startTime);
@@ -374,7 +368,6 @@
     if(totalDistanceCell) totalDistanceCell.textContent = Math.round(totalMeters);
     generateQR();
   }
-
   function undoFraction(){
     if(!['tours','demiCooper','cooper'].includes(state.mode)) return;
     state.fractionAdded = 0;
@@ -386,50 +379,59 @@
     generateQR();
   }
 
-  function buildPayload(){
+  // ---------- QR payload (auto-enriched) ----------
+  function identityBlock(){
     const s = student();
-    const base = { nom:s.nom||'', prenom:s.prenom||'', classe:s.classe||'', sexe:s.sexe||'' };
-    let obj = {};
+    return { nom:s.nom||'', prenom:s.prenom||'', classe:s.classe||'', sexe:s.sexe||'' };
+  }
+  function payloadEnvelope(modeId, libelle, core, meta){
+    return [ Object.assign({ version:'rm-1', mode: modeId, libelle }, identityBlock(), core, { meta }) ];
+  }
 
+  function buildPayload(){
     switch(state.mode){
       case 'intervalles': {
         const type = (document.querySelector('input[name="ivl-type"]:checked')||{}).value || 'cumules';
+        const meta = { distance_cible_m: Math.round(state.targetDist||0), intervalle_m: Math.round(state.splitDist||0), export: (type==='cumules'?'temps_cumules':'temps_intervalle') };
         if(type==='cumules'){
-          obj = { ...base };
-          state.laps.forEach((l, i) => { const d = (i+1)*state.splitDist; obj[`t${d}`] = fmt(l.cumMs); });
+          const core = {};
+          state.laps.forEach((l, i) => { const d = (i+1)*state.splitDist; core[`t${d}`] = fmt(l.cumMs); });
+          return payloadEnvelope('intermediaires','Temps intermédiaire', core, meta);
         } else {
-          obj = { ...base };
-          state.laps.forEach((l, i) => { obj[`i${i+1}`] = fmt(l.lapMs); });
+          const core = {};
+          state.laps.forEach((l, i) => { core[`i${i+1}`] = fmt(l.lapMs); });
+          return payloadEnvelope('intermediaires','Temps intermédiaire', core, meta);
         }
-        break;
       }
       case 'simpleDistance': {
         const d = Math.round(state.targetDist||0);
-        obj = { ...base };
-        obj[`temps_${d}m`] = fmt(state.elapsed);
-        obj[`vitesse_${d}m`] = kmh(d, state.elapsed);
-        break;
+        const core = { };
+        core[`temps_${d}m`] = fmt(state.elapsed);
+        core[`vitesse_${d}m`] = kmh(d, state.elapsed);
+        const meta = { distance_cible_m: d };
+        return payloadEnvelope('chrono_vitesse','Chrono avec calcul de vitesse', core, meta);
       }
       case 'tours': {
         const dist = Math.round(state.cumDist + state.fractionAdded);
-        obj = { ...base, distance_totale: dist, vitesse_moyenne: kmh(dist, state.elapsed) };
-        break;
+        const core = { distance_totale: dist, vitesse_moyenne: kmh(dist, state.elapsed) };
+        const meta = { duree: fmtMMSS(state.countdownMs||0), distance_tour_m: Math.round(state.lapDist||0) };
+        return payloadEnvelope('minuteur_distance','Minuteur avec distance', core, meta);
       }
       case 'demiCooper':
       case 'cooper': {
         const dist = Math.round(state.cumDist + state.fractionAdded);
         const vma = kmh(dist, state.elapsed);
-        obj = { ...base, vma: vma, distance: dist };
-        break;
+        const core = { vma: vma, distance: dist };
+        const meta = { duree: state.mode==='demiCooper' ? '06:00' : '12:00', distance_tour_m: Math.round(state.lapDist||0) };
+        return payloadEnvelope(state.mode==='demiCooper'?'demi_cooper':'cooper', state.mode==='demiCooper'?'Demi-Cooper (6′)':'Cooper (12′)', core, meta);
       }
       case 'minuteurSimple': {
-        const set = state.countdownMs;
-        obj = { ...base, duree: fmtMMSS(set) };
-        break;
+        const core = { duree: fmtMMSS(state.countdownMs||0) };
+        const meta = { duree: fmtMMSS(state.countdownMs||0) };
+        return payloadEnvelope('minuteur','Minuteur', core, meta);
       }
-      default: return null; // simple: no QR
+      default: return null; // 'simple' : no QR
     }
-    return [obj];
   }
 
   function generateQR(){
@@ -444,7 +446,11 @@
       qrcodeBox.appendChild(div);
     }
   }
+  // -----------------------------------------------
 
+  // Events
+  const circleWrap = $('#circle-wrap'), circleFG = $('#circle-fg'), circleText = $('#circle-text');
+  const btnGenQR = $('#btn-gen-qr');
   btnStart.addEventListener('click', start);
   btnStop.addEventListener('click', stop);
   btnLap.addEventListener('click', lap);
@@ -475,7 +481,6 @@
   $('#btn-new').addEventListener('click', () => location.reload());
   if(btnGenQR) btnGenQR.addEventListener('click', generateQR);
   $('#btn-export-csv').addEventListener('click', () => {
-    // CSV structure unchanged to avoid breaking downstream: idx, t_cum, t_lap, v_lap
     const s = student();
     const lines = [];
     lines.push(['nom','prenom','classe','sexe','lap_index','t_cum','t_lap','v_lap_kmh']);

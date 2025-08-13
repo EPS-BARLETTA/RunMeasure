@@ -1,0 +1,49 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="assets/manifest.webmanifest"><link rel="stylesheet" href="assets/styles.css"><title>Élève • Chrono EPS</title></head>
+<body onload="baseInit()"><div class="container">
+<div class="header"><div class="brand">Espace élève</div><div class="nav"><button onclick="toggleDark()">Mode sombre</button><button onclick="toggleXL()">Taille XL</button></div></div>
+<div class="card"><div class="controls">
+<label>Nom</label><input id="nom"><label>Prénom</label><input id="prenom"><label>Classe</label><input id="classe">
+<label>Sexe</label><select id="sexe"><option value="">choisir</option><option value="F">fille</option><option value="M">garcon</option><option value="X">autre</option></select>
+</div></div>
+<div class="card"><div class="controls">
+<label>Tour (m)</label><input id="tourMeters" type="number" min="10" step="1" placeholder="200">
+<button data-preset="100">100</button><button data-preset="200">200</button><button data-preset="250">250</button><button data-preset="400">400</button>
+<label style="margin-left:12px">Cible VMA (km/h)</label><input id="targetVMA" type="number" min="1" step="0.1">
+<label style="margin-left:12px">Seuils (%, vert/orange)</label><input id="thr2" type="number" min="0.5" step="0.5" value="2"><input id="thr5" type="number" min="1" step="0.5" value="5">
+</div></div>
+<div class="card"><div class="controls"><button id="toggleBeep">Bip</button><button id="toggleVib">Vibration</button><button id="toggleFS">Plein écran</button><button id="toggleWake">Anti-veille</button></div>
+<div class="timer zone" id="timerZone">
+<div class="timer-screen" id="screen">00:00</div><div class="timer-sub" id="screenSub">millisecondes masquées</div>
+<div class="timer-bar"><div id="barFill"></div></div>
+<div class="timer-actions">
+<button class="btn-start" id="btnStart">Démarrer</button><button class="btn-lap" id="btnLap" disabled>Intermédiaire</button><button class="btn-stop" id="btnStop" disabled>Stop</button><button class="btn-reset" id="btnReset" disabled>Réinitialiser</button>
+<button class="btn-ghost" id="btnShowMs">Voir ms (fin)</button><button class="btn-ghost" id="btnTest6">Test 6'</button><button class="btn-ghost" id="btnTest12">Test 12'</button>
+</div>
+<div class="timer-sub" id="liveVMA">Vitesse: — • VMA: — • Dist: 0 m</div>
+<table class="table" id="splitTable"><thead><tr><th>#</th><th>Passage</th><th>Temps au passage</th><th>Temps cumulé</th><th>Total</th></tr></thead><tbody></tbody></table>
+</div></div>
+<div class="card"><div class="controls"><button id="btnCSV" class="primary">Enregistrer CSV</button></div></div>
+<div class="footer">© EPS</div></div>
+<script src="assets/app.js"></script>
+<script>
+(function(){['tourMeters','targetVMA','thr2','thr5','nom','prenom','classe','sexe'].forEach(id=>{const el=document.getElementById(id);const v=localStorage.getItem('f_'+id);if(v!==null)el.value=v;el.addEventListener('input',()=>localStorage.setItem('f_'+id,el.value));});})();
+let wl=null;toggleBeep.onclick=()=>useBeep=!useBeep;toggleVib.onclick=()=>useVib=!useVib;
+toggleFS.onclick=()=>{if(!document.fullscreenElement){document.documentElement.requestFullscreen?.()}else{document.exitFullscreen?.()}};
+toggleWake.onclick=async()=>{try{wl=wl||(navigator.wakeLock&&await navigator.wakeLock.request('screen'))}catch(e){alert('Anti-veille non supporté')}};
+const timer=new DigitalTimer({screen:screen,sub:screenSub,bar:barFill});
+btnStart.onclick=()=>{timer.start();btnLap.disabled=false;btnStop.disabled=false;btnReset.disabled=false};
+btnLap.onclick=()=>{timer.lap();vibrate(60);beep()};btnStop.onclick=()=>timer.stop();
+btnReset.onclick=()=>{timer.reset();document.querySelector('#splitTable tbody').innerHTML='';liveVMA.textContent='Vitesse: — • VMA: — • Dist: 0 m';nextLabelMeters=getTour();setZone(timerZone,null)};
+btnShowMs.onclick=()=>{screenSub.textContent='Total (centièmes) : '+timer.fmt(timer.getTotal(),true)};btnTest6.onclick=()=>timer.setTargetMinutes(6);btnTest12.onclick=()=>timer.setTargetMinutes(12);
+function getTour(){return Math.max(10,parseInt((tourMeters.value||'200'),10))}document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{tourMeters.value=b.getAttribute('data-preset');nextLabelMeters=getTour()});
+function getTargetVMA(){const t=parseFloat(targetVMA.value||'');return isFinite(t)&&t>0?t:null}
+function getThr(){const t2=parseFloat(thr2.value||'2'),t5=parseFloat(thr5.value||'5');return {t2:Math.max(.5,t2)/100,t5:Math.max(1,t5)/100}}
+function setZone(el,c){el.classList.remove('green','orange','red');if(c)el.classList.add(c)}
+let nextLabelMeters=getTour();const tbody=document.querySelector('#splitTable tbody');
+function addRow(row){const tr=document.createElement('tr');const label=`${nextLabelMeters} m`;nextLabelMeters+=getTour();tr.innerHTML=`<td>${row.idx}</td><td>${label}</td><td>${timer.fmt(row.lapMs,false)}</td><td>${timer.fmt(row.cumMs,false)}</td><td class='total-cell'>—</td>`;tbody.appendChild(tr)}
+Bus.on('timer:lap',r=>{addRow(r);updateLive()});Bus.on('timer:stop',i=>{[...tbody.querySelectorAll('.total-cell')].forEach(td=>td.textContent=timer.fmt(i.totalMs,false));updateLive(true)});
+function updateLive(){const s=timer.getSplits();const dist=s.length*getTour();const sec=timer.getTotal()/1000;const vInst=s.length?(getTour()/(s[s.length-1].lapMs/1000))*3.6:0;const vma=sec>0?(dist/sec)*3.6:0;liveVMA.textContent=`Vitesse: ${vInst.toFixed(2)} km/h • VMA: ${vma.toFixed(2)} km/h • Dist: ${dist} m`;const tgt=getTargetVMA();if(tgt){const {t2,t5}=getThr();const dev=Math.abs(vInst-tgt)/tgt;setZone(timerZone,dev<=t2?'green':(dev<=t5?'orange':'red'))}requestAnimationFrame(updateLive)};updateLive();
+btnCSV.onclick=()=>{const headers=['nom','prenom','classe','sexe','vma','tour_m','target_vma','thr2','thr5','split_idx','split_lap','split_cum','total'];const n=nom.value.trim(),p=prenom.value.trim(),c=classe.value.trim(),s=sexe.value;const splits=timer.getSplits();const dist=splits.length*getTour();const vma=timer.getTotal()>0?(dist/(timer.getTotal()/1000))*3.6:0;const tour=getTour();const total=timer.getTotal();const thr=getThr();const rows=[];if(splits.length){splits.forEach((sp,i)=>rows.push([n,p,c,s,vma.toFixed(2),tour,(getTargetVMA()||''),thr.t2*100,thr.t5*100,i+1,timer.fmt(sp.lapMs,true),timer.fmt(sp.cumMs,true),timer.fmt(total,true)]))}else{rows.push([n,p,c,s,vma.toFixed(2),tour,(getTargetVMA()||''),thr.t2*100,thr.t5*100,'','','',timer.fmt(total,true)])}const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');download(`vma_${p||'eleve'}_${n||''}.csv`,csv,'text/csv;charset=utf-8')};
+</script></body></html>

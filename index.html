@@ -1,27 +1,7 @@
-<!DOCTYPE html>
-<html lang="fr"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chrono Vitesse EPS</title>
-<link rel="stylesheet" href="assets/styles.css">
-<script defer src="assets/app.js"></script>
-</head><body onload="initDark()">
-<div class="container">
-  <div class="header">
-    <div class="brand">Chrono Vitesse • EPS</div>
-    <div class="nav">
-      <a href="https://eps-barletta.github.io/ScanProf/" target="_blank" rel="noopener">ScanProf</a>
-      <button onclick="toggleDark()">Mode sombre</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <p>Choisis un espace :</p>
-    <div class="controls">
-      <a class="btn-ghost" href="eleve.html">Espace élève</a>
-      <a class="btn-ghost" href="prof.html">Espace prof</a>
-    </div>
-  </div>
-
-  <div class="footer">© Équipe EPS • Vauban — LUXEMBOURG — JB</div>
-</div>
-</body></html>
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="assets/manifest.webmanifest"><link rel="stylesheet" href="assets/styles.css"><title>Chrono Vitesse EPS</title></head>
+<body onload="baseInit()"><div class="container">
+<div class="header"><div class="brand">Chrono Vitesse • EPS</div><div class="nav"><button onclick="toggleDark()">Mode sombre</button><button onclick="toggleXL()">Taille XL</button></div></div>
+<div class="card"><p>Choisis :</p><div class="controls"><a class="primary" href="eleve.html">Espace élève</a><a class="btn" href="projection.html">Projection (prof)</a></div></div>
+<div class="footer">© EPS</div></div><script src="assets/app.js"></script></body></html>

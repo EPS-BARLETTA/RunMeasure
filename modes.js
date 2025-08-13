@@ -1,4 +1,4 @@
-// ChronoVitesse V4
+// ChronoVitesse V5
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -62,12 +62,12 @@
 
     // defaults
     btnLap.classList.remove('hidden');
-    btnStop.classList.add('hidden'); // only for simple/simpleDistance
+    btnStop.classList.add('hidden');
     tableWrap.classList.remove('hidden');
 
     switch(state.mode){
       case 'intervalles':
-        modeName.textContent = '⏱️ Intermédiaires';
+        modeName.textContent = 'Temps intermédiaire';
         params.innerHTML = `
           <label>Distance cible (m)
             <input type="number" id="p-target" min="100" step="50" value="800"/>
@@ -75,28 +75,27 @@
           <label>Intervalle (m)
             <input type="number" id="p-step" min="25" step="25" value="200"/>
           </label>
-          <div class="info">Appuie sur « Tour » à chaque passage.</div>
+          <div class="info">Appuie sur « Tour » à chaque passage.</div>
         `;
         state.targetDist = 800;
         state.splitDist = 200;
         break;
 
       case 'simple':
-        modeName.textContent = '⏱️ Chrono (sans distance)';
-        params.innerHTML = `<div class="info">Chronométrage simple (QR : temps_total). Pas de tours.</div>`;
-        // No laps, show Stop instead of Lap, and hide table
+        modeName.textContent = 'Chrono';
+        params.innerHTML = `<div class="info">Chronométrage simple. Pas de tours. Pas de QR.</div>`;
         btnLap.classList.add('hidden');
         btnStop.classList.remove('hidden');
         tableWrap.classList.add('hidden');
         break;
 
       case 'simpleDistance':
-        modeName.textContent = '⏱️ Chrono + Distance';
+        modeName.textContent = 'Chrono avec calcul de vitesse';
         params.innerHTML = `
           <label>Distance (m)
             <input type="number" id="p-target" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Lance puis « Stop » à l'arrivée.</div>
+          <div class="info">Lance puis « Stop » à l'arrivée. La vitesse moyenne est calculée.</div>
         `;
         state.targetDist = 100;
         btnLap.classList.add('hidden');
@@ -105,7 +104,7 @@
         break;
 
       case 'tours':
-        modeName.textContent = '⏲️ Minuteur & Tours';
+        modeName.textContent = 'Minuteur avec distance';
         params.innerHTML = `
           <label>Durée (mm:ss)
             <input type="text" id="p-countdown" value="05:00"/>
@@ -113,7 +112,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Décompte + « Tour » pour ajouter la distance.</div>
+          <div class="info">Décompte + « Tour » pour ajouter la distance.</div>
         `;
         state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
         state.lapDist = 100;
@@ -123,12 +122,12 @@
         break;
 
       case 'demiCooper':
-        modeName.textContent = '⏱️ Demi-Cooper (6′)';
+        modeName.textContent = 'Demi‑Cooper (6′)';
         params.innerHTML = `
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 6:00. « Tour » à chaque passage.</div>
+          <div class="info">Durée fixe 6:00. « Tour » à chaque passage.</div>
         `;
         state.fixedDuration = 6*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -138,12 +137,12 @@
         break;
 
       case 'cooper':
-        modeName.textContent = '⏱️ Cooper (12′)';
+        modeName.textContent = 'Cooper (12′)';
         params.innerHTML = `
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 12:00. « Tour » à chaque passage.</div>
+          <div class="info">Durée fixe 12:00. « Tour » à chaque passage.</div>
         `;
         state.fixedDuration = 12*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -153,7 +152,7 @@
         break;
 
       case 'minuteurSimple':
-        modeName.textContent = '⏳ Minuteur simple';
+        modeName.textContent = 'Minuteur';
         params.innerHTML = `
           <label>Durée (mm:ss)
             <input type="text" id="p-countdown" value="05:00"/>
@@ -164,7 +163,7 @@
         circleWrap.classList.remove('hidden');
         display.classList.add('hidden');
         btnLap.classList.add('hidden');
-        btnStop.classList.remove('hidden'); // Stop possible
+        btnStop.classList.remove('hidden');
         tableWrap.classList.add('hidden');
         updateRing(state.countdownMs, state.ringTotal);
         break;
@@ -172,7 +171,7 @@
 
     const target = $('#p-target'); if(target) target.addEventListener('change', ()=> state.targetDist = parseFloat(target.value)||0);
     const step   = $('#p-step');   if(step)   step.addEventListener('change', ()=> state.splitDist = parseFloat(step.value)||0);
-    const lapd   = $('#p-lapdist');if(lapd)   lapd.addEventListener('change', ()=> state.lapDist = parseFloat(lapd.value)||0);
+    const lapd   = $('#p-lapdist');if(lapd)   addEventListener('change', ()=> state.lapDist = parseFloat(lapd.value)||0);
     const cdown  = $('#p-countdown'); if(cdown) cdown.addEventListener('change', ()=> {
       state.countdownMs = mmssToMs(cdown.value||'00:00'); state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
     });
@@ -200,7 +199,7 @@
       state.elapsed = now() - state.startTime + state.elapsed;
       cancelAnimationFrame(state.raf);
       btnStart.textContent = 'Reprendre';
-      if(state.mode!=='minuteurSimple' && state.mode!=='simple' && state.mode!=='simpleDistance'){
+      if(!['minuteurSimple','simple','simpleDistance'].includes(state.mode)){
         btnLap.disabled = true;
       }
       btnStop.disabled = false;
@@ -211,7 +210,7 @@
     state.startTime = now();
     state.lastLapAt = state.lastLapAt || state.startTime;
     btnStart.textContent = 'Pause';
-    btnLap.disabled = (state.mode==='minuteurSimple' || state.mode==='simple' || state.mode==='simpleDistance');
+    btnLap.disabled = (['minuteurSimple','simple','simpleDistance'].includes(state.mode));
     btnStop.disabled = false;
     btnReset.disabled = false;
     if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)){
@@ -221,18 +220,18 @@
   }
 
   function stop(){
-    if(!state.running && state.elapsed===0) return; // nothing to stop
+    if(!state.running && state.elapsed===0) return;
     finish();
   }
 
   function tick(){
     let t = state.elapsed + (now() - state.startTime);
 
-    if(state.mode==='tours' || state.mode==='minuteurSimple'){
+    if(['tours','minuteurSimple'].includes(state.mode)){
       const remain = Math.max(0, state.countdownMs - t);
       updateRing(remain, state.ringTotal);
       if(remain<=0){ finish(); return; }
-    } else if(state.mode==='demiCooper' || state.mode==='cooper'){
+    } else if(['demiCooper','cooper'].includes(state.mode)){
       const remain = Math.max(0, state.fixedDuration - t);
       updateRing(remain, state.ringTotal);
       if(remain<=0){ finish(); return; }
@@ -244,7 +243,7 @@
 
   function lap(){
     if(!state.running) return;
-    if(state.mode==='simple' || state.mode==='simpleDistance' || state.mode==='minuteurSimple') return;
+    if(['simple','simpleDistance','minuteurSimple'].includes(state.mode)) return;
 
     const tNow = now();
     const cumMs = state.elapsed + (tNow - state.startTime);
@@ -260,7 +259,7 @@
       addLapRow(cumMs, lapMs, lapDist);
       if(state.cumDist >= state.targetDist){ finish(); }
       return;
-    } else if(state.mode==='tours' || state.mode==='demiCooper' || state.mode==='cooper'){
+    } else if(['tours','demiCooper','cooper'].includes(state.mode)){
       lapDist = state.lapDist;
       state.cumDist += lapDist;
     }
@@ -293,16 +292,17 @@
     let vAvg = 0;
 
     if(state.mode==='intervalles'){
-      totalMeters = state.targetDist;
-      vAvg = kmh(totalMeters, totalMs);
-      $('#intervalles-export').classList.remove('hidden');
+      totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
+      ivlExportBox.classList.remove('hidden');
     } else if(state.mode==='simple'){
-      // only time
+      // chrono simple: no QR
+      qrcodeBox.innerHTML = ''; // ensure empty
+      document.getElementById('btn-gen-qr')?.classList.add('hidden');
     } else if(state.mode==='simpleDistance'){
       totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
     } else if(state.mode==='tours'){
       totalMeters = state.cumDist; vAvg = kmh(totalMeters, totalMs);
-    } else if(state.mode==='demiCooper' || state.mode==='cooper'){
+    } else if(['demiCooper','cooper'].includes(state.mode)){
       totalMeters = state.cumDist; vAvg = kmh(totalMeters, totalMs);
     } else if(state.mode==='minuteurSimple'){
       // nothing
@@ -311,7 +311,7 @@
     totalTime.textContent = fmt(totalMs);
     totalSpeed.textContent = vAvg.toFixed(2);
 
-    if(state.mode!=='intervalles'){
+    if(state.mode!=='intervalles' && state.mode!=='simple'){
       generateQR();
     }
   }
@@ -333,10 +333,6 @@
           state.laps.forEach((l, i) => { obj[`i${i+1}`] = fmt(l.lapMs); });
           payloadObj = obj;
         }
-        break;
-      }
-      case 'simple': {
-        payloadObj = { ...base, temps_total: fmt(state.elapsed) };
         break;
       }
       case 'simpleDistance': {
@@ -361,6 +357,7 @@
         payloadObj = { ...base, duree: fmtMMSS(set) };
         break;
       }
+      default: return; // simple: no QR
     }
 
     const payload = [payloadObj];
@@ -385,7 +382,7 @@
       if(state.ringTotal) updateRing(state.ringTotal, state.ringTotal);
     }
     btnStart.textContent='Démarrer';
-    btnLap.disabled=(state.mode==='minuteurSimple' || state.mode==='simple' || state.mode==='simpleDistance');
+    btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode));
     btnStop.disabled=true;
     btnReset.disabled=false;
     if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)){

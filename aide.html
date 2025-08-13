@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aide • ChronoVitesse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar colorful">
+    <h1>ChronoVitesse</h1>
+  </header>
+
+  <main class="container">
+    <a href="index.html" class="btn btn-outline">&larr; Accueil</a>
+
+    <section class="card prose">
+      <h2>Guide rapide</h2>
+      <p><strong>ChronoVitesse</strong> est conçu pour l&rsquo;EPS : gros boutons, affichage lisible, exports rapides.</p>
+
+      <h3>Modes principaux</h3>
+      <ul>
+        <li><strong>Temps intermédiaire</strong> — Tu indiques une distance cible (ex. 800 m) et un intervalle (ex. 200 m). Tu appuies sur <em>Tour</em> à chaque passage. À la fin, choisis d&rsquo;exporter les <em>temps cumulés</em> (t200, t400…) ou les <em>temps à chaque intervalle</em> (i1, i2…). CSV dispo.</li>
+        <li><strong>Chrono</strong> — Chronométrage simple : <em>Démarrer</em>, <em>Stop</em>, <em>Reset</em>. Aucun tour. Pas de QR (juste le temps affiché et export CSV si besoin).</li>
+        <li><strong>Minuteur</strong> — Compte à rebours (ex. 5:00) avec grand cercle visuel. <em>Démarrer</em>, <em>Stop</em>, <em>Reset</em>.</li>
+        <li><strong>Chrono avec calcul de vitesse</strong> — Tu renseignes la distance (ex. 100 m). <em>Stop</em> à l’arrivée → calcul automatique du temps et de la vitesse moyenne, QR minimal.</li>
+        <li><strong>Minuteur avec distance</strong> — Tu règles la durée et la distance par tour (ex. piste 100 m). À chaque <em>Tour</em>, on additionne la distance et calcule la vitesse au tour. QR = distance totale & vitesse moyenne.</li>
+      </ul>
+
+      <h3>Exports</h3>
+      <ul>
+        <li><strong>CSV</strong> : une ligne par passage + une ligne TOTAL.</li>
+        <li><strong>QR code</strong> : format JSON minimal adapté au mode, pour intégration dans ton application de classement.</li>
+      </ul>
+
+      <h3>Conseils d&rsquo;usage</h3>
+      <ul>
+        <li>Sur tablette/smartphone, active le <em>plein écran</em> du navigateur pour éviter les faux appuis.</li>
+        <li>Teste les QR avec ton lecteur avant la séance pour valider le format.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
+  </footer>
+</body>
+</html>

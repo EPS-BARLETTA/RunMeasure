@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ChronoVitesse • Élève & Modes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script>
     const saveStudent = () => {
@@ -35,6 +38,11 @@
   </header>
 
   <main class="container">
+    <div class="nav-row">
+      <a href="index.html" class="btn btn-outline">&larr; Accueil</a>
+      <a href="aide.html" class="btn btn-outline">Aide</a>
+    </div>
+
     <section class="card">
       <h2>Informations élève</h2>
       <form class="grid-2">
@@ -61,13 +69,19 @@
     <section class="card">
       <h2>Choisir un mode</h2>
       <div class="mode-buttons">
-        <button class="btn btn-blue"    onclick="go('intervalles')">⏱️ Intermédiaires</button>
-        <button class="btn btn-green"   onclick="go('simple')">⏱️ Chrono</button>
-        <button class="btn btn-emerald" onclick="go('simpleDistance')">⏱️ Chrono + Distance</button>
-        <button class="btn btn-amber"   onclick="go('tours')">⏲️ Minuteur & Tours</button>
-        <button class="btn btn-purple"  onclick="go('demiCooper')">6′ Demi-Cooper</button>
-        <button class="btn btn-pink"    onclick="go('cooper')">12′ Cooper</button>
-        <button class="btn btn-accent"  onclick="go('minuteurSimple')">⏳ Minuteur simple</button>
+        <button class="btn btn-blue"    onclick="go('intervalles')">Temps intermédiaire</button>
+        <button class="btn btn-green"   onclick="go('simple')">Chrono</button>
+        <button class="btn btn-emerald" onclick="go('minuteurSimple')">Minuteur</button>
+        <button class="btn btn-purple"  onclick="go('simpleDistance')">Chrono avec calcul de vitesse</button>
+        <button class="btn btn-amber"   onclick="go('tours')">Minuteur avec distance</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Tests d'endurance (optionnel)</h2>
+      <div class="mode-buttons">
+        <button class="btn btn-pink"   onclick="go('demiCooper')">Demi‑Cooper (6′)</button>
+        <button class="btn btn-pink"   onclick="go('cooper')">Cooper (12′)</button>
       </div>
     </section>
   </main>

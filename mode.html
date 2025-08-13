@@ -22,7 +22,6 @@
       <div id="params" class="params grid-3"></div>
 
       <div class="timer">
-        <!-- Cercle progressif pour minuteurs -->
         <div class="circle-wrap hidden" id="circle-wrap">
           <svg viewBox="0 0 120 120" class="circle">
             <circle cx="60" cy="60" r="54" class="bg"></circle>
@@ -35,6 +34,7 @@
         <div class="controls">
           <button id="btn-start" class="btn btn-primary btn-lg" type="button">Démarrer</button>
           <button id="btn-lap" class="btn btn-accent btn-lg" type="button" disabled>Tour</button>
+          <button id="btn-stop" class="btn btn-amber btn-lg" type="button" disabled>Stop</button>
           <button id="btn-reset" class="btn btn-danger btn-lg" type="button" disabled>Reset</button>
         </div>
       </div>
@@ -62,7 +62,6 @@
       </div>
 
       <div id="results" class="results hidden">
-        <!-- Choix d'export pour Intermédiaires -->
         <div id="intervalles-export" class="card info hidden" style="margin:0 0 1rem 0;">
           <strong>Exporter en QR :</strong>
           <label style="display:block;margin-top:.5rem">

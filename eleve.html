@@ -1,39 +1,172 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Espace Élève — ChronoVitesse</title><link rel="stylesheet" href="styles.css"></head>
-<body><div class="container">
-<header><h1>🎓 Espace Élève</h1><div class="actions"><a class="btn" href="index.html">🏠 Accueil</a></div></header>
-<div class="card"><div class="content">
-  <h2>Identité</h2>
-  <div class="grid-2">
-    <div><label>Nom</label><input id="nom" class="input" placeholder="Martin"></div>
-    <div><label>Prénom</label><input id="prenom" class="input" placeholder="Julie"></div>
-    <div><label>Classe</label><input id="classe" class="input" placeholder="4C"></div>
-    <div><label>Sexe</label><select id="sexe" class="input"><option value="M">M</option><option value="F">F</option></select></div>
-  </div>
-  <p class="help">Les infos seront reprises dans le QR.</p>
-</div></div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Élève • Chrono Vitesse EPS</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">Espace élève</div>
+      <div class="nav"><a href="index.html">Accueil</a></div>
+    </div>
 
-<div class="grid">
-  <section class="card"><div class="content"><h2>⏱️ Chrono simple</h2><button class="btn primary big" id="go1">Ouvrir</button></div></section>
-  <section class="card"><div class="content"><h2>⏳ Minuteur</h2><button class="btn primary big" id="go2">Ouvrir</button></div></section>
-  <section class="card"><div class="content"><h2>🎯 Intervalles</h2><button class="btn primary big" id="go3">Ouvrir</button></div></section>
-  <section class="card"><div class="content"><h2>🕛 12 minutes</h2><button class="btn primary big" id="go4">Ouvrir</button></div></section>
-  <section class="card"><div class="content"><h2>🕕 6 minutes</h2><button class="btn primary big" id="go5">Ouvrir</button></div></section>
-  <section class="card"><div class="content"><h2>🧬 Vameval (palier)</h2><button class="btn primary big" id="go6">Ouvrir</button></div></section>
-</div>
-</div><div class="footer">ChronoVitesse - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</div>
+    <div class="card">
+      <div class="form-row">
+        <div>
+          <label>Nom</label>
+          <input id="nom" placeholder="Nom">
+        </div>
+        <div>
+          <label>Prénom</label>
+          <input id="prenom" placeholder="Prénom">
+        </div>
+        <div>
+          <label>Classe</label>
+          <input id="classe" placeholder="2A, 3C...">
+        </div>
+        <div>
+          <label>Sexe</label>
+          <select id="sexe">
+            <option value="">choisir</option>
+            <option value="F">fille</option>
+            <option value="M">garcon</option>
+            <option value="X">autre</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="timer" id="timer">
+        <div class="timer-screen" id="screen">00:00</div>
+        <div class="timer-sub" id="screenSub">millisecondes masquées</div>
+        <div class="timer-bar"><div id="barFill"></div></div>
+        <div class="timer-actions">
+          <button class="btn-start" id="btnStart">Démarrer</button>
+          <button class="btn-lap" id="btnLap" disabled>Intermédiaire</button>
+          <button class="btn-stop" id="btnStop" disabled>Stop</button>
+          <button class="btn-reset" id="btnReset" disabled>Réinitialiser</button>
+          <button class="btn-ghost" id="btnShowMs" title="Afficher les centièmes à la fin">Voir ms (fin)</button>
+          <button class="btn-ghost" id="btnTest6">Test VMA 6'</button>
+          <button class="btn-ghost" id="btnTest12">Test VMA 12'</button>
+          <button class="btn-ghost" id="btnTour200">Tour = 200 m</button>
+        </div>
+
+        <div class="timer-sub" id="liveVMA">Vitesse: — km/h • VMA estimée: — km/h • Distance: 0 m</div>
+
+        <table class="table" id="splitTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Passage</th>
+              <th>Temps au passage</th>
+              <th>Temps cumulé</th>
+              <th>Total (à l’arrêt)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="form-row">
+        <div>
+          <button class="btn-ghost" id="btnQr">Générer le QR → ScanProf</button>
+        </div>
+      </div>
+      <div id="qrcode" class="no-print" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="footer">© Équipe EPS • Vauban — LUXEMBOURG — JB</div>
+  </div>
+
 <script>
-function route(to){
-  const nom=document.getElementById('nom').value.trim();
-  const prenom=document.getElementById('prenom').value.trim();
-  const classe=document.getElementById('classe').value.trim();
-  const sexe=document.getElementById('sexe').value;
-  if(!nom||!prenom||!classe){ alert('Renseigner Nom, Prénom, Classe.'); return; }
-  const q = new URLSearchParams({nom,prenom,classe,sexe}).toString();
-  location.href = to + '?' + q;
-}
-['go1','go2','go3','go4','go5','go6'].forEach((id,i)=>{
-  document.getElementById(id).onclick=(e)=>{ e.preventDefault(); const map=['chrono-simple.html','minuteur.html','chrono-intervals.html','vma-12.html','vma-6.html','vameval-eleve.html']; route(map[i]); };
+// Instantiate timer
+const timer = new DigitalTimer({
+  screen: document.getElementById('screen'),
+  sub: document.getElementById('screenSub'),
+  bar: document.getElementById('barFill')
 });
+// Buttons
+const btnStart = document.getElementById('btnStart');
+const btnLap = document.getElementById('btnLap');
+const btnStop = document.getElementById('btnStop');
+const btnReset = document.getElementById('btnReset');
+const btnShowMs = document.getElementById('btnShowMs');
+
+btnStart.onclick = ()=>{ timer.start(); btnLap.disabled=false; btnStop.disabled=false; btnReset.disabled=false; };
+btnLap.onclick = ()=> timer.lap();
+btnStop.onclick = ()=> timer.stop();
+btnReset.onclick = ()=>{ timer.reset(); document.querySelector('#splitTable tbody').innerHTML=''; document.getElementById('liveVMA').textContent='Vitesse: — km/h • VMA estimée: — km/h • Distance: 0 m'; };
+btnShowMs.onclick = ()=>{ document.getElementById('screenSub').textContent = 'Total (centièmes) : ' + timer.fmt(timer.getTotal(), true); };
+
+// Splits table
+const tbody = document.querySelector('#splitTable tbody');
+let tourMeters = 200;
+let nextLabelMeters = 200;
+function addRow(row){
+  const tr = document.createElement('tr');
+  const label = `${nextLabelMeters} m`;
+  nextLabelMeters += tourMeters;
+  tr.innerHTML = `
+    <td>${row.idx}</td>
+    <td>${label}</td>
+    <td>${timer.fmt(row.lapMs,false)}</td>
+    <td>${timer.fmt(row.cumMs,false)}</td>
+    <td class="total-cell">—</td>`;
+  tbody.appendChild(tr);
+}
+Bus.on('timer:lap', (row)=>{
+  addRow(row);
+  updateLive();
+});
+Bus.on('timer:stop', (info)=>{
+  [...tbody.querySelectorAll('.total-cell')].forEach(td => td.textContent = timer.fmt(info.totalMs,false));
+  updateLive(true);
+});
+function updateLive(final=false){
+  const splits = timer.getSplits();
+  const dist = splits.length * tourMeters;
+  const sec = timer.getTotal()/1000;
+  const vInst = splits.length ? (tourMeters / (splits[splits.length-1].lapMs/1000))*3.6 : 0;
+  const vma = sec>0 ? (dist/sec)*3.6 : 0;
+  const el = document.getElementById('liveVMA');
+  el.textContent = `Vitesse: ${vInst.toFixed(2)} km/h • VMA estimée: ${vma.toFixed(2)} km/h • Distance: ${dist} m` + (final? ` • Total VMA: ${vma.toFixed(2)} km/h` : '');
+}
+
+// Test presets
+document.getElementById('btnTest6').onclick = ()=> timer.setTargetMinutes(6);
+document.getElementById('btnTest12').onclick = ()=> timer.setTargetMinutes(12);
+document.getElementById('btnTour200').onclick = ()=>{ tourMeters=200; nextLabelMeters=200; };
+
+// QR code for ScanProf
+function makeQrPayload(){
+  const nom = document.getElementById('nom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const classe = document.getElementById('classe').value.trim();
+  const sexe = document.getElementById('sexe').value;
+  // VMA finale basée sur total
+  const splits = timer.getSplits();
+  const dist = splits.length * tourMeters;
+  const vma = (timer.getTotal()>0) ? (dist/(timer.getTotal()/1000))*3.6 : 0;
+  return {
+    nom, prenom, classe, sexe, vma: +vma.toFixed(2),
+    Nom: nom, "Prénom": prenom, Classe: classe, Sexe: sexe, VMA: +vma.toFixed(2)
+  };
+}
+document.getElementById('btnQr').onclick = ()=>{
+  const payload = makeQrPayload();
+  const txt = JSON.stringify(payload);
+  const box = document.getElementById('qrcode');
+  box.innerHTML='';
+  new QRCode(box, {text: txt, width: 180, height: 180});
+};
 </script>
-</body></html>
+</body>
+</html>

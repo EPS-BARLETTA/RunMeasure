@@ -12,7 +12,8 @@ window.addEventListener('DOMContentLoaded',()=>{try{const s=JSON.parse(localStor
 <header class="topbar colorful"><h1>RunMeasure</h1></header>
 <main class="container">
   <div class="nav-row"><a href="index.html" class="btn btn-outline">&larr; Accueil</a><a href="aide.html" class="btn btn-outline">Aide</a></div>
-  <section class="card gradient-border centered">
+
+  <section class="card panel hc-blue centered">
     <h2>Informations élève</h2>
     <form class="grid-2">
       <label>Nom<input type="text" id="nom" required/></label>
@@ -26,7 +27,8 @@ window.addEventListener('DOMContentLoaded',()=>{try{const s=JSON.parse(localStor
       </label>
     </form>
   </section>
-  <section class="card gradient-border centered">
+
+  <section class="card panel hc-emerald centered">
     <h2>Choisir un mode</h2>
     <div class="mode-buttons center-grid">
       <button class="btn btn-blue" onclick="go('intervalles')">Temps intermédiaire</button>
@@ -36,7 +38,8 @@ window.addEventListener('DOMContentLoaded',()=>{try{const s=JSON.parse(localStor
       <button class="btn btn-amber" onclick="go('tours')">Minuteur avec distance</button>
     </div>
   </section>
-  <section class="card gradient-border centered">
+
+  <section class="card panel hc-pink centered">
     <h2>Tests d'endurance</h2>
     <div class="mode-buttons center-grid">
       <button class="btn btn-pink" onclick="go('demiCooper')">Demi-Cooper (6′)</button>

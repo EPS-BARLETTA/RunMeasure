@@ -47,12 +47,6 @@
         <small class="info">Distance totale, vitesse et VMA (si applicable) sont recalculées et le QR est mis à jour.</small>
       </div>
       <div id="recap" class="card hidden"><h3>Récapitulatif</h3><table class="recap-table"><tbody id="recap-body"></tbody></table></div>
-      <div id="intervalles-export" class="card info hidden" style="margin:0 0 1rem 0;">
-        <strong>Exporter en QR :</strong>
-        <label style="display:block;margin-top:.5rem"><input type="radio" name="ivl-type" value="cumules" checked> Temps <em>cumulés</em> (t200, t400, …)</label>
-        <label style="display:block;margin-top:.3rem"><input type="radio" name="ivl-type" value="intervalles"> Temps <em>à chaque intervalle</em> (200, 200, …)</label>
-        <button id="btn-gen-qr" class="btn btn-primary" type="button" style="margin-top:.6rem">Générer le QR</button>
-      </div>
       <div class="export-buttons">
         <div id="qrcode" class="qrcode"></div>
         <button id="btn-export-csv" class="btn btn-primary" type="button">Exporter CSV</button>

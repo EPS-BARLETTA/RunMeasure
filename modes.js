@@ -1,4 +1,4 @@
-// RunMeasure V7.8 — QR ultra-compact for Intervalles; CSV tall table (LF newlines)
+// RunMeasure V7.9 — Intervalles QR = CUMULÉS UNIQUEMENT (t200,t400,...) ; All QR order = nom, prenom, classe, sexe, test, ...
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -8,7 +8,6 @@
     const tenths  = totalTenths%10;
     return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${tenths}`;
   };
-  const sec1 = (ms) => +(ms/1000).toFixed(1); // seconds with 0.1 precision
   const fmtMMSS = (ms) => {
     const tot = Math.max(0, Math.round(ms/1000));
     const m = Math.floor(tot/60);
@@ -23,7 +22,7 @@
 
   const modeName=$('#mode-name'); const params=$('#params'); const display=$('#display'); const btnStart=$('#btn-start'); const btnLap=$('#btn-lap'); const btnStop=$('#btn-stop'); const btnReset=$('#btn-reset');
   const tableWrap=$('#table-wrap'); const tbody=$('#laps-table tbody'); const results=$('#results'); const qrcodeBox=$('#qrcode'); const totalTime=$('#total-time'); const totalSpeed=$('#total-speed'); const totalDistanceCell=$('#total-distance'); const rowTotal=$('#row-total');
-  const ivlExportBox=$('#intervalles-export'); const circleWrap=$('#circle-wrap'); const liveDistance=$('#live-distance'); const liveDistVal=$('#live-dist-val'); const fractionTools=$('#fraction-tools'); const recap=$('#recap'); const recapBody=$('#recap-body');
+  const circleWrap=$('#circle-wrap'); const liveDistance=$('#live-distance'); const liveDistVal=$('#live-dist-val'); const fractionTools=$('#fraction-tools'); const recap=$('#recap'); const recapBody=$('#recap-body');
 
   function mmssToMsStr(mm, ss){ const m=Math.max(0,parseInt(mm||'0',10)); const s=Math.max(0,parseInt(ss||'0',10)); return (m*60 + s)*1000; }
   const now = () => performance.now();
@@ -44,7 +43,7 @@
           <label>Intervalle (m)
             <input type="number" id="p-step" min="25" step="25" value="200"/>
           </label>
-          <div class="info">Appuie sur « Tour ». À la fin : QR compact (s à 0,1) avec cumulés <u>et</u> intervalles.</div>`;
+          <div class="info">Appuie sur « Tour ». À la fin : QR <strong>unique</strong> avec <em>temps cumulés</em> (t200, t400, …).</div>`;
         state.targetDist=800; state.splitDist=200; break;
 
       case 'simple':
@@ -91,25 +90,53 @@
   function lap(){ if(!state.running) return; if(['simple','simpleDistance','minuteurSimple'].includes(state.mode)) return; const tNow=now(); const cumMs=state.elapsed+(tNow-state.startTime); const lapMs=tNow-state.lastLapAt; state.lastLapAt=tNow; if(state.mode==='intervalles'){ const next=(state.laps.length+1)*state.splitDist; if(next>state.targetDist) return; state.cumDist=next; addLapRow(cumMs,lapMs); if(state.cumDist>=state.targetDist) finish(); return; } else if(['tours','demiCooper','cooper'].includes(state.mode)){ state.cumDist += state.lapDist; liveDistVal.textContent=Math.round(state.cumDist + state.fractionAdded); } addLapRow(cumMs,lapMs); }
   function addLapRow(cumMs,lapMs){ const tr=document.createElement('tr'); const idx=state.laps.length+1; let lapDist=0; if(state.mode==='intervalles') lapDist=state.splitDist; if(['tours','demiCooper','cooper'].includes(state.mode)) lapDist=state.lapDist; const lapSpeed=lapDist? kmh(lapDist,lapMs):0; const cumMetersNow=Math.round(state.cumDist); tr.innerHTML=`<td>${idx}</td><td>${fmt(cumMs)}</td><td>${fmt(lapMs)}</td><td>${lapDist? lapSpeed.toFixed(2):'—'}</td><td>${(lapDist||state.mode==='intervalles')? cumMetersNow:'—'}</td>`; tbody.appendChild(tr); state.laps.push({idx,cumMs,lapMs,lapDist,lapSpeed,cumMeters:cumMetersNow}); }
   function updateRecapTotals(){ const totalMs=state.elapsed; let totalMeters=0; if(state.mode==='intervalles') totalMeters=state.targetDist; else if(['tours','demiCooper','cooper'].includes(state.mode)) totalMeters=state.cumDist + state.fractionAdded; else if(state.mode==='simpleDistance') totalMeters=state.targetDist; const vAvg=kmh(totalMeters,totalMs); totalTime.textContent=fmt(totalMs); totalSpeed.textContent=(vAvg? vAvg.toFixed(2):'—'); if(totalDistanceCell) totalDistanceCell.textContent=(totalMeters? Math.round(totalMeters):'—'); recap.classList.add('hidden'); recapBody.innerHTML=''; const rows=[]; if(state.mode==='simpleDistance'){ rows.push(['Distance',`${Math.round(state.targetDist)} m`],['Temps',fmt(totalMs)],['Vitesse moyenne',`${kmh(state.targetDist,totalMs).toFixed(2)} km/h`]); } if(['tours','demiCooper','cooper'].includes(state.mode)){ const d=Math.round(totalMeters); rows.push(['Temps',fmt(totalMs)],['Distance totale',`${d} m`],['Vitesse moyenne',`${kmh(d,totalMs).toFixed(2)} km/h`]); if(['demiCooper','cooper'].includes(state.mode)) rows.push(['VMA (moyenne)',`${kmh(d,totalMs).toFixed(2)} km/h`]); } if(rows.length){ recap.classList.remove('hidden'); recapBody.innerHTML=rows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`).join(''); } }
-  function finish(){ if(state.running){ state.elapsed=state.elapsed + (now()-state.startTime); state.running=false; cancelAnimationFrame(state.raf); } btnLap.disabled=true; btnStart.textContent='Démarrer'; btnStop.disabled=true; results.classList.remove('hidden'); rowTotal.classList.remove('hidden'); if(['tours','demiCooper','cooper'].includes(state.mode)){ fractionTools.classList.remove('hidden'); document.querySelectorAll('#fraction-tools [data-frac]').forEach(btn=> btn.onclick=()=>applyFraction(parseFloat(btn.dataset.frac))); const undo=$('#btn-frac-undo'); if(undo) undo.onclick=undoFraction; } if(state.mode==='intervalles'){ ivlExportBox.classList.remove('hidden'); generateQR(); document.querySelectorAll('input[name=\"ivl-type\"]').forEach(r=> r.addEventListener('change', generateQR)); const genBtn=$('#btn-gen-qr'); if(genBtn) genBtn.addEventListener('click', generateQR); } updateRecapTotals(); if(!['simple','minuteurSimple','intervalles'].includes(state.mode)) generateQR(); }
+  function finish(){ if(state.running){ state.elapsed=state.elapsed + (now()-state.startTime); state.running=false; cancelAnimationFrame(state.raf); } btnLap.disabled=true; btnStart.textContent='Démarrer'; btnStop.disabled=true; results.classList.remove('hidden'); rowTotal.classList.remove('hidden'); if(['tours','demiCooper','cooper'].includes(state.mode)){ fractionTools.classList.remove('hidden'); document.querySelectorAll('#fraction-tools [data-frac]').forEach(btn=> btn.onclick=()=>applyFraction(parseFloat(btn.dataset.frac))); const undo=$('#btn-frac-undo'); if(undo) undo.onclick=undoFraction; } updateRecapTotals(); generateQR(); }
   function applyFraction(frac){ if(!['tours','demiCooper','cooper'].includes(state.mode)) return; state.fractionAdded = state.lapDist * frac; liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded); updateRecapTotals(); generateQR(); }
   function undoFraction(){ if(!['tours','demiCooper','cooper'].includes(state.mode)) return; state.fractionAdded=0; liveDistVal.textContent=Math.round(state.cumDist); updateRecapTotals(); generateQR(); }
   function identity(){ const s=student(); return { nom:s.nom||'', prenom:s.prenom||'', classe:s.classe||'', sexe:s.sexe||'' }; }
-  function payload(testLabel, core){ const id=identity(); const obj={ nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe, test:testLabel, ...(core||{}) }; return [obj]; }
-  function generateQR(){ const p=buildPayload(); qrcodeBox.innerHTML=''; if(!p) return; try{ new QRCode(qrcodeBox,{ text:JSON.stringify(p), width:220, height:220, correctLevel:QRCode.CorrectLevel.L }); }catch(e){ const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d);} }
+  function payload(testLabel, core){
+    const id=identity();
+    const obj={ nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe, test:testLabel };
+    Object.keys(core||{}).forEach(k=> obj[k]=core[k]);
+    return [obj];
+  }
+  function generateQR(){
+    const p=buildPayload(); qrcodeBox.innerHTML=''; if(!p) return;
+    try{ new QRCode(qrcodeBox,{ text:JSON.stringify(p), width:220, height:220, correctLevel:QRCode.CorrectLevel.L }); }
+    catch(e){ const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d); }
+  }
   function buildPayload(){
     if(state.mode==='intervalles'){
-      // Ultra-compact seconds arrays (one decimal). Keeps both cumulative and per-interval.
-      const core={ D: Math.round(state.targetDist||0), S: Math.round(state.splitDist||0) };
-      core.Tc = state.laps.map(l=> +(l.cumMs/1000).toFixed(1));
-      core.Ti = state.laps.map(l=> +(l.lapMs/1000).toFixed(1));
+      // CUMULÉS UNIQUEMENT : t200,t400,... en "MM:SS.t"
+      const core = { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0) };
+      state.laps.forEach((l,i)=>{
+        const dist=(i+1)*state.splitDist;
+        core[`t${dist}`]=fmt(l.cumMs);
+      });
       return payload('Temps intermédiaire', core);
     }
-    if(state.mode==='simpleDistance'){ const d=Math.round(state.targetDist||0); const core={}; core[`temps_${d}m`]=fmt(state.elapsed); core[`vitesse_${d}m`]=kmh(d,state.elapsed); return payload('Chrono avec calcul de vitesse', core); }
-    if(state.mode==='tours'){ const dist=Math.round(state.cumDist + state.fractionAdded); return payload('Minuteur avec distance', { distance_totale:dist, vitesse_moyenne: kmh(dist,state.elapsed) }); }
-    if(state.mode==='demiCooper'){ const dist=Math.round(state.cumDist + state.fractionAdded), v=kmh(dist,state.elapsed); return payload('Demi-Cooper (6′)', { vma:v, distance:dist }); }
-    if(state.mode==='cooper'){ const dist=Math.round(state.cumDist + state.fractionAdded), v=kmh(dist,state.elapsed); return payload('Cooper (12′)', { vma:v, distance:dist }); }
-    return null; }
+    if(state.mode==='simpleDistance'){
+      const d=Math.round(state.targetDist||0);
+      const core={};
+      core[`temps_${d}m`] = fmt(state.elapsed);
+      core[`vitesse_${d}m`] = kmh(d,state.elapsed);
+      return payload('Chrono avec calcul de vitesse', core);
+    }
+    if(state.mode==='tours'){
+      const dist=Math.round(state.cumDist + state.fractionAdded);
+      return payload('Minuteur avec distance', { distance_totale:dist, temps_total:fmt(state.elapsed), vitesse_moyenne: kmh(dist,state.elapsed) });
+    }
+    if(state.mode==='demiCooper'){
+      const dist=Math.round(state.cumDist + state.fractionAdded), v=kmh(dist,state.elapsed);
+      return payload('Demi-Cooper (6′)', { distance:dist, temps_total:fmt(state.elapsed), vma:v });
+    }
+    if(state.mode==='cooper'){
+      const dist=Math.round(state.cumDist + state.fractionAdded), v=kmh(dist,state.elapsed);
+      return payload('Cooper (12′)', { distance:dist, temps_total:fmt(state.elapsed), vma:v });
+    }
+    return null;
+  }
+
   function csvExport(){
     const s=student();
     const esc=(v)=>`\"${String(v).replace(/\"/g,'\"\"')}\"`;
@@ -147,7 +174,7 @@
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   }
   btnStart.addEventListener('click', start); btnStop.addEventListener('click', stop); btnLap.addEventListener('click', lap);
-  btnReset.addEventListener('click', ()=>{ state.running=false; cancelAnimationFrame(state.raf); state.startTime=0; state.elapsed=0; state.lastLapAt=0; state.laps=[]; state.cumDist=0; state.fractionAdded=0; display.textContent='00:00.0'; display.classList.remove('display-huge'); if(circleWrap && !circleWrap.classList.contains('hidden')){ if(state.ringTotal) updateRing(state.ringTotal, state.ringTotal);} btnStart.textContent='Démarrer'; btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode)); btnStop.disabled=true; btnReset.disabled=false; if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)) tableWrap.classList.add('hidden'); results.classList.add('hidden'); ivlExportBox.classList.add('hidden'); fractionTools.classList.add('hidden'); qrcodeBox.innerHTML=''; liveDistVal.textContent='0'; recap.classList.add('hidden'); recapBody.innerHTML=''; if(totalDistanceCell) totalDistanceCell.textContent='—'; clearTable(); });
+  btnReset.addEventListener('click', ()=>{ state.running=false; cancelAnimationFrame(state.raf); state.startTime=0; state.elapsed=0; state.lastLapAt=0; state.laps=[]; state.cumDist=0; state.fractionAdded=0; display.textContent='00:00.0'; display.classList.remove('display-huge'); if(circleWrap && !circleWrap.classList.contains('hidden')){ if(state.ringTotal) updateRing(state.ringTotal, state.ringTotal);} btnStart.textContent='Démarrer'; btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode)); btnStop.disabled=true; btnReset.disabled=false; if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)) tableWrap.classList.add('hidden'); results.classList.add('hidden'); qrcodeBox.innerHTML=''; liveDistVal.textContent='0'; recap.classList.add('hidden'); recapBody.innerHTML=''; if(totalDistanceCell) totalDistanceCell.textContent='—'; clearTable(); });
   $('#btn-new').addEventListener('click', ()=> location.reload()); $('#btn-export-csv').addEventListener('click', csvExport);
   renderParams();
 })();

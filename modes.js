@@ -1,4 +1,4 @@
-// RunMeasure V7.1 — add "test" label in QR payloads
+// RunMeasure V7.2 — fixes & UX polish per feedback
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -51,16 +51,12 @@
   const totalDistanceCell = $('#total-distance');
   const rowTotal = $('#row-total');
   const ivlExportBox = $('#intervalles-export');
-  const btnGenQR = $('#btn-gen-qr');
   const circleWrap = $('#circle-wrap');
-  const circleFG = $('#circle-fg');
-  const circleText = $('#circle-text');
   const liveDistance = $('#live-distance');
   const liveDistVal = $('#live-dist-val');
   const fractionTools = $('#fraction-tools');
   const recap = $('#recap');
   const recapBody = $('#recap-body');
-  const CIRCUM = 2 * Math.PI * 54;
 
   async function tryFullscreen(){
     const el = document.documentElement;
@@ -90,7 +86,7 @@
           <label>Intervalle (m)
             <input type="number" id="p-step" min="25" step="25" value="200"/>
           </label>
-          <div class="info">Appuie sur « Tour » à chaque passage.</div>
+          <div class="info">Appuie sur « Tour » à chaque passage. À la fin, le QR est généré automatiquement (par défaut <em>temps cumulés</em>), et tu peux basculer sur <em>temps par intervalle</em>.</div>
         `;
         state.targetDist = 800;
         state.splitDist = 200;
@@ -98,7 +94,7 @@
 
       case 'simple':
         modeName.textContent = 'Chrono';
-        params.innerHTML = `<div class="info">Chronométrage simple. Pas de tours. Pas de QR.</div>`;
+        params.innerHTML = `<div class="info">Chronométrage simple. Pas de tours. <strong>Pas de QR.</strong></div>`;
         btnLap.classList.add('hidden');
         btnStop.classList.remove('hidden');
         tableWrap.classList.add('hidden');
@@ -110,7 +106,7 @@
           <label>Distance (m)
             <input type="number" id="p-target" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Lance puis « Stop » à l'arrivée. La vitesse moyenne est calculée.</div>
+          <div class="info">Lance puis « Stop » à l'arrivée. Récapitulatif + QR minimal.</div>
         `;
         state.targetDist = 100;
         btnLap.classList.add('hidden');
@@ -121,13 +117,19 @@
       case 'tours':
         modeName.textContent = 'Minuteur avec distance';
         params.innerHTML = `
+          <label>Préréglage
+            <select id="preset-countdown">
+              <option>00:30</option><option>01:00</option><option>02:00</option><option>03:00</option>
+              <option selected>05:00</option><option>06:00</option><option>08:00</option><option>10:00</option><option>12:00</option>
+            </select>
+          </label>
           <label>Durée (mm:ss)
             <input type="text" id="p-countdown" value="05:00"/>
           </label>
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Décompte + « Tour » pour ajouter la distance. Le tableau affiche la distance du tour et la cumulée.</div>
+          <div class="info">Décompte + « Tour » pour ajouter la distance. Tableau : <em>Temps cumulé</em>, <em>Temps au tour</em>, <em>Vitesse</em>, <em>Distance cumulée</em>.</div>
         `;
         state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
         state.lapDist = 100;
@@ -143,7 +145,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 6:00. « Tour » à chaque passage. Le tableau affiche distance du tour et cumulée.</div>
+          <div class="info">Durée fixe 6:00. Tableau : <em>Temps cumulé</em>, <em>Temps au tour</em>, <em>Vitesse</em>, <em>Distance cumulée</em>.</div>
         `;
         state.fixedDuration = 6*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -159,7 +161,7 @@
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
-          <div class="info">Durée fixe 12:00. « Tour » à chaque passage. Le tableau affiche distance du tour et cumulée.</div>
+          <div class="info">Durée fixe 12:00. Tableau : <em>Temps cumulé</em>, <em>Temps au tour</em>, <em>Vitesse</em>, <em>Distance cumulée</em>.</div>
         `;
         state.fixedDuration = 12*60*1000; state.ringTotal = state.fixedDuration;
         state.lapDist = 100;
@@ -172,10 +174,16 @@
       case 'minuteurSimple':
         modeName.textContent = 'Minuteur';
         params.innerHTML = `
+          <label>Préréglage
+            <select id="preset-countdown">
+              <option>00:30</option><option>01:00</option><option>02:00</option><option>03:00</option>
+              <option selected>05:00</option><option>06:00</option><option>08:00</option><option>10:00</option><option>12:00</option>
+            </select>
+          </label>
           <label>Durée (mm:ss)
             <input type="text" id="p-countdown" value="05:00"/>
           </label>
-          <div class="info">Compte à rebours simple. Pas de tours.</div>
+          <div class="info">Compte à rebours simple. <strong>Pas de QR.</strong></div>
         `;
         state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
         circleWrap.classList.remove('hidden');
@@ -193,14 +201,16 @@
     const cdown  = $('#p-countdown'); if(cdown) cdown.addEventListener('change', ()=> {
       state.countdownMs = mmssToMs(cdown.value||'00:00'); state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
     });
+    const preset = $('#preset-countdown'); if(preset){ preset.addEventListener('change', ()=> { if($('#p-countdown')){ $('#p-countdown').value = preset.value; $('#p-countdown').dispatchEvent(new Event('change')); } }); }
     liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded);
   }
 
   function updateRing(remaining, total){
+    const CIRCUM = 339.292;
     const ratio = Math.max(0, Math.min(1, (total? remaining/total : 0)));
-    const offset = 339.292 * (1 - ratio);
-    if(circleFG){ circleFG.style.strokeDasharray = 339.292; circleFG.style.strokeDashoffset = offset; }
-    if(circleText){ circleText.textContent = fmtMMSS(remaining); }
+    const offset = CIRCUM * (1 - ratio);
+    if($('#circle-fg')){ $('#circle-fg').style.strokeDasharray = CIRCUM; $('#circle-fg').style.strokeDashoffset = offset; }
+    if($('#circle-text')){ $('#circle-text').textContent = fmtMMSS(remaining); }
   }
   function mmssToMs(s){ const m = /^(\d{1,2}):(\d{2})$/.exec(s)||[0,0,0]; return ((parseInt(m[1],10)||0)*60 + (parseInt(m[2],10)||0))*1000; }
   function now(){ return performance.now(); }
@@ -267,31 +277,67 @@
     const lapMs = tNow - state.lastLapAt;
     state.lastLapAt = tNow;
 
-    let lapDist = undefined;
     if(state.mode==='intervalles'){
       const next = (state.laps.length+1)*state.splitDist;
       if(next > state.targetDist) return;
-      lapDist = state.splitDist;
       state.cumDist = next;
-      addLapRow(cumMs, lapMs, lapDist);
+      addLapRow(cumMs, lapMs);
       if(state.cumDist >= state.targetDist){ finish(); }
       return;
     } else if(['tours','demiCooper','cooper'].includes(state.mode)){
-      lapDist = state.lapDist;
-      state.cumDist += lapDist;
+      state.cumDist += state.lapDist;
       liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded);
     }
-    addLapRow(cumMs, lapMs, lapDist);
+    addLapRow(cumMs, lapMs);
   }
 
-  function addLapRow(cumMs, lapMs, lapDist){
+  function addLapRow(cumMs, lapMs){
     const tr = document.createElement('tr');
     const idx = state.laps.length+1;
+    let lapDist = 0;
+    if(state.mode==='intervalles') lapDist = state.splitDist;
+    if(['tours','demiCooper','cooper'].includes(state.mode)) lapDist = state.lapDist;
     const lapSpeed = lapDist? kmh(lapDist, lapMs) : 0;
     const cumMetersNow = Math.round(state.cumDist); // after update
-    tr.innerHTML = `<td>${idx}</td><td>${fmt(cumMs)}</td><td>${fmt(lapMs)}</td><td>${lapDist? lapSpeed.toFixed(2):'—'}</td><td>${lapDist? Math.round(lapDist):'—'}</td><td>${(lapDist||state.mode==='intervalles')? cumMetersNow:'—'}</td>`;
+    tr.innerHTML = `<td>${idx}</td><td>${fmt(cumMs)}</td><td>${fmt(lapMs)}</td><td>${lapDist? lapSpeed.toFixed(2):'—'}</td><td>${(lapDist||state.mode==='intervalles')? cumMetersNow:'—'}</td>`;
     tbody.appendChild(tr);
-    state.laps.push({idx, cumMs, lapMs, lapDist: lapDist||0, lapSpeed, cumMeters: cumMetersNow});
+    state.laps.push({idx, cumMs, lapMs, lapDist, lapSpeed, cumMeters: cumMetersNow});
+  }
+
+  function updateRecapTotals(){
+    const totalMs = state.elapsed;
+    let totalMeters = 0;
+    if(state.mode==='intervalles'){ totalMeters = state.targetDist; }
+    else if(['tours','demiCooper','cooper'].includes(state.mode)){
+      totalMeters = state.cumDist + state.fractionAdded;
+    } else if(state.mode==='simpleDistance'){ totalMeters = state.targetDist; }
+    const vAvg = kmh(totalMeters, totalMs);
+    totalTime.textContent = fmt(totalMs);
+    totalSpeed.textContent = (vAvg? vAvg.toFixed(2):'—');
+    if(totalDistanceCell) totalDistanceCell.textContent = (totalMeters? Math.round(totalMeters):'—');
+
+    // Recap rows
+    recap.classList.add('hidden');
+    recapBody.innerHTML='';
+    const sRows = [];
+    if(state.mode==='simpleDistance'){
+      sRows.push(['Distance', `${Math.round(state.targetDist)} m`]);
+      sRows.push(['Temps', fmt(totalMs)]);
+      sRows.push(['Vitesse moyenne', `${kmh(state.targetDist, totalMs).toFixed(2)} km/h`]);
+    }
+    if(['tours','demiCooper','cooper'].includes(state.mode)){
+      const d = Math.round(totalMeters);
+      sRows.push(['Temps', fmt(totalMs)]);
+      sRows.push(['Distance totale', `${d} m`]);
+      sRows.push(['Vitesse moyenne', `${kmh(d, totalMs).toFixed(2)} km/h`]);
+      if(['demiCooper','cooper'].includes(state.mode)){
+        sRows.push(['VMA (moyenne)', `${kmh(d, totalMs).toFixed(2)} km/h`]);
+      }
+    }
+    if(sRows.length){
+      recap.classList.remove('hidden');
+      recapBody.innerHTML = sRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`).join('');
+    }
   }
 
   function finish(){
@@ -306,78 +352,36 @@
     results.classList.remove('hidden');
     rowTotal.classList.remove('hidden');
 
-    let totalMs = state.elapsed;
-    let totalMeters = 0;
-    let vAvg = 0;
+    if(['tours','demiCooper','cooper'].includes(state.mode)){
+      fractionTools.classList.remove('hidden');
+    }
 
     if(state.mode==='intervalles'){
-      totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
       ivlExportBox.classList.remove('hidden');
-    } else if(state.mode==='simple'){
-      qrcodeBox.innerHTML = '';
-    } else if(state.mode==='simpleDistance'){
-      totalMeters = state.targetDist; vAvg = kmh(totalMeters, totalMs);
-    } else if(state.mode==='tours'){
-      totalMeters = state.cumDist + state.fractionAdded; vAvg = kmh(totalMeters, totalMs);
-      fractionTools.classList.remove('hidden');
-    } else if(['demiCooper','cooper'].includes(state.mode)){
-      totalMeters = state.cumDist + state.fractionAdded; vAvg = kmh(totalMeters, totalMs);
-      fractionTools.classList.remove('hidden');
-    } else if(state.mode==='minuteurSimple'){
-      // nothing
+      generateQR(); // auto default (cumules)
+      const radios = document.querySelectorAll('input[name="ivl-type"]');
+      radios.forEach(r=> r.addEventListener('change', generateQR));
     }
 
-    totalTime.textContent = fmt(totalMs);
-    totalSpeed.textContent = vAvg.toFixed(2);
-    if(totalDistanceCell) totalDistanceCell.textContent = (totalMeters? Math.round(totalMeters):'—');
+    updateRecapTotals();
 
-    // Recap
-    recap.classList.add('hidden');
-    recapBody.innerHTML='';
-    const sRows = [];
-    if(state.mode==='simpleDistance'){
-      sRows.push(['Distance', `${Math.round(state.targetDist)} m`]);
-      sRows.push(['Temps', fmt(totalMs)]);
-      sRows.push(['Vitesse moyenne', `${kmh(state.targetDist, totalMs).toFixed(2)} km/h`]);
-    }
-    if(['tours','demiCooper','cooper'].includes(state.mode)){
-      const d = Math.round(state.cumDist + state.fractionAdded);
-      sRows.push(['Temps', fmt(totalMs)]);
-      sRows.push(['Distance totale', `${d} m`]);
-      sRows.push(['Vitesse moyenne', `${kmh(d, totalMs).toFixed(2)} km/h`]);
-      if(['demiCooper','cooper'].includes(state.mode)){
-        sRows.push(['VMA (moyenne)', `${kmh(d, totalMs).toFixed(2)} km/h`]);
-      }
-    }
-    if(sRows.length){
-      recap.classList.remove('hidden');
-      recapBody.innerHTML = sRows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`).join('');
-    }
-
-    if(state.mode!=='intervalles' && state.mode!=='simple'){
+    if(!['simple','minuteurSimple','intervalles'].includes(state.mode)){
       generateQR();
     }
   }
 
   function applyFraction(frac){
     if(!['tours','demiCooper','cooper'].includes(state.mode)) return;
-    const add = state.lapDist * frac;
-    state.fractionAdded = add;
+    state.fractionAdded = state.lapDist * frac;
     liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded);
-    const totalMs = state.elapsed;
-    const totalMeters = state.cumDist + state.fractionAdded;
-    totalSpeed.textContent = kmh(totalMeters, totalMs).toFixed(2);
-    if(totalDistanceCell) totalDistanceCell.textContent = Math.round(totalMeters);
+    updateRecapTotals();
     generateQR();
   }
   function undoFraction(){
     if(!['tours','demiCooper','cooper'].includes(state.mode)) return;
     state.fractionAdded = 0;
     liveDistVal.textContent = Math.round(state.cumDist);
-    const totalMs = state.elapsed;
-    const totalMeters = state.cumDist;
-    totalSpeed.textContent = kmh(totalMeters, totalMs).toFixed(2);
-    if(totalDistanceCell) totalDistanceCell.textContent = Math.round(totalMeters);
+    updateRecapTotals();
     generateQR();
   }
 
@@ -437,7 +441,7 @@
         return payload({ test:'Cooper (12′)', vma: vma, distance: dist });
       }
       case 'minuteurSimple': {
-        return payload({ test:'Minuteur', duree: fmtMMSS(state.countdownMs||0) });
+        return null; // NO QR
       }
       default: return null; // 'simple' : no QR
     }
@@ -473,31 +477,6 @@
     clearTable();
   });
   $('#btn-new').addEventListener('click', () => location.reload());
-  if(btnGenQR) btnGenQR.addEventListener('click', generateQR);
-  $('#btn-export-csv').addEventListener('click', () => {
-    const s = student();
-    const lines = [];
-    lines.push(['nom','prenom','classe','sexe','lap_index','t_cum','t_lap','v_lap_kmh']);
-    state.laps.forEach(l => {
-      lines.push([s.nom||'', s.prenom||'', s.classe||'', s.sexe||'', l.idx, fmt(l.cumMs), fmt(l.lapMs), l.lapDist? kmh(l.lapDist, l.lapMs).toFixed(2):'']);
-    });
-    lines.push(['TOTAL','','','', '', fmt(state.elapsed), '', ( (state.cumDist + state.fractionAdded) ? kmh(state.cumDist + state.fractionAdded, state.elapsed).toFixed(2):'')]);
-    const csv = lines.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `runmeasure_${(student().nom||'')}_${(student().prenom||'')}.csv`;
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  });
-
-  // Fractions
-  fractionTools?.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if(!btn) return;
-    if(btn.id === 'btn-frac-undo'){ undoFraction(); return; }
-    const frac = parseFloat(btn.dataset.frac||'0');
-    if(frac>0){ applyFraction(frac); }
-  });
 
   renderParams();
 })();

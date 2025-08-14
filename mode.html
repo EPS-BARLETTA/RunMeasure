@@ -55,7 +55,6 @@
               <th>Temps cumulé</th>
               <th>Temps tour</th>
               <th>Vitesse tour (km/h)</th>
-              <th>Distance tour (m)</th>
               <th>Distance cumulée (m)</th>
             </tr>
           </thead>
@@ -66,7 +65,6 @@
               <td id="total-time">—</td>
               <td>—</td>
               <td id="total-speed">—</td>
-              <td>—</td>
               <td id="total-distance">—</td>
             </tr>
           </tfoot>
@@ -82,7 +80,7 @@
             <button class="btn btn-outline" data-frac="0.75">+ 3/4 tour</button>
             <button class="btn" id="btn-frac-undo">Annuler</button>
           </div>
-          <small class="info">Distance totale et (si applicable) VMA recalculées. Le QR sera regénéré.</small>
+          <small class="info">Distance totale, vitesse et VMA (si applicable) sont recalculées et le QR est mis à jour.</small>
         </div>
 
         <div id="recap" class="card hidden">
@@ -100,7 +98,6 @@
           <label style="display:block;margin-top:.3rem">
             <input type="radio" name="ivl-type" value="intervalles"> Temps <em>à chaque intervalle</em> (200, 200, …)
           </label>
-          <button id="btn-gen-qr" class="btn btn-primary" type="button" style="margin-top:.6rem">Générer le QR</button>
         </div>
 
         <div class="export-buttons">

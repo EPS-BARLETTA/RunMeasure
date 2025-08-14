@@ -8,10 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .home-actions{display:flex;flex-direction:column;gap:1rem;align-items:center}
-    .home-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
-  </style>
+  <style>.home-actions{display:flex;flex-direction:column;gap:1rem;align-items:center}.home-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}</style>
 </head>
 <body class="page-home">
   <main class="centered">
@@ -26,61 +23,30 @@
       </div>
     </div>
   </main>
-  <footer class="footer">
-    RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
-  </footer>
-
+  <footer class="footer">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
   <div class="modal-backdrop" id="safety-backdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-labelledby="safety-title">
       <header><h3 id="safety-title">Fiche de sécurité (EPS • course & activités)</h3></header>
       <div class="body">
-        <p><span class="badge">Avant</span> Echauffement progressif (8–12′), hydratation, tenue adaptée, lacets serrés. Signaler toute douleur, asthme ou contre-indication.</p>
-        <ul>
-          <li>Vérifier la zone : surface propre, pas d’obstacles.</li>
-          <li>Objectif clair & intensité progressive (≈ 1er tour facile).</li>
-          <li>Pas d’écouteurs qui isolent / priorité à la vigilance.</li>
-        </ul>
-        <p><span class="badge">Pendant</span> Respect du sens de course, dépasser à l’extérieur, garder sa trajectoire.</p>
-        <ul>
-          <li>S’hydrater régulièrement sur efforts &gt; 10′.</li>
-          <li>Arrêter en cas de douleur vive, vertiges, essoufflement anormal.</li>
-          <li>Adapter l’allure à son état (parler = bonne intensité).</li>
-        </ul>
-        <p><span class="badge">Après</span> Retour au calme 3–5′, étirements légers, réhydratation, signaler toute gêne.</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:1rem 0;">
-        <p><span class="badge">En cas de blessure</span> (pour soi ou un camarade) :</p>
-        <ul>
-          <li><strong>Ne pas s’agglutiner</strong> : laissez de l’air, parlez calmement.</li>
-          <li><strong>Sécuriser</strong> la zone : éloigner les coureurs et obstacles.</li>
-          <li><strong>Prévenir immédiatement l’enseignant</strong> (ou un adulte responsable).</li>
-          <li>Vérifier si la personne <strong>répond</strong> et <strong>respire</strong>.</li>
-          <li><strong>Ne pas déplacer</strong> la personne en cas de douleur au dos/cou/tête.</li>
-          <li>En cas de saignement : <strong>compression</strong> locale avec un tissu propre.</li>
-          <li>Si perte de connaissance / respiration anormale : alerter, demander un adulte d’appeler le <strong>112</strong>.</li>
-          <li>Rester auprès de la personne jusqu’à la prise en charge.</li>
-        </ul>
-        <p style="color:#555;font-size:.95rem"><em>Rappel :</em> respecter les consignes du professeur, le matériel et les autres élèves. La sécurité passe avant la performance.</p>
+        <p><span class="badge">Avant</span> Echauffement 8–12′, hydratation, tenue adaptée. Signaler toute douleur/asthme.</p>
+        <ul><li>Vérifier la zone (pas d’obstacle).</li><li>1er tour facile.</li><li>Pas d’écouteurs isolants.</li></ul>
+        <p><span class="badge">Pendant</span> Respect du sens, dépasser à l’extérieur, vigilance.</p>
+        <ul><li>S’hydrater &gt;10′.</li><li>Arrêter en cas de douleur/vertiges.</li></ul>
+        <p><span class="badge">Après</span> Retour au calme 3–5′, étirements légers, signaler toute gêne.</p>
+        <hr/>
+        <p><span class="badge">En cas de blessure</span> : ne pas s’agglutiner, sécuriser, prévenir le prof, vérifier réponse/respiration, ne pas déplacer si suspicion rachis, compression d’un saignement, alerte 112 si besoin, rester auprès de la personne.</p>
       </div>
-      <div class="actions">
-        <button class="btn btn-primary" id="btn-safety-close">J’ai compris</button>
-      </div>
+      <div class="actions"><button class="btn btn-primary" id="btn-safety-close">J’ai compris</button></div>
     </div>
   </div>
-
   <script>
     (function(){
-      const backdrop = document.getElementById('safety-backdrop');
-      const openBtn = document.getElementById('btn-safety');
-      const closeBtn = document.getElementById('btn-safety-close');
-      if(openBtn && backdrop){
-        openBtn.addEventListener('click', ()=>{ backdrop.style.display='flex'; backdrop.setAttribute('aria-hidden','false'); });
-      }
-      if(closeBtn && backdrop){
-        closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
-      }
-      if(backdrop){
-        backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop){ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); } });
-      }
+      const b=document.getElementById('safety-backdrop');
+      const o=document.getElementById('btn-safety');
+      const c=document.getElementById('btn-safety-close');
+      if(o) o.addEventListener('click', ()=>{ b.style.display='flex'; b.setAttribute('aria-hidden','false'); });
+      if(c) c.addEventListener('click', ()=>{ b.style.display='none'; b.setAttribute('aria-hidden','true'); });
+      if(b) b.addEventListener('click', (e)=>{ if(e.target===b){ b.style.display='none'; b.setAttribute('aria-hidden','true'); } });
     })();
   </script>
 </body>

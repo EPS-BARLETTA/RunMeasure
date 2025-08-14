@@ -1,93 +1,48 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RunMeasure • Élève & Modes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script>
-    const saveStudent = () => {
-      const nom = document.getElementById('nom').value.trim();
-      const prenom = document.getElementById('prenom').value.trim();
-      const classe = document.getElementById('classe').value.trim();
-      const sexe = document.getElementById('sexe').value;
-      const obj = {nom, prenom, classe, sexe};
-      localStorage.setItem('rm_student', JSON.stringify(obj));
-    };
-    const go = (mode) => {
-      saveStudent();
-      location.href = 'mode.html?mode=' + encodeURIComponent(mode);
-    };
-    window.addEventListener('DOMContentLoaded', () => {
-      try{
-        const s = JSON.parse(localStorage.getItem('rm_student')||'{}');
-        if(s.nom) document.getElementById('nom').value = s.nom;
-        if(s.prenom) document.getElementById('prenom').value = s.prenom;
-        if(s.classe) document.getElementById('classe').value = s.classe;
-        if(s.sexe) document.getElementById('sexe').value = s.sexe;
-      }catch(e){}
-    });
-  </script>
+<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure • Élève & Modes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"/>
+<script>
+const saveStudent=()=>{const nom=document.getElementById('nom').value.trim();const prenom=document.getElementById('prenom').value.trim();const classe=document.getElementById('classe').value.trim();const sexe=document.getElementById('sexe').value;localStorage.setItem('rm_student',JSON.stringify({nom,prenom,classe,sexe}));};
+const go=(mode)=>{saveStudent();location.href='mode.html?mode='+encodeURIComponent(mode);};
+window.addEventListener('DOMContentLoaded',()=>{try{const s=JSON.parse(localStorage.getItem('rm_student')||'{}');['nom','prenom','classe','sexe'].forEach(k=>{if(s[k]) document.getElementById(k).value=s[k];});}catch(e){};});
+</script>
 </head>
 <body>
-  <header class="topbar colorful">
-    <h1>RunMeasure</h1>
-  </header>
-
-  <main class="container">
-    <div class="nav-row">
-      <a href="index.html" class="btn btn-outline">&larr; Accueil</a>
-      <a href="aide.html" class="btn btn-outline">Aide</a>
+<header class="topbar colorful"><h1>RunMeasure</h1></header>
+<main class="container">
+  <div class="nav-row"><a href="index.html" class="btn btn-outline">&larr; Accueil</a><a href="aide.html" class="btn btn-outline">Aide</a></div>
+  <section class="card gradient-border centered">
+    <h2>Informations élève</h2>
+    <form class="grid-2">
+      <label>Nom<input type="text" id="nom" required/></label>
+      <label>Prénom<input type="text" id="prenom" required/></label>
+      <label>Classe<input type="text" id="classe" required/></label>
+      <label>Sexe
+        <select id="sexe" required>
+          <option value="" disabled selected>—</option>
+          <option value="F">Fille</option><option value="M">Garçon</option><option value="Autre">Autre</option>
+        </select>
+      </label>
+    </form>
+  </section>
+  <section class="card gradient-border centered">
+    <h2>Choisir un mode</h2>
+    <div class="mode-buttons center-grid">
+      <button class="btn btn-blue" onclick="go('intervalles')">Temps intermédiaire</button>
+      <button class="btn btn-green" onclick="go('simple')">Chrono</button>
+      <button class="btn btn-emerald" onclick="go('minuteurSimple')">Minuteur</button>
+      <button class="btn btn-purple" onclick="go('simpleDistance')">Chrono avec calcul de vitesse</button>
+      <button class="btn btn-amber" onclick="go('tours')">Minuteur avec distance</button>
     </div>
-
-    <section class="card gradient-border centered">
-      <h2>Informations élève</h2>
-      <form class="grid-2">
-        <label>Nom
-          <input type="text" id="nom" required />
-        </label>
-        <label>Prénom
-          <input type="text" id="prenom" required />
-        </label>
-        <label>Classe
-          <input type="text" id="classe" required />
-        </label>
-        <label>Sexe
-          <select id="sexe" required>
-            <option value="" disabled selected>—</option>
-            <option value="F">Fille</option>
-            <option value="M">Garçon</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </label>
-      </form>
-    </section>
-
-    <section class="card gradient-border centered">
-      <h2>Choisir un mode</h2>
-      <div class="mode-buttons center-grid">
-        <button class="btn btn-blue"    onclick="go('intervalles')">Temps intermédiaire</button>
-        <button class="btn btn-green"   onclick="go('simple')">Chrono</button>
-        <button class="btn btn-emerald" onclick="go('minuteurSimple')">Minuteur</button>
-        <button class="btn btn-purple"  onclick="go('simpleDistance')">Chrono avec calcul de vitesse</button>
-        <button class="btn btn-amber"   onclick="go('tours')">Minuteur avec distance</button>
-      </div>
-    </section>
-
-    <section class="card gradient-border centered">
-      <h2>Tests d'endurance</h2>
-      <div class="mode-buttons center-grid">
-        <button class="btn btn-pink"   onclick="go('demiCooper')">Demi-Cooper (6′)</button>
-        <button class="btn btn-pink"   onclick="go('cooper')">Cooper (12′)</button>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB
-  </footer>
-</body>
-</html>
+  </section>
+  <section class="card gradient-border centered">
+    <h2>Tests d'endurance</h2>
+    <div class="mode-buttons center-grid">
+      <button class="btn btn-pink" onclick="go('demiCooper')">Demi-Cooper (6′)</button>
+      <button class="btn btn-pink" onclick="go('cooper')">Cooper (12′)</button>
+    </div>
+  </section>
+</main>
+<footer class="footer">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+</body></html>

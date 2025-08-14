@@ -1,4 +1,4 @@
-// RunMeasure V7.2 — fixes & UX polish per feedback
+// RunMeasure V7.3 — minutes/secondes selects, fractions reflected in totals & QR, CSV compat
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -58,6 +58,11 @@
   const recap = $('#recap');
   const recapBody = $('#recap-body');
 
+  function mmssToMsStr(mm, ss){
+    const m = Math.max(0, parseInt(mm||'0',10));
+    const s = Math.max(0, parseInt(ss||'0',10));
+    return (m*60 + s)*1000;
+  }
   async function tryFullscreen(){
     const el = document.documentElement;
     try{ if(!document.fullscreenElement && el.requestFullscreen){ await el.requestFullscreen(); } }catch(e){}
@@ -116,22 +121,14 @@
 
       case 'tours':
         modeName.textContent = 'Minuteur avec distance';
-        params.innerHTML = `
-          <label>Préréglage
-            <select id="preset-countdown">
-              <option>00:30</option><option>01:00</option><option>02:00</option><option>03:00</option>
-              <option selected>05:00</option><option>06:00</option><option>08:00</option><option>10:00</option><option>12:00</option>
-            </select>
-          </label>
-          <label>Durée (mm:ss)
-            <input type="text" id="p-countdown" value="05:00"/>
-          </label>
+        params.appendChild(buildMinuteSecondSelectors());
+        params.insertAdjacentHTML('beforeend', `
           <label>Distance par tour (m)
             <input type="number" id="p-lapdist" min="25" step="25" value="100"/>
           </label>
           <div class="info">Décompte + « Tour » pour ajouter la distance. Tableau : <em>Temps cumulé</em>, <em>Temps au tour</em>, <em>Vitesse</em>, <em>Distance cumulée</em>.</div>
-        `;
-        state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
+        `);
+        state.countdownMs = mmssToMsStr(5,0); state.ringTotal = state.countdownMs;
         state.lapDist = 100;
         circleWrap.classList.remove('hidden');
         display.classList.add('hidden');
@@ -173,19 +170,9 @@
 
       case 'minuteurSimple':
         modeName.textContent = 'Minuteur';
-        params.innerHTML = `
-          <label>Préréglage
-            <select id="preset-countdown">
-              <option>00:30</option><option>01:00</option><option>02:00</option><option>03:00</option>
-              <option selected>05:00</option><option>06:00</option><option>08:00</option><option>10:00</option><option>12:00</option>
-            </select>
-          </label>
-          <label>Durée (mm:ss)
-            <input type="text" id="p-countdown" value="05:00"/>
-          </label>
-          <div class="info">Compte à rebours simple. <strong>Pas de QR.</strong></div>
-        `;
-        state.countdownMs = mmssToMs('05:00'); state.ringTotal = state.countdownMs;
+        params.appendChild(buildMinuteSecondSelectors());
+        params.insertAdjacentHTML('beforeend', `<div class="info">Compte à rebours simple. <strong>Pas de QR.</strong></div>`);
+        state.countdownMs = mmssToMsStr(5,0); state.ringTotal = state.countdownMs;
         circleWrap.classList.remove('hidden');
         display.classList.add('hidden');
         btnLap.classList.add('hidden');
@@ -198,11 +185,39 @@
     const target = $('#p-target'); if(target) target.addEventListener('change', ()=> state.targetDist = parseFloat(target.value)||0);
     const step   = $('#p-step');   if(step)   step.addEventListener('change', ()=> state.splitDist = parseFloat(step.value)||0);
     const lapd   = $('#p-lapdist');if(lapd)   lapd.addEventListener('change', ()=> state.lapDist = parseFloat(lapd.value)||0);
-    const cdown  = $('#p-countdown'); if(cdown) cdown.addEventListener('change', ()=> {
-      state.countdownMs = mmssToMs(cdown.value||'00:00'); state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
-    });
-    const preset = $('#preset-countdown'); if(preset){ preset.addEventListener('change', ()=> { if($('#p-countdown')){ $('#p-countdown').value = preset.value; $('#p-countdown').dispatchEvent(new Event('change')); } }); }
     liveDistVal.textContent = Math.round(state.cumDist + state.fractionAdded);
+  }
+
+  function buildMinuteSecondSelectors(){
+    const wrap = document.createElement('div');
+    wrap.className = 'grid-3';
+
+    const min = document.createElement('label');
+    min.innerHTML = 'Minutes<select id="sel-min"></select>';
+    const selMin = min.querySelector('select');
+    for(let i=1;i<=120;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); if(i===5) o.selected=true; selMin.appendChild(o); }
+
+    const sec = document.createElement('label');
+    sec.innerHTML = 'Secondes<select id="sel-sec"></select>';
+    const selSec = sec.querySelector('select');
+    for(let i=1;i<=59;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); selSec.appendChild(o); }
+    const zeroOpt = document.createElement('option'); zeroOpt.value=0; zeroOpt.textContent='00'; selSec.insertBefore(zeroOpt, selSec.firstChild); zeroOpt.selected=true;
+
+    const spacer = document.createElement('div'); spacer.innerHTML='&nbsp;';
+
+    selMin.addEventListener('change', ()=> {
+      const mm = parseInt(selMin.value,10), ss = parseInt(selSec.value,10);
+      state.countdownMs = (mm*60+ss)*1000; state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
+    });
+    selSec.addEventListener('change', ()=> {
+      const mm = parseInt(selMin.value,10), ss = parseInt(selSec.value,10);
+      state.countdownMs = (mm*60+ss)*1000; state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
+    });
+
+    wrap.appendChild(min);
+    wrap.appendChild(sec);
+    wrap.appendChild(spacer);
+    return wrap;
   }
 
   function updateRing(remaining, total){
@@ -212,8 +227,7 @@
     if($('#circle-fg')){ $('#circle-fg').style.strokeDasharray = CIRCUM; $('#circle-fg').style.strokeDashoffset = offset; }
     if($('#circle-text')){ $('#circle-text').textContent = fmtMMSS(remaining); }
   }
-  function mmssToMs(s){ const m = /^(\d{1,2}):(\d{2})$/.exec(s)||[0,0,0]; return ((parseInt(m[1],10)||0)*60 + (parseInt(m[2],10)||0))*1000; }
-  function now(){ return performance.now(); }
+  const now = () => performance.now();
 
   function clearTable(){
     tbody.innerHTML='';
@@ -361,6 +375,7 @@
       generateQR(); // auto default (cumules)
       const radios = document.querySelectorAll('input[name="ivl-type"]');
       radios.forEach(r=> r.addEventListener('change', generateQR));
+      const genBtn = $('#btn-gen-qr'); if(genBtn) genBtn.addEventListener('click', generateQR);
     }
 
     updateRecapTotals();
@@ -385,12 +400,16 @@
     generateQR();
   }
 
-  // ---------- QR payloads (add "test" label only) ----------
+  // ---------- QR payloads (identity -> test -> core) ----------
   function identityBlock(){
     const s = student();
     return { nom:s.nom||'', prenom:s.prenom||'', classe:s.classe||'', sexe:s.sexe||'' };
   }
-  function payload(core){ return [ Object.assign(identityBlock(), core) ]; }
+  function payloadWithTest(testLabel, core){
+    const id = identityBlock();
+    const obj = Object.assign({}, id, { test: testLabel }, core||{});
+    return [ obj ];
+  }
 
   function generateQR(){
     const p = buildPayload();
@@ -410,35 +429,35 @@
       case 'intervalles': {
         const type = (document.querySelector('input[name="ivl-type"]:checked')||{}).value || 'cumules';
         if(type==='cumules'){
-          const core = { test:'Temps intermédiaire' };
+          const core = {};
           state.laps.forEach((l, i) => { const d = (i+1)*state.splitDist; core[`t${d}`] = fmt(l.cumMs); });
-          return payload(core);
+          return payloadWithTest('Temps intermédiaire', core);
         } else {
-          const core = { test:'Temps intermédiaire' };
+          const core = {};
           state.laps.forEach((l, i) => { core[`i${i+1}`] = fmt(l.lapMs); });
-          return payload(core);
+          return payloadWithTest('Temps intermédiaire', core);
         }
       }
       case 'simpleDistance': {
         const d = Math.round(state.targetDist||0);
-        const core = { test:'Chrono avec calcul de vitesse' };
+        const core = {};
         core[`temps_${d}m`] = fmt(state.elapsed);
         core[`vitesse_${d}m`] = kmh(d, state.elapsed);
-        return payload(core);
+        return payloadWithTest('Chrono avec calcul de vitesse', core);
       }
       case 'tours': {
         const dist = Math.round(state.cumDist + state.fractionAdded);
-        return payload({ test:'Minuteur avec distance', distance_totale: dist, vitesse_moyenne: kmh(dist, state.elapsed) });
+        return payloadWithTest('Minuteur avec distance', { distance_totale: dist, vitesse_moyenne: kmh(dist, state.elapsed) });
       }
       case 'demiCooper': {
         const dist = Math.round(state.cumDist + state.fractionAdded);
         const vma = kmh(dist, state.elapsed);
-        return payload({ test:'Demi-Cooper (6′)', vma: vma, distance: dist });
+        return payloadWithTest('Demi-Cooper (6′)', { vma: vma, distance: dist });
       }
       case 'cooper': {
         const dist = Math.round(state.cumDist + state.fractionAdded);
         const vma = kmh(dist, state.elapsed);
-        return payload({ test:'Cooper (12′)', vma: vma, distance: dist });
+        return payloadWithTest('Cooper (12′)', { vma: vma, distance: dist });
       }
       case 'minuteurSimple': {
         return null; // NO QR
@@ -447,6 +466,26 @@
     }
   }
   // ---------------------------------------------------------
+
+  // CSV Export (robust replace)
+  function csvExport(){
+    const s = student();
+    const esc = (v) => (`"${String(v).replace(/"/g,'""')}"`);
+    const lines = [];
+    lines.push(['nom','prenom','classe','sexe','lap_index','t_cum','t_lap','v_lap_kmh','dist_cum_m']);
+    state.laps.forEach(l => {
+      const v = l.lapDist? kmh(l.lapDist, l.lapMs).toFixed(2):'';
+      lines.push([s.nom||'', s.prenom||'', s.classe||'', s.sexe||'', l.idx, fmt(l.cumMs), fmt(l.lapMs), v, (l.cumMeters||'')]);
+    });
+    const totalMeters = (['tours','demiCooper','cooper'].includes(state.mode)) ? Math.round(state.cumDist + state.fractionAdded) : (state.mode==='intervalles'? Math.round(state.targetDist): '');
+    lines.push(['TOTAL','','','', '', fmt(state.elapsed), '', ( totalMeters? kmh(totalMeters, state.elapsed).toFixed(2):''), totalMeters]);
+    const csv = lines.map(r=>r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `runmeasure_${(s.nom||'')}_${(s.prenom||'')}.csv`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
 
   // Events
   btnStart.addEventListener('click', start);
@@ -477,6 +516,8 @@
     clearTable();
   });
   $('#btn-new').addEventListener('click', () => location.reload());
+  $('#btn-export-csv').addEventListener('click', csvExport);
+  // For intervalles, also generate QR button is attached in finish()
 
   renderParams();
 })();

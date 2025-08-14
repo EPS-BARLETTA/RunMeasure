@@ -1,4 +1,4 @@
-// RunMeasure V8.3 — local QR lib + compact payload + diagnostics
+// RunMeasure V9 — QR inline, compact payloads, CSV tables
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -101,27 +101,13 @@
     Object.keys(core||{}).forEach(k=> obj[k]=core[k]);
     return [obj];
   }
-  function setQrMeta(str){
-    const bytes = new Blob([str]).size; // UTF-8 length
-    if(qrMeta) qrMeta.textContent = `QR payload: ${bytes} octets`;
-  }
-  function tryMakeQR(text){
-    try{
-      new QRCode(qrcodeBox,{ text, width:220, height:220, correctLevel:QRCode.CorrectLevel.L });
-      return true;
-    }catch(e){
-      qrcodeBox.innerHTML='';
-      const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d);
-      return false;
-    }
-  }
+  function setQrMeta(str){ const bytes = new Blob([str]).size; if(qrMeta) qrMeta.textContent = `QR payload: ${bytes} octets`; }
+  function tryMakeQR(text){ try{ new QRCode(qrcodeBox,{ text, width:220, height:220, correctLevel:QRCode.CorrectLevel.L }); return true; }catch(e){ qrcodeBox.innerHTML=''; const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d); return false; } }
   function generateQR(){
     const p=buildPayload(); qrcodeBox.innerHTML=''; if(!p){ setQrMeta(''); return; }
     let text = JSON.stringify(p);
     setQrMeta(text);
-    // First attempt with tc in "MM:SS"
     if(tryMakeQR(text)) return;
-    // Fallback: make 'tc' even shorter: convert to seconds integer and join by '|'
     if(state.mode==='intervalles'){
       const secs = state.laps.map(l => Math.round(l.cumMs/1000)).join('|');
       const core = { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0), tc: secs };

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure V8.3 • Élève & Modes</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"/>
+<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure • Élève & Modes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"/>
 <script>
 const saveStudent=()=>{const nom=document.getElementById('nom').value.trim();const prenom=document.getElementById('prenom').value.trim();const classe=document.getElementById('classe').value.trim();const sexe=document.getElementById('sexe').value;localStorage.setItem('rm_student',JSON.stringify({nom,prenom,classe,sexe}));};
 const go=(mode)=>{saveStudent();location.href='mode.html?mode='+encodeURIComponent(mode);};
@@ -9,7 +11,7 @@ window.addEventListener('DOMContentLoaded',()=>{try{const s=JSON.parse(localStor
 </script>
 </head>
 <body>
-<header class="topbar colorful"><h1>RunMeasure — V8.3</h1></header>
+<header class="topbar colorful"><h1>RunMeasure</h1></header>
 <main class="container">
   <div class="nav-row"><a href="index.html" class="btn btn-outline">&larr; Accueil</a><a href="aide.html" class="btn btn-outline">Aide</a></div>
 

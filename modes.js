@@ -1,4 +1,4 @@
-// RunMeasure V7.9 — Intervalles QR = CUMULÉS UNIQUEMENT (t200,t400,...) ; All QR order = nom, prenom, classe, sexe, test, ...
+// RunMeasure V8.1 — Intervalles QR: 'tc' uses MM:SS (pipe-separated), very compact
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -43,7 +43,7 @@
           <label>Intervalle (m)
             <input type="number" id="p-step" min="25" step="25" value="200"/>
           </label>
-          <div class="info">Appuie sur « Tour ». À la fin : QR <strong>unique</strong> avec <em>temps cumulés</em> (t200, t400, …).</div>`;
+          <div class="info">Appuie sur « Tour ». À la fin : QR <strong>unique</strong> avec <em>temps cumulés</em> (format <code>MM:SS</code>) compressés dans <code>tc</code>.</div>`;
         state.targetDist=800; state.splitDist=200; break;
 
       case 'simple':
@@ -107,13 +107,9 @@
   }
   function buildPayload(){
     if(state.mode==='intervalles'){
-      // CUMULÉS UNIQUEMENT : t200,t400,... en "MM:SS.t"
-      const core = { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0) };
-      state.laps.forEach((l,i)=>{
-        const dist=(i+1)*state.splitDist;
-        core[`t${dist}`]=fmt(l.cumMs);
-      });
-      return payload('Temps intermédiaire', core);
+      // 'tc' as MM:SS values joined by '|'
+      const tc = state.laps.map(l => fmtMMSS(l.cumMs)).join('|');
+      return payload('Temps intermédiaire', { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0), tc });
     }
     if(state.mode==='simpleDistance'){
       const d=Math.round(state.targetDist||0);
@@ -167,7 +163,7 @@
     } else {
       lines.push(['info']); lines.push(['Pas de données exportables pour ce mode.']);
     }
-    const csv = lines.map(r=>r.map(esc).join(',')).join('\n'); // LF newlines
+    const csv = lines.map(r=>r.map(esc).join(',')).join('\n');
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=`runmeasure_${(s.nom||'')}_${(s.prenom||'')}.csv`;

@@ -1,4 +1,4 @@
-// RunMeasure V9 — QR inline, compact payloads, CSV tables
+// RunMeasure V8.1 — Intervalles QR: 'tc' uses MM:SS (pipe-separated), very compact
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -21,8 +21,7 @@
   const state = { mode:getMode(), running:false, startTime:0, elapsed:0, lastLapAt:0, laps:[], cumDist:0, targetDist:0, splitDist:0, lapDist:0, countdownMs:0, fixedDuration:0, ringTotal:0, fractionAdded:0 };
 
   const modeName=$('#mode-name'); const params=$('#params'); const display=$('#display'); const btnStart=$('#btn-start'); const btnLap=$('#btn-lap'); const btnStop=$('#btn-stop'); const btnReset=$('#btn-reset');
-  const tableWrap=$('#table-wrap'); const tbody=$('#laps-table tbody'); const results=$('#results'); const qrcodeBox=$('#qrcode'); const qrMeta=$('#qr-meta');
-  const totalTime=$('#total-time'); const totalSpeed=$('#total-speed'); const totalDistanceCell=$('#total-distance'); const rowTotal=$('#row-total');
+  const tableWrap=$('#table-wrap'); const tbody=$('#laps-table tbody'); const results=$('#results'); const qrcodeBox=$('#qrcode'); const totalTime=$('#total-time'); const totalSpeed=$('#total-speed'); const totalDistanceCell=$('#total-distance'); const rowTotal=$('#row-total');
   const circleWrap=$('#circle-wrap'); const liveDistance=$('#live-distance'); const liveDistVal=$('#live-dist-val'); const fractionTools=$('#fraction-tools'); const recap=$('#recap'); const recapBody=$('#recap-body');
 
   function mmssToMsStr(mm, ss){ const m=Math.max(0,parseInt(mm||'0',10)); const s=Math.max(0,parseInt(ss||'0',10)); return (m*60 + s)*1000; }
@@ -39,12 +38,12 @@
         modeName.textContent='Temps intermédiaire';
         params.innerHTML = `
           <label>Distance cible (m)
-            <input type="number" id="p-target" min="50" step="50" value="800"/>
+            <input type="number" id="p-target" min="100" step="50" value="800"/>
           </label>
           <label>Intervalle (m)
             <input type="number" id="p-step" min="25" step="25" value="200"/>
           </label>
-          <div class="info">Appuie sur « Tour ». À la fin : QR <strong>unique</strong> avec <em>temps cumulés</em> (MM:SS) compressés dans <code>tc</code>.</div>`;
+          <div class="info">Appuie sur « Tour ». À la fin : QR <strong>unique</strong> avec <em>temps cumulés</em> (format <code>MM:SS</code>) compressés dans <code>tc</code>.</div>`;
         state.targetDist=800; state.splitDist=200; break;
 
       case 'simple':
@@ -101,23 +100,14 @@
     Object.keys(core||{}).forEach(k=> obj[k]=core[k]);
     return [obj];
   }
-  function setQrMeta(str){ const bytes = new Blob([str]).size; if(qrMeta) qrMeta.textContent = `QR payload: ${bytes} octets`; }
-  function tryMakeQR(text){ try{ new QRCode(qrcodeBox,{ text, width:220, height:220, correctLevel:QRCode.CorrectLevel.L }); return true; }catch(e){ qrcodeBox.innerHTML=''; const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d); return false; } }
   function generateQR(){
-    const p=buildPayload(); qrcodeBox.innerHTML=''; if(!p){ setQrMeta(''); return; }
-    let text = JSON.stringify(p);
-    setQrMeta(text);
-    if(tryMakeQR(text)) return;
-    if(state.mode==='intervalles'){
-      const secs = state.laps.map(l => Math.round(l.cumMs/1000)).join('|');
-      const core = { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0), tc: secs };
-      text = JSON.stringify(payload('Temps intermédiaire', core));
-      setQrMeta(text);
-      qrcodeBox.innerHTML=''; tryMakeQR(text);
-    }
+    const p=buildPayload(); qrcodeBox.innerHTML=''; if(!p) return;
+    try{ new QRCode(qrcodeBox,{ text:JSON.stringify(p), width:220, height:220, correctLevel:QRCode.CorrectLevel.L }); }
+    catch(e){ const d=document.createElement('div'); d.textContent='Erreur QR: '+e.message; qrcodeBox.appendChild(d); }
   }
   function buildPayload(){
     if(state.mode==='intervalles'){
+      // 'tc' as MM:SS values joined by '|'
       const tc = state.laps.map(l => fmtMMSS(l.cumMs)).join('|');
       return payload('Temps intermédiaire', { distance: Math.round(state.targetDist||0), intervalle: Math.round(state.splitDist||0), tc });
     }
@@ -180,7 +170,7 @@
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   }
   btnStart.addEventListener('click', start); btnStop.addEventListener('click', stop); btnLap.addEventListener('click', lap);
-  btnReset.addEventListener('click', ()=>{ state.running=false; cancelAnimationFrame(state.raf); state.startTime=0; state.elapsed=0; state.lastLapAt=0; state.laps=[]; state.cumDist=0; state.fractionAdded=0; display.textContent='00:00.0'; display.classList.remove('display-huge'); if(circleWrap && !circleWrap.classList.contains('hidden')){ if(state.ringTotal) updateRing(state.ringTotal, state.ringTotal);} btnStart.textContent='Démarrer'; btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode)); btnStop.disabled=true; btnReset.disabled=false; if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)) tableWrap.classList.add('hidden'); results.classList.add('hidden'); qrcodeBox.innerHTML=''; qrMeta.textContent=''; liveDistVal.textContent='0'; recap.classList.add('hidden'); recapBody.innerHTML=''; if(totalDistanceCell) totalDistanceCell.textContent='—'; });
+  btnReset.addEventListener('click', ()=>{ state.running=false; cancelAnimationFrame(state.raf); state.startTime=0; state.elapsed=0; state.lastLapAt=0; state.laps=[]; state.cumDist=0; state.fractionAdded=0; display.textContent='00:00.0'; display.classList.remove('display-huge'); if(circleWrap && !circleWrap.classList.contains('hidden')){ if(state.ringTotal) updateRing(state.ringTotal, state.ringTotal);} btnStart.textContent='Démarrer'; btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode)); btnStop.disabled=true; btnReset.disabled=false; if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)) tableWrap.classList.add('hidden'); results.classList.add('hidden'); qrcodeBox.innerHTML=''; liveDistVal.textContent='0'; recap.classList.add('hidden'); recapBody.innerHTML=''; if(totalDistanceCell) totalDistanceCell.textContent='—'; clearTable(); });
   $('#btn-new').addEventListener('click', ()=> location.reload()); $('#btn-export-csv').addEventListener('click', csvExport);
   renderParams();
 })();

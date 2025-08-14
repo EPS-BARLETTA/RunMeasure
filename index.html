@@ -9,25 +9,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Modal safety */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:1rem;z-index:50}
-    .modal{background:#fff;border-radius:18px;max-width:820px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
-    .modal header{background:linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777);color:#fff;padding:1rem 1.2rem}
-    .modal header h3{margin:0}
-    .modal .body{padding:1rem 1.2rem}
-    .modal .actions{display:flex;justify-content:flex-end;gap:.5rem;padding:0 1.2rem 1.2rem}
-    .badge{display:inline-block;background:#eef2ff;color:#1d4ed8;font-weight:700;border-radius:999px;padding:.2rem .6rem;margin-right:.4rem}
-    .modal ul{margin:.6rem 0 0 1.2rem}
-    .modal ul li{margin:.25rem 0}
+    .home-actions{display:flex;flex-direction:column;gap:1rem;align-items:center}
+    .home-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
   </style>
 </head>
 <body class="page-home">
   <main class="centered">
     <h1 class="app-title gradient">RunMeasure</h1>
     <div class="home-actions">
-      <a class="btn btn-primary btn-xl" href="options.html">Démarrer</a>
-      <button class="btn btn-outline btn-xl" id="btn-safety">Fiche sécurité</button>
-      <a class="btn btn-outline btn-xl" href="aide.html">Aide</a>
+      <div class="home-row">
+        <a class="btn btn-primary btn-xl" href="options.html">Démarrer</a>
+      </div>
+      <div class="home-row">
+        <button class="btn btn-outline btn-xl" id="btn-safety">Fiche sécurité</button>
+        <a class="btn btn-outline btn-xl" href="aide.html">Aide</a>
+      </div>
     </div>
   </main>
   <footer class="footer">
@@ -51,6 +47,18 @@
           <li>Adapter l’allure à son état (parler = bonne intensité).</li>
         </ul>
         <p><span class="badge">Après</span> Retour au calme 3–5′, étirements légers, réhydratation, signaler toute gêne.</p>
+        <hr style="border:none;border-top:1px solid #eee;margin:1rem 0;">
+        <p><span class="badge">En cas de blessure</span> (pour soi ou un camarade) :</p>
+        <ul>
+          <li><strong>Ne pas s’agglutiner</strong> : laissez de l’air, parlez calmement.</li>
+          <li><strong>Sécuriser</strong> la zone : éloigner les coureurs et obstacles.</li>
+          <li><strong>Prévenir immédiatement l’enseignant</strong> (ou un adulte responsable).</li>
+          <li>Vérifier si la personne <strong>répond</strong> et <strong>respire</strong>.</li>
+          <li><strong>Ne pas déplacer</strong> la personne en cas de douleur au dos/cou/tête.</li>
+          <li>En cas de saignement : <strong>compression</strong> locale avec un tissu propre.</li>
+          <li>Si perte de connaissance / respiration anormale : alerter, demander un adulte d’appeler le <strong>112</strong>.</li>
+          <li>Rester auprès de la personne jusqu’à la prise en charge.</li>
+        </ul>
         <p style="color:#555;font-size:.95rem"><em>Rappel :</em> respecter les consignes du professeur, le matériel et les autres élèves. La sécurité passe avant la performance.</p>
       </div>
       <div class="actions">
@@ -60,10 +68,21 @@
   </div>
 
   <script>
-    const b = document.getElementById('safety-backdrop');
-    document.getElementById('btn-safety').addEventListener('click', ()=>{ b.style.display='flex'; b.setAttribute('aria-hidden','false'); });
-    document.getElementById('btn-safety-close').addEventListener('click', ()=>{ b.style.display='none'; b.setAttribute('aria-hidden','true'); });
-    b.addEventListener('click', (e)=>{ if(e.target===b){ b.style.display='none'; b.setAttribute('aria-hidden','true'); } });
+    // Wire modal open/close
+    (function(){
+      const backdrop = document.getElementById('safety-backdrop');
+      const openBtn = document.getElementById('btn-safety');
+      const closeBtn = document.getElementById('btn-safety-close');
+      if(openBtn && backdrop){
+        openBtn.addEventListener('click', ()=>{ backdrop.style.display='flex'; backdrop.setAttribute('aria-hidden','false'); });
+      }
+      if(closeBtn && backdrop){
+        closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
+      }
+      if(backdrop){
+        backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop){ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); } });
+      }
+    })();
   </script>
 </body>
 </html>

@@ -30,7 +30,6 @@ p{margin:.5rem 0}
 }
 .app-title{font-size:2.8rem;letter-spacing:.5px;font-weight:800}
 .gradient{background:linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777);-webkit-background-clip:text;background-clip:text;color:transparent}
-.home-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
 .btn{border:none;border-radius:16px;padding:.9rem 1.1rem;font-weight:700;cursor:pointer;display:inline-block;min-width:160px;text-align:center}
 .btn-xl{font-size:1.25rem;min-width:230px;padding:1.05rem 1.6rem}
 .btn-lg{font-size:1.1rem;min-width:170px}
@@ -126,3 +125,14 @@ tfoot td{font-weight:700}
 /* Recap table */
 .recap-table{width:100%;border-collapse:collapse}
 .recap-table td{border-bottom:1px solid var(--line);padding:.5rem .4rem}
+
+/* Modal safety (shared) */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:1rem;z-index:50}
+.modal{background:#fff;border-radius:18px;max-width:820px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+.modal header{background:linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777);color:#fff;padding:1rem 1.2rem}
+.modal header h3{margin:0}
+.modal .body{padding:1rem 1.2rem}
+.modal .actions{display:flex;justify-content:flex-end;gap:.5rem;padding:0 1.2rem 1.2rem}
+.badge{display:inline-block;background:#eef2ff;color:#1d4ed8;font-weight:700;border-radius:999px;padding:.2rem .6rem;margin-right:.4rem}
+.modal ul{margin:.6rem 0 0 1.2rem}
+.modal ul li{margin:.25rem 0}

@@ -1,4 +1,4 @@
-// RunMeasure V7.3 — minutes/secondes selects, fractions reflected in totals & QR, CSV compat
+// RunMeasure V7.4 — minutes=0..120, fractions wired, safety modal on home
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const fmt = (ms) => {
@@ -58,6 +58,7 @@
   const recap = $('#recap');
   const recapBody = $('#recap-body');
 
+  const now = () => performance.now();
   function mmssToMsStr(mm, ss){
     const m = Math.max(0, parseInt(mm||'0',10));
     const s = Math.max(0, parseInt(ss||'0',10));
@@ -195,24 +196,22 @@
     const min = document.createElement('label');
     min.innerHTML = 'Minutes<select id="sel-min"></select>';
     const selMin = min.querySelector('select');
-    for(let i=1;i<=120;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); if(i===5) o.selected=true; selMin.appendChild(o); }
+    for(let i=0;i<=120;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); if(i===5) o.selected=true; selMin.appendChild(o); }
 
     const sec = document.createElement('label');
     sec.innerHTML = 'Secondes<select id="sel-sec"></select>';
     const selSec = sec.querySelector('select');
-    for(let i=1;i<=59;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); selSec.appendChild(o); }
-    const zeroOpt = document.createElement('option'); zeroOpt.value=0; zeroOpt.textContent='00'; selSec.insertBefore(zeroOpt, selSec.firstChild); zeroOpt.selected=true;
+    for(let i=0;i<=59;i++){ const o=document.createElement('option'); o.value=i; o.textContent=String(i).padStart(2,'0'); selSec.appendChild(o); }
+    selSec.value = 0;
 
     const spacer = document.createElement('div'); spacer.innerHTML='&nbsp;';
 
-    selMin.addEventListener('change', ()=> {
+    function onDurChange(){
       const mm = parseInt(selMin.value,10), ss = parseInt(selSec.value,10);
       state.countdownMs = (mm*60+ss)*1000; state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
-    });
-    selSec.addEventListener('change', ()=> {
-      const mm = parseInt(selMin.value,10), ss = parseInt(selSec.value,10);
-      state.countdownMs = (mm*60+ss)*1000; state.ringTotal = state.countdownMs; updateRing(state.countdownMs, state.ringTotal);
-    });
+    }
+    selMin.addEventListener('change', onDurChange);
+    selSec.addEventListener('change', onDurChange);
 
     wrap.appendChild(min);
     wrap.appendChild(sec);
@@ -227,7 +226,6 @@
     if($('#circle-fg')){ $('#circle-fg').style.strokeDasharray = CIRCUM; $('#circle-fg').style.strokeDashoffset = offset; }
     if($('#circle-text')){ $('#circle-text').textContent = fmtMMSS(remaining); }
   }
-  const now = () => performance.now();
 
   function clearTable(){
     tbody.innerHTML='';
@@ -240,7 +238,7 @@
   function start(){
     if(state.running){
       state.running = false;
-      state.elapsed = now() - state.startTime + state.elapsed;
+      state.elapsed = performance.now() - state.startTime + state.elapsed;
       cancelAnimationFrame(state.raf);
       btnStart.textContent = 'Reprendre';
       if(!['minuteurSimple','simple','simpleDistance'].includes(state.mode)){
@@ -251,7 +249,7 @@
       return;
     }
     state.running = true;
-    state.startTime = now();
+    state.startTime = performance.now();
     state.lastLapAt = state.lastLapAt || state.startTime;
     btnStart.textContent = 'Pause';
     btnLap.disabled = (['minuteurSimple','simple','simpleDistance'].includes(state.mode));
@@ -267,7 +265,7 @@
   function stop(){ if(!state.running && state.elapsed===0) return; finish(); }
 
   function tick(){
-    let t = state.elapsed + (now() - state.startTime);
+    let t = state.elapsed + (performance.now() - state.startTime);
     if(['tours','minuteurSimple'].includes(state.mode)){
       const remain = Math.max(0, state.countdownMs - t);
       updateRing(remain, state.ringTotal);
@@ -286,7 +284,7 @@
     if(!state.running) return;
     if(['simple','simpleDistance','minuteurSimple'].includes(state.mode)) return;
 
-    const tNow = now();
+    const tNow = performance.now();
     const cumMs = state.elapsed + (tNow - state.startTime);
     const lapMs = tNow - state.lastLapAt;
     state.lastLapAt = tNow;
@@ -356,7 +354,7 @@
 
   function finish(){
     if(state.running){
-      state.elapsed = state.elapsed + (now() - state.startTime);
+      state.elapsed = state.elapsed + (performance.now() - state.startTime);
       state.running = false;
       cancelAnimationFrame(state.raf);
     }
@@ -368,6 +366,12 @@
 
     if(['tours','demiCooper','cooper'].includes(state.mode)){
       fractionTools.classList.remove('hidden');
+      // Wire fraction buttons
+      document.querySelectorAll('#fraction-tools [data-frac]').forEach(btn => {
+        btn.onclick = () => applyFraction(parseFloat(btn.dataset.frac));
+      });
+      const undo = document.getElementById('btn-frac-undo');
+      if(undo) undo.onclick = undoFraction;
     }
 
     if(state.mode==='intervalles'){
@@ -517,7 +521,7 @@
   });
   $('#btn-new').addEventListener('click', () => location.reload());
   $('#btn-export-csv').addEventListener('click', csvExport);
-  // For intervalles, also generate QR button is attached in finish()
+  // For intervalles, the QR radio + button events are attached in finish()
 
   renderParams();
 })();

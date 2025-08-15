@@ -9,23 +9,24 @@
 <body>
   <div class="wrap">
     <header class="card center">
-      <h1 class="brand">RunMeasure — V8.3</h1>
+      <h1 class="brand">RunMeasure</h1>
       <div class="chips">
         <a class="btn btn-ghost" href="index.html">← Accueil</a>
-        <a class="btn btn-ghost" href="aide.html">Aide</a>
+        <a class="btn btn-ghost" href="help.html">Aide</a>
+        <a class="btn btn-ghost" href="safety.html">Fiche sécurité</a>
       </div>
     </header>
 
-    <section class="card section-green">
+    <section class="card">
       <h2 class="center">Informations élève</h2>
       <div class="row">
         <div>
           <label for="nom" class="badge">Nom</label>
-          <input id="nom" type="text" autocomplete="family-name" placeholder="Martin">
+          <input id="nom" type="text" placeholder="Martin">
         </div>
         <div>
           <label for="prenom" class="badge">Prénom</label>
-          <input id="prenom" type="text" autocomplete="given-name" placeholder="Julie">
+          <input id="prenom" type="text" placeholder="Julie">
         </div>
       </div>
       <div class="row">
@@ -48,62 +49,32 @@
       </div>
     </section>
 
-    <section class="card section-green">
+    <section class="card">
       <h2 class="center">Choisir un mode</h2>
       <div class="grid">
-        <a class="btn btn-primary" style="background:#2c5be0" data-mode="intermediaire">Temps intermédiaire</a>
-        <a class="btn btn-primary" style="background:#169b51" data-mode="chrono">Chrono</a>
-        <a class="btn btn-primary" style="background:#119b86" data-mode="minuteur">Minuteur</a>
-        <a class="btn btn-primary" style="background:#6b37ff" data-mode="chrono_vitesse">Chrono avec calcul de vitesse</a>
-        <a class="btn btn-primary" style="background:#c96d07" data-mode="minuteur_distance">Minuteur avec distance</a>
+        <a class="btn btn-primary btn-wide go" data-mode="chrono">Chrono</a>
+        <a class="btn btn-primary btn-wide go" data-mode="minuteur">Minuteur</a>
+        <a class="btn btn-primary btn-wide go" data-mode="chrono_vitesse">Chrono avec calcul de vitesse</a>
+        <a class="btn btn-primary btn-wide go" data-mode="minuteur_distance">Minuteur avec distance</a>
+        <a class="btn btn-primary btn-wide go" data-mode="intermediaire">Temps intermédiaire</a>
+        <a class="btn btn-primary btn-wide go" data-mode="demi_cooper">Demi-Cooper (6′)</a>
+        <a class="btn btn-primary btn-wide go" data-mode="cooper">Cooper (12′)</a>
       </div>
     </section>
 
-    <section class="card section-pink">
-      <h2 class="center">Tests d'endurance</h2>
-      <div class="grid">
-        <a class="btn btn-primary" style="background:#c0316e" data-mode="demi_cooper">Demi-Cooper (6′)</a>
-        <a class="btn btn-primary" style="background:#c0156a" data-mode="cooper">Cooper (12′)</a>
-      </div>
-    </section>
-
-    <footer class="center muted">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+    <footer class="muted center">Pack EPS iPad</footer>
   </div>
 
   <script>
-    function getEleve() {
-      try { const raw = localStorage.getItem('eleve'); if (raw) return JSON.parse(raw); } catch {}
-      return { nom:"", prenom:"", classe:"", sexe:"" };
-    }
-    function setEleve(e) { try { localStorage.setItem('eleve', JSON.stringify(e)); } catch {} }
-    function loadForm() {
-      const e = getEleve();
-      if (!e) return;
-      if (e.nom) document.getElementById('nom').value = e.nom;
-      if (e.prenom) document.getElementById('prenom').value = e.prenom;
-      if (e.classe) document.getElementById('classe').value = e.classe;
-      if (e.sexe) document.getElementById('sexe').value = e.sexe;
-    }
-    function readForm() {
-      return {
-        nom: document.getElementById('nom').value.trim(),
-        prenom: document.getElementById('prenom').value.trim(),
-        classe: document.getElementById('classe').value.trim(),
-        sexe: document.getElementById('sexe').value.trim().toLowerCase()
-      };
-    }
-    document.addEventListener('DOMContentLoaded', () => {
+    function getEleve(){ try{const raw=localStorage.getItem('eleve'); if(raw) return JSON.parse(raw);}catch{} return {nom:'',prenom:'',classe:'',sexe:''}; }
+    function setEleve(e){ try{localStorage.setItem('eleve', JSON.stringify(e));}catch{} }
+    function loadForm(){ const e=getEleve(); const ids=['nom','prenom','classe','sexe']; ids.forEach(id=>{ if(e[id]) document.getElementById(id).value=e[id]; }); }
+    function readForm(){ return { nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim().toLowerCase() }; }
+    document.addEventListener('DOMContentLoaded',()=>{
       loadForm();
-      document.getElementById('save-eleve').addEventListener('click', () => {
-        setEleve(readForm()); alert('Élève enregistré ✅');
-      });
-      document.querySelectorAll('[data-mode]').forEach(a => {
-        a.addEventListener('click', (ev) => {
-          ev.preventDefault();
-          setEleve(readForm());
-          const mode = a.getAttribute('data-mode');
-          window.location.href = `mode.html?mode=${encodeURIComponent(mode)}`;
-        });
+      document.getElementById('save-eleve').addEventListener('click', ()=>{ setEleve(readForm()); alert('Élève enregistré ✅'); });
+      document.querySelectorAll('a.go').forEach(a=>{
+        a.addEventListener('click',(ev)=>{ ev.preventDefault(); setEleve(readForm()); const mode=a.getAttribute('data-mode'); location.href=`mode.html?mode=${encodeURIComponent(mode)}`; });
       });
     });
   </script>

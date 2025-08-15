@@ -12,79 +12,97 @@
       <h1 class="brand">RunMeasure</h1>
       <div class="chips">
         <a class="btn btn-ghost" href="options.html">← Choisir un autre mode</a>
-        <a class="btn btn-ghost" href="index.html">Accueil</a>
-        <a class="btn btn-ghost" href="aide.html">Aide</a>
+        <button id="btn-help" class="btn btn-ghost">Aide</button>
+        <button id="btn-full" class="btn btn-primary">⛶ Plein écran</button>
       </div>
     </header>
 
-    <section id="params" class="card">
+    <section class="card" id="params">
       <h2>Paramètres</h2>
-      <div class="row" id="distance-row" style="display:none">
-        <div>
-          <label for="distance-input" class="badge">Distance (m)</label>
-          <input id="distance-input" type="number" min="0" placeholder="ex : 400">
+      <div class="row" id="row-distance" style="display:none">
+        <div><label class="badge" for="distance-input">Distance (m)</label><input id="distance-input" type="number" min="0" placeholder="ex: 800"></div>
+      </div>
+      <div class="row" id="row-track" style="display:none">
+        <div><label class="badge" for="track-length">Longueur de piste (m)</label><input id="track-length" type="number" min="50" step="1" value="400"></div>
+        <div><label class="badge" for="laps-count">Tours complets</label><input id="laps-count" type="number" min="0" step="1" value="0"></div>
+        <div><label class="badge" for="lap-fraction">Fraction</label>
+          <select id="lap-fraction">
+            <option value="0">0</option>
+            <option value="0.25">1/4</option>
+            <option value="0.5">1/2</option>
+            <option value="0.75">3/4</option>
+          </select>
         </div>
       </div>
-      <div class="row" id="timer-row" style="display:none">
-        <div>
-          <label for="time-input" class="badge">Durée (MM:SS)</label>
-          <input id="time-input" type="text" placeholder="06:00">
-        </div>
+      <div class="row" id="row-intervalles" style="display:none">
+        <div><label class="badge" for="total-distance">Distance totale (m)</label><input id="total-distance" type="number" min="100" step="50" value="800"></div>
+        <div><label class="badge" for="split-step">Pas d'intermédiaire (m)</label><input id="split-step" type="number" min="50" step="50" value="200"></div>
+      </div>
+      <div class="row" id="row-timer" style="display:none">
+        <div class="wheel"><label class="badge">Heures</label><select id="wh-h"></select></div>
+        <div class="wheel"><label class="badge">Minutes</label><select id="wh-m"></select></div>
+        <div class="wheel"><label class="badge">Secondes</label><select id="wh-s"></select></div>
       </div>
       <p id="hint" class="muted"></p>
     </section>
 
-    <section class="card">
+    <section class="card" id="controls">
       <h2>Contrôles</h2>
       <div class="chips">
-        <button id="start-btn" class="btn btn-primary">▶️ Démarrer</button>
-        <button id="split-btn" class="btn btn-ghost" style="display:none">🏁 Temps intermédiaire</button>
-        <button id="stop-btn" class="btn btn-ghost" disabled>⏸️ Stop</button>
-        <button id="reset-btn" class="btn btn-ghost" disabled>🔄 Reset</button>
+        <button id="btn-start" class="btn btn-ok">▶️ Démarrer</button>
+        <button id="btn-lap" class="btn btn-ghost" style="display:none">🏁 Intermédiaire</button>
+        <button id="btn-stop" class="btn btn-warn" disabled>⏸️ Stop</button>
+        <button id="btn-reset" class="btn btn-danger" disabled>🔄 Reset</button>
+        <button id="btn-qr" class="btn btn-ghost">📱 Générer le QR JSON</button>
       </div>
     </section>
 
     <section class="card" id="results">
-      <h2>Résultats</h2>
+      <h2>Affichage</h2>
       <div class="grid">
-        <div class="card">
-          <div>Temps</div>
-          <div id="time-result" class="stat">00:00</div>
+        <div class="card center">
+          <div class="sub">Temps</div>
+          <div id="time" class="stat">00:00</div>
         </div>
-        <div id="distance-col" class="card" style="display:none">
-          <div>Distance totale</div>
-          <div id="distance-result" class="stat">—</div>
+        <div class="card center" id="box-speed" style="display:none">
+          <div class="sub">Vitesse</div>
+          <div id="speed" class="stat">—</div>
         </div>
-        <div id="speed-col" class="card" style="display:none">
-          <div>Vitesse estimée</div>
-          <div id="speed-result" class="stat">—</div>
+        <div class="card center" id="box-distance" style="display:none">
+          <div class="sub">Distance</div>
+          <div id="distance" class="stat">—</div>
         </div>
       </div>
 
-      <div id="splits-block" style="display:none; margin-top:12px;">
+      <div id="splits-wrap" style="display:none;margin-top:12px">
         <h3>Intermédiaires</h3>
-        <table id="splits-table" style="width:100%; border-collapse:collapse">
-          <thead><tr><th style="text-align:left;border-bottom:1px solid #eee">#</th><th style="text-align:left;border-bottom:1px solid #eee">Temps</th></tr></thead>
+        <table id="splits-table">
+          <thead><tr><th>#</th><th>Distance cumulée (m)</th><th>Temps cumulé</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
     </section>
 
-    <div id="result"></div>
+    <!-- Fullscreen overlays -->
+    <div id="fs-chrono" class="fullscreen">
+      <div id="fs-time" class="time-big">00:00</div>
+    </div>
 
-    <footer class="center muted">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+    <div id="fs-countdown" class="fullscreen">
+      <div class="circle"><canvas id="cd-canvas"></canvas></div>
+      <div id="cd-time" class="time-big" style="margin-top:18px">00:00</div>
+    </div>
+
+    <div id="fs-speed" class="fullscreen">
+      <div id="fs-speed-val" class="speed-big">—</div>
+      <div id="fs-time2" class="time-big" style="font-size:12vw;margin-top:12px">00:00</div>
+    </div>
+
+    <footer class="muted center">EPS iPad • QR intégrés</footer>
   </div>
 
-  <!-- Progressive loader: try jsDelivr, then unpkg; if both fail, app still works and shows message in QR box -->
-  <script>
-    (function(){
-      function load(src){ return new Promise((res,rej)=>{ var s=document.createElement('script'); s.src=src; s.defer=true; s.onload=res; s.onerror=()=>rej(new Error('load '+src)); document.head.appendChild(s); }); }
-      (async ()=>{
-        try{ await load('https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'); }
-        catch(e){ try{ await load('https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js'); }catch(_){} }
-      })();
-    })();
-  </script>
+  <!-- QR lib via CDN (dual fallback loaded by app.js if missing) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script defer src="app.js"></script>
 </body>
 </html>

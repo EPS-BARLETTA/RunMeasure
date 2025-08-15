@@ -8,26 +8,26 @@
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1 id="mode-title">Mode</h1>
-      <nav>
-        <a class="btn" href="options.html">← Choisir un autre mode</a>
-        <a class="btn" href="index.html">Accueil</a>
-        <a class="btn" href="aide.html">Aide</a>
-      </nav>
+    <header class="card center">
+      <h1 class="brand">RunMeasure</h1>
+      <div class="chips">
+        <a class="btn btn-ghost" href="options.html">← Choisir un autre mode</a>
+        <a class="btn btn-ghost" href="index.html">Accueil</a>
+        <a class="btn btn-ghost" href="aide.html">Aide</a>
+      </div>
     </header>
 
     <section id="params" class="card">
       <h2>Paramètres</h2>
       <div class="row" id="distance-row" style="display:none">
         <div>
-          <label for="distance-input">Distance (m)</label>
+          <label for="distance-input" class="badge">Distance (m)</label>
           <input id="distance-input" type="number" min="0" placeholder="ex : 400">
         </div>
       </div>
       <div class="row" id="timer-row" style="display:none">
         <div>
-          <label for="time-input">Durée (MM:SS)</label>
+          <label for="time-input" class="badge">Durée (MM:SS)</label>
           <input id="time-input" type="text" placeholder="06:00">
         </div>
       </div>
@@ -36,26 +36,26 @@
 
     <section class="card">
       <h2>Contrôles</h2>
-      <div class="row">
-        <button id="start-btn" class="btn btn-success">▶️ Démarrer</button>
-        <button id="split-btn" class="btn" style="display:none">🏁 Temps intermédiaire</button>
-        <button id="stop-btn" class="btn btn-primary" disabled>⏸️ Stop</button>
-        <button id="reset-btn" class="btn btn-danger" disabled>🔄 Reset</button>
+      <div class="chips">
+        <button id="start-btn" class="btn btn-primary">▶️ Démarrer</button>
+        <button id="split-btn" class="btn btn-ghost" style="display:none">🏁 Temps intermédiaire</button>
+        <button id="stop-btn" class="btn btn-ghost" disabled>⏸️ Stop</button>
+        <button id="reset-btn" class="btn btn-ghost" disabled>🔄 Reset</button>
       </div>
     </section>
 
     <section class="card" id="results">
       <h2>Résultats</h2>
-      <div class="row">
-        <div>
+      <div class="grid">
+        <div class="card">
           <div>Temps</div>
           <div id="time-result" class="stat">00:00</div>
         </div>
-        <div id="distance-col" style="display:none">
+        <div id="distance-col" class="card" style="display:none">
           <div>Distance totale</div>
           <div id="distance-result" class="stat">—</div>
         </div>
-        <div id="speed-col" style="display:none">
+        <div id="speed-col" class="card" style="display:none">
           <div>Vitesse estimée</div>
           <div id="speed-result" class="stat">—</div>
         </div>
@@ -63,22 +63,28 @@
 
       <div id="splits-block" style="display:none; margin-top:12px;">
         <h3>Intermédiaires</h3>
-        <table id="splits-table">
-          <thead><tr><th>#</th><th>Temps</th></tr></thead>
+        <table id="splits-table" style="width:100%; border-collapse:collapse">
+          <thead><tr><th style="text-align:left;border-bottom:1px solid #eee">#</th><th style="text-align:left;border-bottom:1px solid #eee">Temps</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
     </section>
 
-    <!-- Le QR s'injecte ici -->
     <div id="result"></div>
 
-    <footer class="muted">RunMeasure — ZIP</footer>
+    <footer class="center muted">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
   </div>
 
-  <!-- CDN qrcodejs pour générer les QR -->
-  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <!-- Logique appli + QR -->
+  <!-- Progressive loader: try jsDelivr, then unpkg; if both fail, app still works and shows message in QR box -->
+  <script>
+    (function(){
+      function load(src){ return new Promise((res,rej)=>{ var s=document.createElement('script'); s.src=src; s.defer=true; s.onload=res; s.onerror=()=>rej(new Error('load '+src)); document.head.appendChild(s); }); }
+      (async ()=>{
+        try{ await load('https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'); }
+        catch(e){ try{ await load('https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js'); }catch(_){} }
+      })();
+    })();
+  </script>
   <script defer src="app.js"></script>
 </body>
 </html>

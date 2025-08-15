@@ -1,15 +1,24 @@
-/* Style minimal compatible */
+/* Keep a friendly gradient UI similar to your screenshots */
 *{box-sizing:border-box}
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fafafa;color:#111;margin:0}
-.wrap{max-width:900px;margin:0 auto;padding:16px}
-header,footer{text-align:center;margin:8px 0}
-.card{border:1px solid #ddd;border-radius:12px;padding:12px;background:#fff;margin-bottom:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.btn{display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid #ccc;background:#f5f5f5;font-weight:600;text-decoration:none;text-align:center;cursor:pointer}
-.btn-primary{background:#eaf3ff;border-color:#bcd4ff}
-.btn-success{background:#eaffea;border-color:#c8ffc8}
-.btn-danger{background:#ffecec;border-color:#ffc8c8}
-.btn-wide{width:100%}
-.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:220px}
-.stat{font-size:1.3rem;font-weight:700}
+:root{--radius:22px}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f5f6fb;color:#111;margin:0}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+header,footer{text-align:center;margin:12px 0}
+.brand{font-size:40px;font-weight:900;background:linear-gradient(90deg,#2b50ff,#e21ea2);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0}
+h2{margin:0 0 10px}
+.card{border:1px solid #e8e8ee;border-radius:24px;padding:16px;background:#fff;box-shadow:0 2px 12px rgba(20,20,60,.04);margin-bottom:16px}
+.section-green{background:linear-gradient(180deg,#e9fff3,#ffffff)}
+.section-pink{background:linear-gradient(180deg,#ffe8ef,#ffffff)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.btn{display:inline-block;padding:14px 18px;border-radius:28px;border:0;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn-ghost{border:2px solid #e1e1f6;background:#fff}
+.btn-primary{background:#2b50ff;color:#fff}
+.chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+input[type="text"],input[type="number"],select{width:100%;padding:12px 14px;border:1px solid #dcdcef;border-radius:16px;background:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:220px}
+.stat{font-size:28px;font-weight:800}
 .muted{color:#666}
+.center{text-align:center}
+.badge{font-weight:800;font-size:12px;padding:6px 10px;border-radius:999px;background:#f1f2fb;display:inline-block}
+#qr-box{margin-top:16px}
+footer{color:#666;padding-bottom:24px}

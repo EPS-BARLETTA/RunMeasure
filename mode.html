@@ -1,82 +1,84 @@
-<!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure V8.3-inline • Mode</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css"/>
-<script>
-/* inline qrcode lib */
-/* QRCode for JavaScript - Minimal build (embedded) */
-var QRCode=function(t,e){this._htOption={width:256,height:256,correctLevel:1,text:""};if("string"==typeof t&&(t=document.getElementById(t)),this._el=t,this._oQRCode=null,e)for(var i in e)this._htOption[i]=e[i];this.makeCode(this._htOption.text)};QRCode.CorrectLevel={L:1,M:0,Q:3,H:2};QRCode.prototype.makeCode=function(t){this._htOption.text=t,this._oQRCode=new QRCodeModel(getTypeNumber(t,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(t),this._oQRCode.make(),this._el.innerHTML="";var e=document.createElement("canvas");e.width=this._htOption.width,e.height=this._htOption.height;for(var i=e.getContext("2d"),o=this._htOption.width/this._oQRCode.getModuleCount(),n=this._htOption.height/this._oQRCode.getModuleCount(),r=0;r<this._oQRCode.getModuleCount();r++)for(var h=0;h<this._oQRCode.getModuleCount();h++)i.fillStyle=this._oQRCode.isDark(r,h)?"#000":"#fff",i.fillRect(Math.round(h*n),Math.round(r*o),Math.ceil(n),Math.ceil(o));this._el.appendChild(e)};
-function QRCodeModel(t,e){this.typeNumber=t,this.errorCorrectLevel=e,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}QRCodeModel.prototype={addData:function(t){this.dataList.push(new QR8bitByte(t)),this.dataCache=null},isDark:function(t,e){if(t<0||this.moduleCount<=t||e<0||this.moduleCount<=e)throw new Error(t+","+e);return this.modules[t][e]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(t,e){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var i=0;i<this.moduleCount;i++){this.modules[i]=new Array(this.moduleCount);for(var o=0;o<this.moduleCount;o++)this.modules[i][o]=null}setupPositionProbePattern(this,0,0),setupPositionProbePattern(this,this.moduleCount-7,0),setupPositionProbePattern(this,0,this.moduleCount-7),setupPositionAdjustPattern(this),setupTimingPattern(this),setupTypeInfo(this,t,e),this.typeNumber>=7&&setupTypeNumber(this,t),this.dataCache=createData(this.typeNumber,this.errorCorrectLevel,this.dataList),mapData(this,this.dataCache,e)},
-getBestMaskPattern:function(){for(var t=0,e=0,i=0;i<8;i++){mapData(this,createData(this.typeNumber,this.errorCorrectLevel,this.dataList),i);var o=QRUtil.getLostPoint(this);(0==i||t>o)&&(t=o,e=i)}return e}};
-var QRUtil={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(t){for(var e=t<<10;QRUtil.getBCHDigit(e)-QRUtil.getBCHDigit(QRUtil.G15)>=0;)e^=QRUtil.G15<<(QRUtil.getBCHDigit(e)-QRUtil.getBCHDigit(QRUtil.G15));return(t<<10|e)^QRUtil.G15_MASK},getBCHTypeNumber:function(t){for(var e=t<<12;QRUtil.getBCHDigit(e)-QRUtil.getBCHDigit(QRUtil.G18)>=0;)e^=QRUtil.G18<<(QRUtil.getBCHDigit(e)-QRUtil.getBCHDigit(QRUtil.G18));return t<<12|e},getBCHDigit:function(t){for(var e=0;0!=t;)e++,t>>=1;return e},getPatternPosition:function(t){return QRUtil.PATTERN_POSITION_TABLE[t-1]||[]},getMask:function(t,e,i){switch(t){case 0:return(e+i)%2==0;case 1:return e%2==0;case 2:return i%3==0;case 3:return(e+i)%3==0;case 4:return(Math.floor(e/2)+Math.floor(i/3))%2==0;case 5:return(e*i)%2+(e*i)%3==0;case 6:return((e*i)%2+(e*i)%3)%2==0;case 7:return((e+i)%2+(e*i)%3)%2==0;default:throw new Error("bad maskPattern:"+t)}},getLostPoint:function(t){for(var e=t.getModuleCount(),i=0,o=0;o<e;o++)for(var n=0;n<e;n++){for(var r=0,h=t.isDark(o,n),a=-1;a<=1;a++)if(!(o+a<0||e<=o+a))for(var s=-1;s<=1;s++)n+s<0||e<=n+s||(a!=0||s!=0)&&h==t.isDark(o+a,n+s)&&r++;r>5&&(i+=3+r-5)}for(o=0;o<e-1;o++)for(n=0;n<e-1;n++){var l=0;t.isDark(o,n)&&(l++),t.isDark(o+1,n)&&(l++),t.isDark(o,n+1)&&(l++),t.isDark(o+1,n+1)&&(l++),(0==l||4==l)&&(i+=3)}for(o=0;o<e;o++)for(n=0;n<e;n++){if(t.isDark(o,n))i++;}var c=Math.abs(100*i/e/e-50)/5;return i+10*c};
-function QR8bitByte(t){this.mode=1,this.data=t}QR8bitByte.prototype={getLength:function(){return this.data.length},write:function(t){for(var e=0;e<this.data.length;e++)t.put(this.data.charCodeAt(e),8)}};
-function getTypeNumber(t,e){for(var i=1;i<=10;i++){try{var o=new QRCodeModel(i,e);o.addData(t);var n=createData(i,e,o.dataList);return i}catch(t){}}throw new Error("QR payload too large")}
-function setupPositionProbePattern(t,e,i){for(var o=-1;o<=7;o++)if(!(e+o<=-1||t.moduleCount<=e+o))for(var n=-1;n<=7;n++)i+n<=-1||t.moduleCount<=i+n||(o>=0&&o<=6&&(0==n||6==n)||n>=0&&n<=6&&(0==o||6==o)||o>=2&&o<=4&&n>=2&&n<=4)&&(t.modules[e+o][i+n]=!0)}
-function setupTimingPattern(t){for(var e=8;e<t.moduleCount-8;e++)null===t.modules[e][6]&&(t.modules[e][6]=e%2==0),null===t.modules[6][e]&&(t.modules[6][e]=e%2==0)}
-function setupPositionAdjustPattern(t){for(var e=QRUtil.getPatternPosition(t.typeNumber),i=0;i<e.length;i++)for(var o=0;o<e.length;o++){var n=e[i],r=e[o];if(null==t.modules[n][r])for(var h=-2;h<=2;h++)for(var a=-2;a<=2;a++)t.modules[n+h][r+a]=-2==h||2==h||-2==a||2==a||0==h&&0==a}}
-function setupTypeNumber(t,e){for(var i=QRUtil.getBCHTypeNumber(t.typeNumber),o=0;o<18;o++){var n=!e&&1==(i>>o&1);t.modules[Math.floor(o/3)][o%3+t.moduleCount-8-3]=n,t.modules[o%3+8][Math.floor(o/3)]=n}}
-function setupTypeInfo(t,e,i){for(var o=QRUtil.getBCHTypeInfo(e<<3|i),n=0;n<15;n++){var r=!1;1==(o>>n&1)&&(r=!0),n<6?t.modules[n][8]=r:n<8?t.modules[n+1][8]=r:t.modules[t.moduleCount-15+n][8]=r}for(n=0;n<15;n++){var h=!1;1==(o>>n&1)&&(h=!0),n<8?t.modules[8][t.moduleCount-n-1]=h:n<9?t.modules[8][t.moduleCount-n-1-1]=h:t.modules[8][15-n-1]=h}t.modules[t.moduleCount-8][8]=!0}
-function createData(t,e,i){for(var o=RSBlock.getRSBlocks(t,e),n=new BitBuffer,r=0;r<i.length;r++){var h=i[r];n.put(h.mode,4),n.put(h.getLength(),8);for(var a=0;a<h.data.length;a++)n.put(h.data.charCodeAt(a),8)}for(var s=0,l=0;l<o.length;l++)s+=o[l].dataCount;for(;n.getLengthInBits()>8*s;)n.getLengthInBits();for(n.getLengthInBits()%8!=0&&n.put(0,8);n.getLengthInBits()<8*s;)n.put(236,8),n.getLengthInBits()<8*s&&n.put(17,8);return createBytes(n,o)}
-function createBytes(t,e){for(var i=0,o=0,n=new Array(e.length),r=0;r<e.length;r++)o=Math.max(o,e[r].dataCount),n[r]=new Array(e[r].dataCount);for(r=0;r<e.length;r++){for(var h=e[r],a=0;a<h.dataCount;a++)n[r][a]=255&t.buffer[a+i];i+=h.dataCount}for(var s=0,l=0;l<e.length;l++)s=Math.max(s,e[l].totalCount-e[l].dataCount);for(var c=new Array(e.length),u=0;u<s;u++)for(l=0;l<e.length;l++){var d=e[l].totalCount-e[l].dataCount;u<d&&(c[l]||(c[l]=[]),c[l].push(255&t.buffer[i]),i++)}for(var f=[],p=0;p<o;p++)for(l=0;l<e.length;l++)p<n[l].length&&f.push(n[l][p]);for(u=0;u<s;u++)for(l=0;l<e.length;l++)c[l]&&u<c[l].length&&f.push(c[l][u]);return f}
-var RSBlock={getRSBlocks:function(t,e){return[{totalCount:19,dataCount:16},{totalCount:34,dataCount:28},{totalCount:55,dataCount:44},{totalCount:80,dataCount:64},{totalCount:108,dataCount:86},{totalCount:136,dataCount:108},{totalCount:156,dataCount:124},{totalCount:194,dataCount:154},{totalCount:232,dataCount:182},{totalCount:274,dataCount:216}][t-1]}};
-function BitBuffer(){this.buffer=[],this.length=0}BitBuffer.prototype={get:function(t){return 1==(this.buffer[Math.floor(t/8)]>>>7-t%8&1)},put:function(t,e){for(var i=0;i<e;i++)this.putBit(1==(t>>>e-i-1&1))},getLengthInBits:function(){return this.length},putBit:function(t){this.buffer.push(t?1:0),this.length++}};
-function mapData(t,e,i){for(var o=-1,n=t.moduleCount-1,r=7,h=0,a=t.moduleCount-1;a>0;a-=2)for(6==a&&a--;h<t.moduleCount;){for(var s=0;s<2;s++)null==t.modules[n][a-s]&&(h<e.length?(t.modules[n][a-s]=1==(255&e[h]>>>r)&1):t.modules[n][a-s]=!1);if((r--,r==-1&&(h++,r=7)),o? n++:n--,n<0||t.moduleCount<=n){n=o?0:t.moduleCount-1,o=!o;break}}}
-
-</script>
-<script src="modes.js" defer></script>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RunMeasure • Mode</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar colorful"><h1 id="title">RunMeasure — V8.3-inline</h1></header>
-<main class="container">
-  <div class="nav-row"><a href="options.html" class="btn btn-outline">&larr; Retour</a><a href="aide.html" class="btn btn-outline">Aide</a></div>
-  <section class="card">
-    <h2 id="mode-name">Mode</h2>
-    <div id="params" class="params grid-3"></div>
-    <div class="timer">
-      <div class="circle-wrap hidden" id="circle-wrap">
-        <svg viewBox="0 0 120 120" class="circle">
-          <circle cx="60" cy="60" r="54" class="bg"></circle>
-          <circle cx="60" cy="60" r="54" class="fg" id="circle-fg"></circle>
-          <text x="60" y="66" text-anchor="middle" class="circle-text" id="circle-text">00:00</text>
-        </svg>
-      </div>
-      <div id="display" class="display">00:00.0</div>
-      <div class="controls">
-        <button id="btn-start" class="btn btn-primary btn-lg" type="button">Démarrer</button>
-        <button id="btn-lap" class="btn btn-accent btn-lg" type="button" disabled>Tour</button>
-        <button id="btn-stop" class="btn btn-amber btn-lg" type="button" disabled>Stop</button>
-        <button id="btn-reset" class="btn btn-danger btn-lg" type="button" disabled>Reset</button>
-      </div>
-      <div id="live-distance" class="live-distance hidden">Distance cumulée : <span id="live-dist-val">0</span> m</div>
-    </div>
-    <div id="table-wrap" class="table-wrap hidden">
-      <table id="laps-table"><thead><tr><th>#</th><th>Temps cumulé</th><th>Temps tour</th><th>Vitesse tour (km/h)</th><th>Distance cumulée (m)</th></tr></thead><tbody></tbody>
-      <tfoot><tr id="row-total" class="strong hidden"><td>Total</td><td id="total-time">—</td><td>—</td><td id="total-speed">—</td><td id="total-distance">—</td></tr></tfoot>
-      </table>
-    </div>
-    <div id="results" class="results hidden">
-      <div id="fraction-tools" class="card info hidden" style="margin:0 0 1rem 0;">
-        <strong>Ajouter une fraction de tour :</strong>
-        <div class="fraction-row">
-          <button class="btn btn-outline" data-frac="0.25">+ 1/4 tour</button>
-          <button class="btn btn-outline" data-frac="0.5">+ 1/2 tour</button>
-          <button class="btn btn-outline" data-frac="0.75">+ 3/4 tour</button>
-          <button class="btn" id="btn-frac-undo">Annuler</button>
-        </div>
-        <small class="info">Distance totale, vitesse et VMA (si applicable) sont recalculées et le QR est mis à jour.</small>
-      </div>
-      <div id="recap" class="card hidden"><h3>Récapitulatif</h3><table class="recap-table"><tbody id="recap-body"></tbody></table></div>
-      <div class="export-buttons">
+  <div class="wrap">
+    <header>
+      <h1 id="mode-title">Mode</h1>
+      <nav>
+        <a class="btn" href="options.html">← Choisir un autre mode</a>
+        <a class="btn" href="index.html">Accueil</a>
+        <a class="btn" href="aide.html">Aide</a>
+      </nav>
+    </header>
+
+    <section id="params" class="card">
+      <h2>Paramètres</h2>
+      <div class="row" id="distance-row" style="display:none">
         <div>
-          <div id="qrcode" class="qrcode"></div>
-          <div id="qr-meta" style="font-size:.9rem;color:#555"></div>
+          <label for="distance-input">Distance (m)</label>
+          <input id="distance-input" type="number" min="0" placeholder="ex : 400">
         </div>
-        <button id="btn-export-csv" class="btn btn-primary" type="button">Exporter CSV</button>
-        <button id="btn-new" class="btn btn-danger" type="button">Recommencer</button>
       </div>
-    </div>
-  </section>
-</main>
-<footer class="footer">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
-</body></html>
+      <div class="row" id="timer-row" style="display:none">
+        <div>
+          <label for="time-input">Durée (MM:SS)</label>
+          <input id="time-input" type="text" placeholder="06:00">
+        </div>
+      </div>
+      <p id="hint" class="muted"></p>
+    </section>
+
+    <section class="card">
+      <h2>Contrôles</h2>
+      <div class="row">
+        <button id="start-btn" class="btn btn-success">▶️ Démarrer</button>
+        <button id="split-btn" class="btn" style="display:none">🏁 Temps intermédiaire</button>
+        <button id="stop-btn" class="btn btn-primary" disabled>⏸️ Stop</button>
+        <button id="reset-btn" class="btn btn-danger" disabled>🔄 Reset</button>
+      </div>
+    </section>
+
+    <section class="card" id="results">
+      <h2>Résultats</h2>
+      <div class="row">
+        <div>
+          <div>Temps</div>
+          <div id="time-result" class="stat">00:00</div>
+        </div>
+        <div id="distance-col" style="display:none">
+          <div>Distance totale</div>
+          <div id="distance-result" class="stat">—</div>
+        </div>
+        <div id="speed-col" style="display:none">
+          <div>Vitesse estimée</div>
+          <div id="speed-result" class="stat">—</div>
+        </div>
+      </div>
+
+      <div id="splits-block" style="display:none; margin-top:12px;">
+        <h3>Intermédiaires</h3>
+        <table id="splits-table">
+          <thead><tr><th>#</th><th>Temps</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Le QR s'injecte ici -->
+    <div id="result"></div>
+
+    <footer class="muted">RunMeasure — ZIP</footer>
+  </div>
+
+  <!-- CDN qrcodejs pour générer les QR -->
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <!-- Logique appli + QR -->
+  <script defer src="app.js"></script>
+</body>
+</html>

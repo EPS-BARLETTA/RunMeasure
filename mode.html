@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure V8.3 • Mode</title>
+<html lang="fr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>RunMeasure • Mode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"/>
-<script src="qrcode.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script src="modes.js" defer></script>
 </head>
 <body>
-<header class="topbar colorful"><h1 id="title">RunMeasure — V8.3</h1></header>
+<header class="topbar colorful"><h1 id="title">RunMeasure</h1></header>
 <main class="container">
   <div class="nav-row"><a href="options.html" class="btn btn-outline">&larr; Retour</a><a href="aide.html" class="btn btn-outline">Aide</a></div>
   <section class="card">
@@ -48,10 +48,7 @@
       </div>
       <div id="recap" class="card hidden"><h3>Récapitulatif</h3><table class="recap-table"><tbody id="recap-body"></tbody></table></div>
       <div class="export-buttons">
-        <div>
-          <div id="qrcode" class="qrcode"></div>
-          <div id="qr-meta" style="font-size:.9rem;color:#555"></div>
-        </div>
+        <div id="qrcode" class="qrcode"></div>
         <button id="btn-export-csv" class="btn btn-primary" type="button">Exporter CSV</button>
         <button id="btn-new" class="btn btn-danger" type="button">Recommencer</button>
       </div>

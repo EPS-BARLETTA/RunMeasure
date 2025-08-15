@@ -1,10 +1,20 @@
-// RunMeasure — modes.js (FINAL PATCH)
-// - QR JSON plats (sans millisecondes) pour tous les modes
-// - Export CSV
-// - Charge automatiquement qrcodejs si absent (aucun changement HTML nécessaire)
-// - Si #qrcode est absent, crée un petit conteneur discret en bas à droite
+// RunMeasure — modes.js (LAST BUILD)
+// - Fix QR for "Temps intermédiaire" + "Demi Cooper" + "Cooper"
+// - JSON plat (sans millisecondes), alias de clés pour compatibilité ScanProf
+// - Charge qrcodejs si absent (aucune modif HTML)
+// - Cache "version" sur la page de saisie via injection CSS (pas de modif style.css)
+// - Export CSV conservé
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
+
+  // ===== CSS injection : cacher l'affichage de version =====
+  (function injectVersionHideCSS(){
+    const css = `#version, .version, [data-version], .app-version { display:none !important; }`;
+    const st = document.createElement('style');
+    st.setAttribute('data-runmeasure-patch','hide-version');
+    st.appendChild(document.createTextNode(css));
+    document.head.appendChild(st);
+  })();
 
   // ===== Formats =====
   const fmt = (ms) => { // MM:SS.d (affichage live)
@@ -16,7 +26,7 @@
   const fmtHMS = (ms) => { const tot=Math.max(0,Math.round(ms/1000)); const h=Math.floor(tot/3600); const m=Math.floor((tot%3600)/60); const s=tot%60; const pad=n=>String(n).padStart(2,'0'); return (h>0)?`${h}:${pad(m)}:${pad(s)}`:`${m}:${pad(s)}`; };
   const kmh = (meters, ms) => (ms>0 ? +((meters/(ms/1000))*3.6).toFixed(2) : 0);
 
-  // ===== QR lib loader (aucune modif HTML) =====
+  // ===== QR lib loader =====
   function ensureQRCodeLib(){
     return new Promise((resolve)=>{
       if (window.QRCode) return resolve(true);
@@ -50,7 +60,7 @@
         circleWrap=$('#circle-wrap'), liveDistance=$('#live-distance'), liveDistVal=$('#live-dist-val'),
         fractionTools=$('#fraction-tools'), recap=$('#recap'), recapBody=$('#recap-body');
 
-  // ===== Build UI per mode (structure existante conservée) =====
+  // ===== Build UI per mode =====
   function renderParams(){
     if (params) params.innerHTML='';
     circleWrap?.classList.add('hidden'); display?.classList.remove('hidden'); liveDistance?.classList.add('hidden');
@@ -91,7 +101,7 @@
 
       case 'demiCooper':
       case 'cooper':
-        if (modeName) modeName.textContent = (state.mode==='demiCooper')?'Demi-Cooper (6′)':'Cooper (12′)';
+        if (modeName) modeName.textContent = (state.mode==='demiCooper')?'Demi Cooper (6′)':'Cooper (12′)';
         if (params) params.innerHTML = `<label>Distance par tour (m)<input type="number" id="p-lapdist" min="25" step="25" value="100"/></label><div class="info">Durée fixe ${(state.mode==='demiCooper')? '6:00' : '12:00'}. Tableau identique. Fractions mises à jour partout.</div>`;
         state.fixedDuration = (state.mode==='demiCooper')? 6*60*1000 : 12*60*1000; state.ringTotal=state.fixedDuration; state.lapDist=100;
         circleWrap?.classList.remove('hidden'); display?.classList.add('hidden'); liveDistance?.classList.remove('hidden');
@@ -125,7 +135,7 @@
     wrap.appendChild(min); wrap.appendChild(sec); wrap.appendChild(spacer); return wrap;
   }
 
-  // ===== Core chrono (inchangé) =====
+  // ===== Core chrono =====
   function updateRing(remaining,total){
     const C=339.292; const ratio=Math.max(0,Math.min(1,(total?remaining/total:0)));
     const off=C*(1-ratio); const fg=$('#circle-fg'); if(fg){ fg.style.strokeDasharray=C; fg.style.strokeDashoffset=off; }
@@ -246,15 +256,19 @@
     const base = { nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe };
 
     if(state.mode==='intervalles'){
+      // "Temps intermédiaire" + alias de clés
       const out = Object.assign({}, base, {
-        test: "Tps intermédiaires",
+        test: "Temps intermédiaire",
         distance_cible_m: Math.round(state.targetDist||0),
-        pas_intermediaire_m: Math.round(state.splitDist||0)
+        intervalle_m: Math.round(state.splitDist||0),
+        pas_intermediaire_m: Math.round(state.splitDist||0) // alias
       });
       const totalLaps = Math.min(state.laps.length, Math.floor((state.targetDist||0)/(state.splitDist||1)));
       for (let i=0;i<totalLaps;i++){
         const dist = (i+1)*(state.splitDist||0);
-        out[`tps_${dist}`] = fmtHMS(state.laps[i].cumMs); // cumulés, sans ms
+        const val = fmtHMS(state.laps[i].cumMs);
+        out[`tps_${dist}`] = val;   // ex: tps_200
+        out[`tps${dist}`]  = val;   // ex: tps200 (alias)
       }
       if (totalLaps>0){
         const last = state.laps[totalLaps-1].cumMs;
@@ -277,26 +291,31 @@
 
     if(state.mode==='tours'){
       const dist = Math.round(state.cumDist + state.fractionAdded);
+      const v = +(kmh(dist,state.elapsed).toFixed(2));
       return Object.assign({}, base, {
         test: "Minuteur + distance",
         duree_minuteur_s: Math.round(state.elapsed/1000),
         duree_minuteur_hms: fmtHMS(state.elapsed),
         distance_realisee_m: dist,
-        vitesse_kmh: +(kmh(dist,state.elapsed).toFixed(2))
+        distance_m: dist,           // alias
+        vitesse_kmh: v
       });
     }
 
     if(state.mode==='demiCooper' || state.mode==='cooper'){
-      const fixed = (state.mode==='demiCooper') ? 6*60 : 12*60; // s
+      const isDemi = (state.mode==='demiCooper');
+      const fixed = isDemi ? 6*60 : 12*60; // s
       const dist = Math.round(state.cumDist + state.fractionAdded);
-      const v = (dist/1000) / (fixed/3600);
+      const v = +( ((dist/1000) / (fixed/3600)).toFixed(2) );
       return Object.assign({}, base, {
-        test: (state.mode==='demiCooper') ? "Demi-Cooper 6min" : "Cooper 12min",
+        test: isDemi ? "Demi Cooper" : "Cooper",
         duree_s: fixed,
         duree_hms: fmtHMS(fixed*1000),
         distance_realisee_m: dist,
-        vitesse_moy_kmh: Math.round(v*100)/100,
-        vma_estimee_kmh: Math.round(v*100)/100
+        distance_m: dist,            // alias
+        vitesse_moy_kmh: v,
+        vma_kmh: v,                  // alias
+        vma_estimee_kmh: v           // alias
       });
     }
     return null;
@@ -322,13 +341,12 @@
 
     const ok = await ensureQRCodeLib();
     if (!ok){
-      // fallback : affiche le JSON brut (au cas où) — au moins récupérable
       const pre=document.createElement('pre'); pre.textContent = JSON.stringify(p);
-      pre.style.maxWidth='240px'; pre.style.maxHeight='240px'; pre.style.overflow='auto'; pre.style.fontSize='10px';
+      pre.style.maxWidth='250px'; pre.style.maxHeight='250px'; pre.style.overflow='auto'; pre.style.fontSize='10px';
       box.appendChild(pre);
       return;
     }
-    new QRCode(box,{ text:JSON.stringify(p), width:220, height:220, correctLevel:QRCode.CorrectLevel.M });
+    new QRCode(box,{ text:JSON.stringify(p), width:250, height:250, correctLevel:QRCode.CorrectLevel.L });
   }
 
   // ===== CSV =====

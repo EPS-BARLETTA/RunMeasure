@@ -1,11 +1,7 @@
 /* modes.js — RunMeasure
- * Génère le QR JSON (ScanProf) pour :
- * - Temps intermédiaire (intermediaire)
- * - Demi-Cooper (demi_cooper)
- * - Cooper (cooper)
- * Et ne casse pas les autres modes.
- *
- * Nécessite qrcode.min.js chargé AVANT (defer conseillé).
+ * QR JSON (ScanProf) pour : intermediaire, demi_cooper, cooper
+ * — sans casser les autres modes.
+ * Nécessite qrcode.min.js AVANT (defer).
  */
 
 function $(sel, root = document) { return root.querySelector(sel); }
@@ -81,17 +77,17 @@ function ensureQrContainer() {
   return box;
 }
 function renderQR(payloadObj) {
-  const box = ensureQrContainer();
+  ensureQrContainer();
   const target = $('#qr');
   const pre = $('#qr-json');
-  if (!target) return;
-
   const text = JSON.stringify(payloadObj);
-  target.innerHTML = '';
-  if (typeof QRCode !== 'undefined') {
-    new QRCode(target, { text, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-  } else {
-    target.textContent = 'QRCode library manquante (qrcode.min.js)';
+  if (target) {
+    target.innerHTML = '';
+    if (typeof QRCode !== 'undefined') {
+      new QRCode(target, { text, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+    } else {
+      target.textContent = 'QRCode library manquante (qrcode.min.js)';
+    }
   }
   if (pre) pre.textContent = text;
 }
@@ -142,16 +138,12 @@ function readDurationMs(fallbackSec=null) {
   return null;
 }
 function readSplits() {
-  let splits = $all('#splits-table .split')
-    .map(td => td.textContent.trim()).filter(Boolean);
+  let splits = $all('#splits-table .split').map(td => td.textContent.trim()).filter(Boolean);
   if (splits.length) return splits;
-
   splits = $all('[data-split]').map(el => el.getAttribute('data-split')).filter(Boolean);
   if (splits.length) return splits;
-
   splits = $all('#splits li').map(li => li.textContent.trim()).filter(Boolean);
   if (splits.length) return splits;
-
   return [];
 }
 
@@ -159,39 +151,22 @@ function readSplits() {
 function buildIntermediairePayload() {
   const splits = readSplits();
   let totalMs = readDurationMs(null);
-  if (!totalMs && splits.length) {
-    totalMs = splits.reduce((acc, t) => acc + (timeToMs(t)||0), 0);
-  }
-  const result = {
-    type: "temps_intermediaire",
-    splits,
-    total_ms: totalMs,
-    total_hms: totalMs ? msToTime(totalMs) : null
-  };
+  if (!totalMs && splits.length) totalMs = splits.reduce((acc, t) => acc + (timeToMs(t)||0), 0);
+  const result = { type: "temps_intermediaire", splits, total_ms: totalMs, total_hms: totalMs ? msToTime(totalMs) : null };
   return basePayload("intermediaire", result);
 }
 function buildDemiCooperPayload() {
   const dureeMs = readDurationMs(6*60);
   const dist = readDistanceMeters();
   const v = (dist && dureeMs) ? kmh(dist, dureeMs) : null;
-  const result = {
-    type: "demi_cooper",
-    distance_m: dist,
-    duree_s: dureeMs ? Math.round(dureeMs/1000) : null,
-    vitesse_kmh: v
-  };
+  const result = { type: "demi_cooper", distance_m: dist, duree_s: dureeMs ? Math.round(dureeMs/1000) : null, vitesse_kmh: v };
   return basePayload("demi_cooper", result);
 }
 function buildCooperPayload() {
   const dureeMs = readDurationMs(12*60);
   const dist = readDistanceMeters();
   const v = (dist && dureeMs) ? kmh(dist, dureeMs) : null;
-  const result = {
-    type: "cooper",
-    distance_m: dist,
-    duree_s: dureeMs ? Math.round(dureeMs/1000) : null,
-    vitesse_kmh: v
-  };
+  const result = { type: "cooper", distance_m: dist, duree_s: dureeMs ? Math.round(dureeMs/1000) : null, vitesse_kmh: v };
   return basePayload("cooper", result);
 }
 
@@ -214,11 +189,8 @@ function boot() {
   const q = new URLSearchParams(location.search);
   let mode = (q.get('mode') || '').toLowerCase();
 
-  // Alias acceptés
-  const alias = {
-    'intervalles': 'intermediaire',
-    'demi-cooper': 'demi_cooper'
-  };
+  // Alias
+  const alias = { 'intervalles': 'intermediaire', 'demi-cooper': 'demi_cooper' };
   mode = alias[mode] || mode;
 
   if (!mode) return;
@@ -226,7 +198,5 @@ function boot() {
   if (mode === 'intermediaire') { addQrButtonIfMissing(buildIntermediairePayload); return; }
   if (mode === 'demi_cooper')   { addQrButtonIfMissing(buildDemiCooperPayload);   return; }
   if (mode === 'cooper')        { addQrButtonIfMissing(buildCooperPayload);        return; }
-  // autres modes : laissé tel quel (aucune casse)
 }
-
 document.addEventListener('DOMContentLoaded', boot);

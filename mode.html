@@ -107,11 +107,9 @@
   (function() {
     const qs = new URLSearchParams(location.search);
     let mode = (qs.get('mode') || '').toLowerCase();
-    // Alias acceptés
-    const alias = {
-      'intervalles': 'intermediaire',
-      'demi-cooper': 'demi_cooper'
-    };
+
+    // ALIAS acceptés (ne change rien au visuel)
+    const alias = { 'intervalles': 'intermediaire', 'demi-cooper': 'demi_cooper' };
     mode = alias[mode] || mode;
 
     // Elements
@@ -180,17 +178,13 @@
       if (countdown) {
         const remain = Math.max(0, targetMs - elapsed);
         timeResult.textContent = msToClock(remain);
-        if (remain <= 0) {
-          stop();
-        } else {
-          raf = requestAnimationFrame(tick);
-        }
+        if (remain <= 0) { stop(); }
+        else { raf = requestAnimationFrame(tick); }
       } else {
         timeResult.textContent = msToClock(elapsed);
         raf = requestAnimationFrame(tick);
       }
 
-      // Vitesse live si chronos avec distance
       if ((mode === 'chrono_vitesse' || mode === 'minuteur_distance' || mode === 'demi_cooper' || mode === 'cooper')) {
         const d = readDistance();
         if (d) {

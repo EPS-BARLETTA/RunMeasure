@@ -82,8 +82,7 @@
         modeName.textContent = (state.mode==='demiCooper')?'Demi-Cooper (6′)':'Cooper (12′)';
         params.innerHTML = `<label>Distance par tour (m)<input type="number" id="p-lapdist" min="25" step="25" value="100"/></label><div class="info">Durée fixe ${(state.mode==='demiCooper')? '6:00' : '12:00'}. Tableau identique. Fractions mises à jour partout.</div>`;
         state.fixedDuration = (state.mode==='demiCooper')? 6*60*1000 : 12*60*1000; state.ringTotal=state.fixedDuration; state.lapDist=100;
-        circleWrap.classList.remove('hidden'); display.classList.add('hidden'); liveDistance.classList.remove('hidden');
-        updateRing(state.fixedDuration, state.ringTotal);
+        circleWrap.classList.remove('hidden'); display.classList.add('hidden'); liveDistance.classList.remove('hidden'); updateRing(state.fixedDuration, state.ringTotal);
         break;
 
       case 'minuteurSimple':
@@ -268,7 +267,7 @@
 
   // CSV (garde l'esprit de ton export)
   function csvExport(){
-    const s=student(); const esc=v=>`\"${String(v).replace(/\"/g,'\"\"')}\"`; let lines=[];
+    const s=student(); const esc=v=>`"${String(v).replace(/"/g,'""')}"`; let lines=[];
     if(state.mode==='intervalles'){
       lines.push(['nom','prenom','classe','sexe','distance_cible_m','intervalle_m','index','distance_m','temps_cum','temps_interval']);
       state.laps.forEach((l,i)=>{ const dist=(i+1)*state.splitDist; lines.push([s.nom||'',s.prenom||'',s.classe||'',s.sexe||'', Math.round(state.targetDist||0), Math.round(state.splitDist||0), i+1, dist, fmtHMS(l.cumMs), fmtHMS(l.lapMs)]); });
@@ -287,7 +286,7 @@
       if(['demiCooper','cooper'].includes(state.mode)){ headRecap.push('vma_kmh'); rowRecap.push(vavg); }
       lines.push(headRecap); lines.push(rowRecap);
     } else { lines.push(['info']); lines.push(['Pas de données exportables pour ce mode.']); }
-    const csv = lines.map(r=>r.map(esc).join('\n' if False else ',')).join('\n');
+    const csv = lines.map(r=>r.map(esc).join(',')).join('\n');
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=`runmeasure_${(s.nom||'')}_${(s.prenom||'')}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);

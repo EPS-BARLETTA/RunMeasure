@@ -5,34 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RunMeasure - Modes</title>
   <link rel="stylesheet" href="./style.css" />
-  <style>
-    /* Fallback styles (au cas où) — votre style.css reste prioritaire */
-    :root { --b:#0a84ff; --muted:#666; --br:#e9e9e9; }
-    body { font-family: system-ui, -apple-system, Arial, sans-serif; margin:0; padding:16px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
-    h1 { font-size: 1.25rem; margin: 0; }
-    .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
-    button { padding:10px 14px; border:0; border-radius:10px; cursor:pointer; background:#f3f3f3; }
-    button:hover{ background:#eee; }
-    #display { font-size: 2.4rem; font-variant-numeric: tabular-nums; margin: 12px 0; }
-    .hidden { display:none !important; }
-    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .grid-3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; }
-    #table-wrap { overflow:auto; border:1px solid var(--br); border-radius:10px; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { padding:8px; border-bottom:1px solid #eee; text-align:left; }
-    #circle-wrap { display:flex; align-items:center; gap:12px; }
-    #circle-wrap.huge svg { width: 220px; height: 220px; }
-    #live-distance { font-size:1rem; color:#222; }
-    #recap { margin-top:12px; }
-    #results { margin-top: 16px; }
-    #row-total td { font-weight: 600; }
-    .info { font-size: 0.9rem; color:var(--muted); }
-    .display-huge { font-size: 4rem !important; }
-  </style>
 </head>
 <body>
-
   <header>
     <h1 id="mode-name">Mode</h1>
     <div class="toolbar">
@@ -62,8 +36,7 @@
     Distance cumulée : <strong><span id="live-dist-val">0</span> m</strong>
   </section>
 
-  <section id="fraction-tools" class="hidden" style="margin:8px 0;">
-    <span>Ajouter une fraction de tour :</span>
+  <section id="fraction-tools" class="hidden">
     <button type="button" data-frac="0.25">+ 1/4</button>
     <button type="button" data-frac="0.5">+ 1/2</button>
     <button type="button" data-frac="0.75">+ 3/4</button>

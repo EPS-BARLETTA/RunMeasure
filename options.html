@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RunMeasure • Options</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="card center">
+      <h1 class="brand">RunMeasure — V8.3</h1>
+      <div class="chips">
+        <a class="btn btn-ghost" href="index.html">← Accueil</a>
+        <a class="btn btn-ghost" href="aide.html">Aide</a>
+      </div>
+    </header>
+
+    <section class="card section-green">
+      <h2 class="center">Informations élève</h2>
+      <div class="row">
+        <div>
+          <label for="nom" class="badge">Nom</label>
+          <input id="nom" type="text" autocomplete="family-name" placeholder="Martin">
+        </div>
+        <div>
+          <label for="prenom" class="badge">Prénom</label>
+          <input id="prenom" type="text" autocomplete="given-name" placeholder="Julie">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="classe" class="badge">Classe</label>
+          <input id="classe" type="text" placeholder="2nde 4">
+        </div>
+        <div>
+          <label for="sexe" class="badge">Sexe</label>
+          <select id="sexe">
+            <option value="">—</option>
+            <option value="fille">Fille</option>
+            <option value="garcon">Garçon</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="center" style="margin-top:8px">
+        <button id="save-eleve" class="btn btn-ghost">💾 Enregistrer l’élève</button>
+      </div>
+    </section>
+
+    <section class="card section-green">
+      <h2 class="center">Choisir un mode</h2>
+      <div class="grid">
+        <a class="btn btn-primary" style="background:#2c5be0" data-mode="intermediaire">Temps intermédiaire</a>
+        <a class="btn btn-primary" style="background:#169b51" data-mode="chrono">Chrono</a>
+        <a class="btn btn-primary" style="background:#119b86" data-mode="minuteur">Minuteur</a>
+        <a class="btn btn-primary" style="background:#6b37ff" data-mode="chrono_vitesse">Chrono avec calcul de vitesse</a>
+        <a class="btn btn-primary" style="background:#c96d07" data-mode="minuteur_distance">Minuteur avec distance</a>
+      </div>
+    </section>
+
+    <section class="card section-pink">
+      <h2 class="center">Tests d'endurance</h2>
+      <div class="grid">
+        <a class="btn btn-primary" style="background:#c0316e" data-mode="demi_cooper">Demi-Cooper (6′)</a>
+        <a class="btn btn-primary" style="background:#c0156a" data-mode="cooper">Cooper (12′)</a>
+      </div>
+    </section>
+
+    <footer class="center muted">RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+  </div>
+
+  <script>
+    function getEleve() {
+      try { const raw = localStorage.getItem('eleve'); if (raw) return JSON.parse(raw); } catch {}
+      return { nom:"", prenom:"", classe:"", sexe:"" };
+    }
+    function setEleve(e) { try { localStorage.setItem('eleve', JSON.stringify(e)); } catch {} }
+    function loadForm() {
+      const e = getEleve();
+      if (!e) return;
+      if (e.nom) document.getElementById('nom').value = e.nom;
+      if (e.prenom) document.getElementById('prenom').value = e.prenom;
+      if (e.classe) document.getElementById('classe').value = e.classe;
+      if (e.sexe) document.getElementById('sexe').value = e.sexe;
+    }
+    function readForm() {
+      return {
+        nom: document.getElementById('nom').value.trim(),
+        prenom: document.getElementById('prenom').value.trim(),
+        classe: document.getElementById('classe').value.trim(),
+        sexe: document.getElementById('sexe').value.trim().toLowerCase()
+      };
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      loadForm();
+      document.getElementById('save-eleve').addEventListener('click', () => {
+        setEleve(readForm()); alert('Élève enregistré ✅');
+      });
+      document.querySelectorAll('[data-mode]').forEach(a => {
+        a.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          setEleve(readForm());
+          const mode = a.getAttribute('data-mode');
+          window.location.href = `mode.html?mode=${encodeURIComponent(mode)}`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,32 +1,16 @@
-// RunMeasure — modes.js (LAST BUILD)
-// - Fix QR for "Temps intermédiaire" + "Demi Cooper" + "Cooper"
-// - JSON plat (sans millisecondes), alias de clés pour compatibilité ScanProf
-// - Charge qrcodejs si absent (aucune modif HTML)
-// - Cache "version" sur la page de saisie via injection CSS (pas de modif style.css)
-// - Export CSV conservé
+// RunMeasure — modes.js (FINAL • labels stricts + QR fixes)
+// - Intermédiaires: test="Tps intermédiaires", tps_XXX cumulés (H:MM:SS), + aliases tpsXXX
+// - Minuteur distance: test="Minuteur avec distance"
+// - Chrono vitesse: test="Chrono avec calcul de vitesse"
+// - Demi/Cooper: test="Demi Cooper" / "Cooper"
+// - Sans millisecondes, JSON plat, lib QR auto
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
-
-  // ===== CSS injection : cacher l'affichage de version =====
-  (function injectVersionHideCSS(){
-    const css = `#version, .version, [data-version], .app-version { display:none !important; }`;
-    const st = document.createElement('style');
-    st.setAttribute('data-runmeasure-patch','hide-version');
-    st.appendChild(document.createTextNode(css));
-    document.head.appendChild(st);
-  })();
-
-  // ===== Formats =====
-  const fmt = (ms) => { // MM:SS.d (affichage live)
-    const t=Math.max(0,Math.round(ms/100));
-    const m=Math.floor(t/600), s=Math.floor((t%600)/10), d=t%10;
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${d}`;
-  };
-  const fmtMMSS = (ms) => { const tot=Math.max(0,Math.round(ms/1000)); const m=Math.floor(tot/60); const s=tot%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
-  const fmtHMS = (ms) => { const tot=Math.max(0,Math.round(ms/1000)); const h=Math.floor(tot/3600); const m=Math.floor((tot%3600)/60); const s=tot%60; const pad=n=>String(n).padStart(2,'0'); return (h>0)?`${h}:${pad(m)}:${pad(s)}`:`${m}:${pad(s)}`; };
+  const fmt = (ms) => { const t=Math.max(0,Math.round(ms/100)); const m=Math.floor(t/600), s=Math.floor((t%600)/10), d=t%10; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${d}`; };
+  const fmtMMSS = (ms) => { const tot=Math.max(0,Math.round(ms/1000)); const m=Math.floor(tot/60), s=tot%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
+  const fmtHMS = (ms) => { const tot=Math.max(0,Math.round(ms/1000)); const h=Math.floor(tot/3600), m=Math.floor((tot%3600)/60), s=tot%60; const pad=n=>String(n).padStart(2,'0'); return (h>0)?`${h}:${pad(m)}:${pad(s)}`:`${m}:${pad(s)}`; };
   const kmh = (meters, ms) => (ms>0 ? +((meters/(ms/1000))*3.6).toFixed(2) : 0);
 
-  // ===== QR lib loader =====
   function ensureQRCodeLib(){
     return new Promise((resolve)=>{
       if (window.QRCode) return resolve(true);
@@ -38,19 +22,13 @@
     });
   }
 
-  // ===== State & DOM =====
   const getMode = () => new URLSearchParams(location.search).get('mode') || 'intervalles';
   const student = () => { try { return JSON.parse(localStorage.getItem('rm_student')||'{}'); } catch(e){ return {}; } };
   function identity(){ const s=student(); return { nom:s.nom||'', prenom:s.prenom||'', classe:s.classe||'', sexe:s.sexe||'' }; }
   function mmssToMsStr(mm, ss){ const m=Math.max(0,parseInt(mm||'0',10)); const s=Math.max(0,parseInt(ss||'0',10)); return (m*60 + s)*1000; }
   const now = () => performance.now();
-  async function tryFullscreen(){ try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }catch(e){} }
 
-  const state = {
-    mode:getMode(), running:false, startTime:0, elapsed:0, lastLapAt:0, raf:0,
-    laps:[], cumDist:0, targetDist:0, splitDist:0, lapDist:0,
-    countdownMs:0, fixedDuration:0, ringTotal:0, fractionAdded:0
-  };
+  const state = { mode:getMode(), running:false, startTime:0, elapsed:0, lastLapAt:0, raf:0, laps:[], cumDist:0, targetDist:0, splitDist:0, lapDist:0, countdownMs:0, fixedDuration:0, ringTotal:0, fractionAdded:0 };
 
   const modeName=$('#mode-name'), params=$('#params'), display=$('#display'),
         btnStart=$('#btn-start'), btnLap=$('#btn-lap'), btnStop=$('#btn-stop'), btnReset=$('#btn-reset'),
@@ -60,7 +38,6 @@
         circleWrap=$('#circle-wrap'), liveDistance=$('#live-distance'), liveDistVal=$('#live-dist-val'),
         fractionTools=$('#fraction-tools'), recap=$('#recap'), recapBody=$('#recap-body');
 
-  // ===== Build UI per mode =====
   function renderParams(){
     if (params) params.innerHTML='';
     circleWrap?.classList.add('hidden'); display?.classList.remove('hidden'); liveDistance?.classList.add('hidden');
@@ -135,7 +112,6 @@
     wrap.appendChild(min); wrap.appendChild(sec); wrap.appendChild(spacer); return wrap;
   }
 
-  // ===== Core chrono =====
   function updateRing(remaining,total){
     const C=339.292; const ratio=Math.max(0,Math.min(1,(total?remaining/total:0)));
     const off=C*(1-ratio); const fg=$('#circle-fg'); if(fg){ fg.style.strokeDasharray=C; fg.style.strokeDashoffset=off; }
@@ -159,7 +135,8 @@
     if (btnStart) btnStart.textContent='Pause'; if (btnLap) btnLap.disabled=(['minuteurSimple','simple','simpleDistance'].includes(state.mode));
     if (btnStop) btnStop.disabled=false; if (btnReset) btnReset.disabled=false;
     if(!['simple','simpleDistance','minuteurSimple'].includes(state.mode)) tableWrap?.classList.remove('hidden');
-    tryFullscreen(); tick();
+    try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }catch(e){}
+    tick();
   }
 
   function stop(){ if(!state.running && state.elapsed===0) return; finish(); }
@@ -250,25 +227,22 @@
     updateRecapTotals(); generateQR();
   }
 
-  // ===== QR Payloads plats (sans ms) =====
   function buildPayload(){
-    const id=identity();
-    const base = { nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe };
+    const id=identity(); const base = { nom:id.nom, prenom:id.prenom, classe:id.classe, sexe:id.sexe };
 
     if(state.mode==='intervalles'){
-      // "Temps intermédiaire" + alias de clés
       const out = Object.assign({}, base, {
-        test: "Temps intermédiaire",
+        test: "Tps intermédiaires",
         distance_cible_m: Math.round(state.targetDist||0),
         intervalle_m: Math.round(state.splitDist||0),
-        pas_intermediaire_m: Math.round(state.splitDist||0) // alias
+        pas_intermediaire_m: Math.round(state.splitDist||0)
       });
       const totalLaps = Math.min(state.laps.length, Math.floor((state.targetDist||0)/(state.splitDist||1)));
       for (let i=0;i<totalLaps;i++){
         const dist = (i+1)*(state.splitDist||0);
         const val = fmtHMS(state.laps[i].cumMs);
         out[`tps_${dist}`] = val;   // ex: tps_200
-        out[`tps${dist}`]  = val;   // ex: tps200 (alias)
+        out[`tps${dist}`]  = val;   // alias: tps200
       }
       if (totalLaps>0){
         const last = state.laps[totalLaps-1].cumMs;
@@ -281,7 +255,7 @@
     if(state.mode==='simpleDistance'){
       const d = Math.round(state.targetDist||0);
       return Object.assign({}, base, {
-        test: "Chrono + vitesse",
+        test: "Chrono avec calcul de vitesse",
         distance_m: d,
         temps_total_s: Math.round(state.elapsed/1000),
         temps_total_hms: fmtHMS(state.elapsed),
@@ -293,18 +267,17 @@
       const dist = Math.round(state.cumDist + state.fractionAdded);
       const v = +(kmh(dist,state.elapsed).toFixed(2));
       return Object.assign({}, base, {
-        test: "Minuteur + distance",
+        test: "Minuteur avec distance",
         duree_minuteur_s: Math.round(state.elapsed/1000),
         duree_minuteur_hms: fmtHMS(state.elapsed),
         distance_realisee_m: dist,
-        distance_m: dist,           // alias
+        distance_m: dist,
         vitesse_kmh: v
       });
     }
 
     if(state.mode==='demiCooper' || state.mode==='cooper'){
-      const isDemi = (state.mode==='demiCooper');
-      const fixed = isDemi ? 6*60 : 12*60; // s
+      const isDemi = (state.mode==='demiCooper'); const fixed = isDemi ? 6*60 : 12*60; // s
       const dist = Math.round(state.cumDist + state.fractionAdded);
       const v = +( ((dist/1000) / (fixed/3600)).toFixed(2) );
       return Object.assign({}, base, {
@@ -312,20 +285,17 @@
         duree_s: fixed,
         duree_hms: fmtHMS(fixed*1000),
         distance_realisee_m: dist,
-        distance_m: dist,            // alias
+        distance_m: dist,
         vitesse_moy_kmh: v,
-        vma_kmh: v,                  // alias
-        vma_estimee_kmh: v           // alias
+        vma_kmh: v,
+        vma_estimee_kmh: v
       });
     }
     return null;
   }
 
   async function generateQR(){
-    const p=buildPayload();
-    if(!p) return;
-
-    // Conteneur : existant (#qrcode) sinon création discrète
+    const p=buildPayload(); if(!p) return;
     let box = qrcodeBoxInit || $('#qrcode');
     if (!box){
       box = document.createElement('div');
@@ -335,21 +305,12 @@
       const title=document.createElement('div'); title.textContent='QR résultat'; title.style.fontSize='12px'; title.style.margin='0 0 6px 0'; title.style.color='#333';
       box.appendChild(title);
       document.body.appendChild(box);
-    } else {
-      box.innerHTML='';
-    }
-
+    } else { box.innerHTML=''; }
     const ok = await ensureQRCodeLib();
-    if (!ok){
-      const pre=document.createElement('pre'); pre.textContent = JSON.stringify(p);
-      pre.style.maxWidth='250px'; pre.style.maxHeight='250px'; pre.style.overflow='auto'; pre.style.fontSize='10px';
-      box.appendChild(pre);
-      return;
-    }
+    if (!ok){ const pre=document.createElement('pre'); pre.textContent = JSON.stringify(p); pre.style.maxWidth='250px'; pre.style.maxHeight='250px'; pre.style.overflow='auto'; pre.style.fontSize='10px'; box.appendChild(pre); return; }
     new QRCode(box,{ text:JSON.stringify(p), width:250, height:250, correctLevel:QRCode.CorrectLevel.L });
   }
 
-  // ===== CSV =====
   function csvExport(){
     const s=student(); const esc=v=>`\"${String(v).replace(/\"/g,'\"\"')}\"`; let lines=[];
     if(state.mode==='intervalles'){
@@ -376,7 +337,6 @@
     const a = document.createElement('a'); a.href=url; a.download=`runmeasure_${(s.nom||'')}_${(s.prenom||'')}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   }
 
-  // ===== Wiring =====
   btnStart?.addEventListener('click', start);
   btnStop?.addEventListener('click', stop);
   btnLap?.addEventListener('click', lap);

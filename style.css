@@ -30,8 +30,6 @@ thead th{font-size:14px;color:var(--muted)}
 .smallish input, .smallish select{padding:8px 10px;font-size:14px}
 .big-controls .btn{padding:18px 20px;font-size:18px}
 footer{background:#eee;text-align:center;padding:16px;margin-top:20px;color:#333}
-
-/* Fullscreen overlays (chrono/minuteur only) */
 .fullscreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px}
 .fullscreen.active{display:flex}
 .time-big{font-size:18vw;line-height:1;font-weight:900;letter-spacing:2px;text-align:center}

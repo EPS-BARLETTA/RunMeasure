@@ -5,29 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Chrono Intervalles EPS</title>
 
+<!-- QRCode.js (fiable, hors-ligne après 1er cache navigateur) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 <style>
-  :root{ --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220; }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{ margin:0; background:linear-gradient(180deg, var(--bg), #0b1220 60%); color:var(--ink);
-        font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
-        display:flex; min-height:100vh; flex-direction:column; }
-  .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; } .page.active{ display:block }
+  :root{
+    --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8;
+    --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:linear-gradient(180deg,var(--bg),#0b1220 60%); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
+    display:flex; min-height:100vh; flex-direction:column;
+  }
+  .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; }
+  .page.active{ display:block }
   .hero{ display:flex; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:24px; }
   .hero h1{ margin:0 0 10px; font-weight:900; letter-spacing:.6px; font-size:clamp(2rem,6vw,3rem) }
   .hero p{ margin:0 0 20px; color:var(--muted); font-size:clamp(1rem,2.4vw,1.2rem) }
   .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
-  button,.btn{ border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px; background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; min-width:180px; display:inline-flex; align-items:center; justify-content:center }
-  button:active,.btn:active{ transform:translateY(1px) }
-  .b-primary{background:var(--accent2)} .b-go{background:var(--accent)} .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
+  button{
+    border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px;
+    background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; min-width:180px;
+    display:inline-flex; align-items:center; justify-content:center
+  }
+  button:active{ transform:translateY(1px) }
+  .b-primary{background:var(--accent2)} .b-go{background:var(--accent)}
+  .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
 
-  .title{ text-align:center; font-weight:800 } .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) } .title p{ margin:0; color:var(--muted); font-size:.95rem }
-  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px } @media(max-width:860px){ .grid{ grid-template-columns:1fr } }
-  .card{ background:linear-gradient(180deg, var(--panel), var(--card)); border:1px solid #1e293b; border-radius:18px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.25); }
-  .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 } .row{ display:flex; gap:12px; flex-wrap:wrap } .field{ flex:1 1 180px; min-width:180px }
+  .title{ text-align:center; font-weight:800 }
+  .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) }
+  .title p{ margin:0; color:var(--muted); font-size:.95rem }
+
+  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px }
+  @media(max-width:860px){ .grid{ grid-template-columns:1fr } }
+
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--card));
+    border:1px solid #1e293b; border-radius:18px; padding:16px;
+    box-shadow:0 8px 30px rgba(0,0,0,.25);
+  }
+
+  .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 }
+  .row{ display:flex; gap:12px; flex-wrap:wrap }
+  .field{ flex:1 1 180px; min-width:180px }
   label{ display:block; font-size:.85rem; color:var(--muted); margin:0 0 6px }
-  input[type="text"],input[type="number"],select{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244; background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none }
+  input[type="text"],input[type="number"],select{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244;
+    background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none
+  }
 
-  .chrono{ display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums; background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%); border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px }
+  .chrono{
+    display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums;
+    background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%);
+    border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px
+  }
   .chrono-time{ font-size:clamp(2.6rem,7vw,4.8rem); font-weight:900; text-shadow:0 0 24px rgba(59,130,246,.25) }
 
   table{ width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius:14px; border:1px solid #223146 }
@@ -35,12 +69,28 @@
   tbody td{ padding:10px; border-top:1px solid #1c2940 } tbody tr:nth-child(odd){ background:#0a1422 } tbody tr:nth-child(even){ background:#0c1626 }
 
   .hint{ color:var(--muted); font-size:.85rem; margin-top:6px }
-  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
-  .qr-card{ background:#fff; border:1px solid #d1d5db; border-radius:12px; padding:12px; max-width: 420px; }
-  .qr-title{ color:#111827; font-weight:800; text-align:center; margin:0 0 6px }
-  .qr-box svg{ display:block }
+  .meta{ text-align:center; color:#cbd5e1; margin:4px 0 10px }
+  .badge{ display:inline-block; font-weight:800; padding:6px 10px; border-radius:999px; background:#0a1220; border:1px solid #223146; margin-right:8px }
 
-  footer{ margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px; font-weight:700; border-top:1px solid #cbd5e1; }
+  /* Fiche sécurité visuelle */
+  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+  @media(max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
+  .safe{ border-radius:16px; padding:14px; border:1px solid rgba(255,255,255,.08); box-shadow:0 10px 30px rgba(0,0,0,.25) }
+  .safe h3{ margin:0 0 6px; font-size:1.05rem } .safe ul{ margin:.3rem 0 0 1rem }
+  .s1{ background:linear-gradient(135deg,#0b1220 0%,rgba(14,165,233,.15)100%) }
+  .s2{ background:linear-gradient(135deg,#0b1220 0%,rgba(34,197,94,.15)100%) }
+  .s3{ background:linear-gradient(135deg,#0b1220 0%,rgba(245,158,11,.18)100%) }
+  .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
+
+  /* QR */
+  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
+  #qrcode canvas{ background:#fff; border-radius:10px; padding:10px }
+  .qr-error{ color:#fecaca; background:#7f1d1d; border:1px solid #b91c1c; padding:8px 10px; border-radius:8px; }
+
+  footer{
+    margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px;
+    font-weight:700; border-top:1px solid #cbd5e1;
+  }
 </style>
 </head>
 <body>
@@ -59,34 +109,37 @@
   </div>
 </main>
 
-<!-- SÉCURITÉ -->
+<!-- SÉCURITÉ (visuelle) -->
 <section id="page-safety" class="page">
   <div class="title">
     <h2>Fiche sécurité – Demi-fond & gestes en cas de blessure</h2>
     <p>Si douleur vive ou malaise : <b>tu t’arrêtes</b> et tu préviens immédiatement.</p>
   </div>
-  <div class="grid">
-    <div class="card">
-      <h3 class="section-title">Sécurité & conseils</h3>
-      <ul>
-        <li>Échauffement progressif 10–15 min (mobilité + éducatifs + lignes droites).</li>
-        <li>Hydratation, chaussures adaptées, lacets serrés.</li>
-        <li>Pacing : partir régulier, épaules relâchées, respiration rythmée.</li>
-        <li>STOP si douleur vive, vertiges, essoufflement inhabituel.</li>
-        <li>Crampes/point de côté : ralentir, respirer profondément, étirements doux.</li>
-        <li>Chute/entorse (R-I-C-E) : repos, glace protégée, compression, élévation.</li>
-        <li>Malaise grave : surveiller, alerter, composer le <b>112</b>.</li>
-      </ul>
-      <div class="btns" style="margin-top:10px"><button class="b-ghost" onclick="goTo('page-home')">← Accueil</button></div>
-    </div>
+  <div class="safe-grid">
+    <div class="safe s1"><h3>🟦 Échauffement (10–15 min)</h3><ul><li>Course légère + mobilité.</li><li>Montées de genoux / talons-fesses.</li><li>2–3 lignes droites progressives.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Hydratation & tenue</h3><ul><li>Petites gorgées régulières.</li><li>Chaussures adaptées, lacets serrés.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Pacing</h3><ul><li>Partir régulier, pas trop vite.</li><li>Respiration rythmée, épaules relâchées.</li></ul></div>
+    <div class="safe s1"><h3>🟦 Signaux d’alerte</h3><ul><li>Douleur vive, vertiges, essoufflement inhabituel → <b>STOP</b>.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Crampes / point de côté</h3><ul><li>Ralentir, respirer, étirer doucement.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Chute / entorse (R-I-C-E)</h3><ul><li>Repos, glace protégée, compression, élévation.</li><li>Immobiliser si suspicion de fracture.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Malaise grave</h3><ul><li>Allonger/asseoir, surveiller, alerter.</li><li>Appel d’urgence : <b>112</b>.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Après l’effort</h3><ul><li>Retour au calme + hydratation.</li><li>Étirements doux.</li></ul></div>
+  </div>
+  <div class="btns" style="margin-top:10px">
+    <button class="b-ghost" onclick="goTo('page-home')">← Accueil</button>
+    <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
   </div>
 </section>
 
 <!-- RÉGLAGES -->
 <section id="page-app" class="page">
   <div class="title">
-    <h2>Paramètres & élève</h2>
-    <p>Renseigne l’élève et choisis la distance/palier, puis lance la course.</p>
+    <h2>Chrono Intervalles</h2>
+    <p>Renseigne l’élève et les paramètres, puis <b>Démarrer</b>.</p>
+  </div>
+  <div class="btns" style="margin-bottom:8px">
+    <button class="b-ghost" onclick="goTo('page-home')">Accueil</button>
+    <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
   </div>
 
   <div class="grid">
@@ -109,13 +162,13 @@
     </section>
 
     <section class="card">
-      <h3 class="section-title">Course</h3>
+      <h3 class="section-title">Paramètres de la course</h3>
       <div class="row">
         <div class="field"><label>Distance totale (m)</label><input id="distTot" type="number" inputmode="numeric" value="800" min="50" step="50"></div>
         <div class="field"><label>Palier / Temps intermédiaire (m)</label><input id="distPalier" type="number" inputmode="numeric" value="200" min="25" step="25"></div>
-        <div class="field"><label>&nbsp;</label><button id="apply" class="b-ghost">Appliquer / Réinitialiser</button></div>
+        <div class="field"><label>&nbsp;</label><button id="apply" class="b-ghost">Appliquer / Réinitialiser paramètres</button></div>
       </div>
-      <p class="hint">La distance doit être un multiple du palier (ex. 800 et 200).</p>
+      <p class="hint">La distance totale doit être un multiple du palier (ex. 800 et 200).</p>
     </section>
   </div>
 
@@ -126,7 +179,9 @@
 
 <!-- COURSE -->
 <section id="page-run" class="page">
-  <div class="card">
+  <div class="meta" id="runMeta"></div>
+
+  <section class="card">
     <div class="chrono">
       <div style="width:100%;text-align:center">
         <div class="chrono-time" id="time">00:00.00</div>
@@ -141,32 +196,29 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card" style="margin-top:16px">
-    <h3 class="section-title">Intermédiaires</h3>
+  <section class="card" style="margin-top:16px">
+    <h3 class="section-title">Récapitulatif des intermédiaires</h3>
     <table>
-      <thead><tr><th>Palier (m)</th><th>Temps palier</th><th>Temps cumulé</th><th>Vitesse palier (km/h)</th></tr></thead>
+      <thead><tr><th>Palier (m)</th><th>Temps sur le palier</th><th>Temps cumulé</th><th>Vitesse sur le palier (km/h)</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
-  </div>
+  </section>
 
-  <div class="card" style="margin-top:16px">
-    <h3 class="section-title">QR cumulés & export</h3>
-    <div class="qr-wrap">
-      <div class="qr-card">
-        <p class="qr-title">QR des temps cumulés</p>
-        <div id="qrcode" class="qr-box"></div>
-      </div>
-    </div>
-    <div class="btns" style="margin-top:10px">
+  <section class="card" style="margin-top:16px">
+    <h3 class="section-title">QR (auto) & Export</h3>
+    <div class="btns" style="justify-content:center">
       <button id="exportCSV" class="b-ghost" disabled>Exporter CSV</button>
     </div>
-    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à l’arrêt (format: nom/prenom/classe/sexe + “200”, “400”, …).</p>
-  </div>
+    <div class="qr-wrap" style="margin-top:10px">
+      <div id="qrcode"></div>
+    </div>
+    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à la fin de la course.</p>
+  </section>
 
   <div class="btns" style="margin-top:6px">
-    <button class="b-ghost" onclick="goTo('page-app')">← Retour</button>
+    <button class="b-ghost" onclick="goTo('page-app')">← Retour aux réglages</button>
   </div>
 </section>
 
@@ -174,23 +226,30 @@
   ChronoIntrervalles - Equipe EPS Lycée Vauban - LUXEMBOURG -JB
 </footer>
 
-<!-- ====== Générateur QR SVG (offline, robuste) – qrcode-generator (MIT, embarqué) ====== -->
-<script>
-!function(){function u(a){throw a;}function v(a,b){this.typeNumber=a;this.errorCorrectLevel=b;this.modules=null;this.moduleCount=0;this.dataCache=null;this.dataList=[]}function w(a,b){this.mode=4;this.data=a}function x(){this.buffer=[];this.length=0}var y={L:1,M:0,Q:3,H:2};v.prototype={addData:function(a){this.dataList.push(new w(a))},isDark:function(a,b){if(null==this.modules[a]||null==this.modules[a][b])throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){if(1>this.typeNumber)for(var a=1;40>=a;a++){var b=new v(a,this.errorCorrectLevel);b.dataList=this.dataList.slice(0);b.makeImpl(!1);b.dataCache=b.createData();if(b.dataCache){this.typeNumber=a;break}}this.makeImpl(!0)},makeImpl:function(a){this.moduleCount=4*this.typeNumber+17;this.modules=Array(this.moduleCount);for(var b=0;b<this.moduleCount;b++){this.modules[b]=Array(this.moduleCount);for(var c=0;c<this.moduleCount;c++)this.modules[b][c]=null}this.setupPositionProbePattern(0,0);this.setupPositionProbePattern(this.moduleCount-7,0);this.setupPositionProbePattern(0,this.moduleCount-7);this.setupPositionAdjustPattern();this.setupTimingPattern();this.setupTypeInfo(a,0);7<=this.typeNumber&&this.setupTypeNumber(a);null==this.dataCache&&(this.dataCache=this.createData());this.mapData(this.dataCache)},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2),null==this.modules[6][a]&&(this.modules[6][a]=0==a%2)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(a+c<=-1||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)b+d<=-1||this.moduleCount<=b+d||(this.modules[a+c][b+d]=0<=c&&6>=c&&(0==d||6==d)||0<=d&&6>=d&&(0==c||6==c)||2<=c&&4>=c&&2<=d&&4>=d)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!1);this.applyMaskPattern(c);var d=z.getLostPoint(this);0==c||d<a?(a=d,b=c):0}return this.applyMaskPattern(b),b},createData:function(){for(var a=A.getRSBlocks(this.typeNumber,this.errorCorrectLevel),b=new x,c=0;c<this.dataList.length;c++)this.dataList[c].write(b);for(c=0;c<a.length;c++){var d=a[c].dataCount;for(b.getLengthInBits()>8*d&&u(new Error("code length overflow. "+b.getLengthInBits()+">"+8*d));b.getLengthInBits()+4<=8*d;)b.put(0,4);for(;b.getLengthInBits()%8!=0;)b.putBit(!1)}for(;b.getLengthInBits()<8*d;)b.put(236,8),b.getLengthInBits()<8*d&&b.put(17,8);return B(b,a)},mapData:function(a){for(var b=this.getBestMaskPattern(),c=this.moduleCount-1,d=7,e=0,f=this.moduleCount-1;0<f;f-=2)for(6==f&&f--;;){for(var g=0;2>g;g++)if(null==this.modules[c-g][f]){var h=!1;e<a.length&&(h=1==(a[e]>>>d&1));z.getMask(b,c-g,f)&&(h=!h);this.modules[c-g][f]=h}if(d--,-1==d){e++;if(e>=a.length)break;d=7}c+=b?-1:1;if(0>c||c>=this.moduleCount){c+=b?1:-1;break}}},setupPositionAdjustPattern:function(){for(var a=z.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var f=-2;2>=f;f++)for(var g=-2;2>=g;g++)this.modules[d+f][e+g]=-2==f||2==f||-2==g||2==g||0==f&&0==g}},setupTypeNumber:function(a){for(var b=z.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(b>>c&1);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d;this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=z.getBCHTypeInfo(y.M<<3|b),d=0;15>d;d++){var e=!a&&1==(c>>d&1);6>d?this.modules[d][8]=e:8>d?this.modules[d+1][8]=e:this.modules[this.moduleCount-15+d][8]=e;8>d?this.modules[8][this.moduleCount-d-1]=e:this.modules[8][14-d]=e}},applyMaskPattern:function(a){for(var b=0;b<this.moduleCount;b++)for(var c=0;c<this.moduleCount;c++)null!=this.modules[b][c]&&(this.modules[b][c]=this.modules[b][c]^z.getMask(a,b,c))}};var z=function(){var a=[[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98]];return{PATTERN_POSITION_TABLE:a,getPatternPosition:function(b){return a[b-1]},getMask:function(b,c,d){switch(b){case 0:return 0==(c+d)%2;case 1:return 0==c%2;case 2:return 0==d%3;case 3:return 0==(c+d)%3;case 4:return 0==(Math.floor(c/2)+Math.floor(d/3))%2;case 5:return 0==c*d%2+c*d%3;case 6:return 0==(c*d%2+c*d%3)%2;case 7:return 0==((c*d%3+(c+d)%2))%2;default:throw new Error("bad maskPattern:"+b)}},getBCHTypeInfo:function(b){for(var c=b<<10;z.getBCHDigit(c)-z.getBCHDigit(1335)>=0;)c^=1335<<z.getBCHDigit(c)-z.getBCHDigit(1335);return b<<10|c},getBCHTypeNumber:function(b){for(var c=b<<12;z.getBCHDigit(c)-z.getBCHDigit(7973)>=0;)c^=7973<<z.getBCHDigit(c)-z.getBCHDigit(7973);return b<<12|c},getBCHDigit:function(b){for(var c=0;0!=b;)c++,b>>>=1;return c},getLostPoint:function(b){for(var c=b.getModuleCount(),d=0,e=0;e<c;e++)for(var f=0;f<c;f++){for(var g=0,h=b.isDark(e,f),k=-1;1>=k;k++)if(!(0>e+k||e+k>=c))for(var l=-1;1>=l;l++)0>f+l||f+l>=c||0==k&&0==l||h==b.isDark(e+k,f+l)&&g++;5<g&&(d+=3+g-5)}for(e=0;e<c-1;e++)for(f=0;f<c-1;f++){g=0;b.isDark(e,f)&&g++;b.isDark(e+1,f)&&g++;b.isDark(e,f+1)&&g++;b.isDark(e+1,f+1)&&g++;0==g||4==g?d+=3:0}for(e=0;e<c;e++)for(f=0;f<c-6;f++)b.isDark(e,f)&&!b.isDark(e,f+1)&&b.isDark(e,f+2)&&b.isDark(e,f+3)&&b.isDark(e,f+4)&&!b.isDark(e,f+5)&&b.isDark(e,f+6)&&(d+=40);for(f=0;f<c;f++)for(e=0;e<c-6;e++)b.isDark(e,f)&&!b.isDark(e+1,f)&&b.isDark(e+2,f)&&b.isDark(e+3,f)&&b.isDark(e+4,f)&&!b.isDark(e+5)&&b.isDark(e+6)&&(d+=40);for(var m=0,n=0,e=0;e<c;e++)for(f=0;f<c;f++)b.isDark(e,f)&&m++;n=Math.abs(100*m/c/c-50)/5*10;return d+=n}}}(),A=function(a){this.mode=4;this.data=a};A.prototype.write=function(a){for(var b=8*this.data.length,c=0;c<b;c++)a.put(1==(this.data.charCodeAt(Math.floor(c/8))>>>7-c%8&1)?1:0,1)};x.prototype={getBuffer:function(){return this.buffer},getLengthInBits:function(){return this.length},put:function(a,b){for(var c=0;c<b;c++)this.putBit(1==(a>>>b-c-1&1))},putBit:function(a){var b=this.length>>>3;this.buffer.length<=b&&this.buffer.push(0);a&&(this.buffer[b]|=128>>>this.length%8);this.length++}};function B(a,b){for(var c=0,d=0,e=0,f=0,g=Array(b.length),h=Array(b.length),k=0;k<b.length;k++){var l=b[k].dataCount,m=b[k].totalCount-l,d=Math.max(d,l),e=Math.max(e,m);g[k]=Array(l);for(var n=0;n<g[k].length;n++)g[k][n]=255&a.getBuffer()[n+f];f+=l;l=C.getRSBlocks(b[k].totalCount,b[k].dataCount);h[k]=Array(l.getLength());for(n=0;n<h[k].length;n++)h[k][n]=0;for(n=0;n<g[k].length;n++)h[k][n]=g[k][n];for(n=0;n<e;n++)for(k=0;k<b.length;k++)for(var p=0;p<h[k].length;p++)h[k][p]^=l.get(n)}for(var r=[],q=0;q<d;q++)for(k=0;k<b.length;k++)q<g[k].length&&r.push(g[k][q]);for(q=0;q<e;q++)for(k=0;k<b.length;k++)q<h[k].length&&r.push(h[k][q]);return r}var D={getRSBlocks:function(a,b){var c=E(a,b),d=c.length/3,e=[];for(a=0;a<d;a++)for(var f=c[3*a+0],g=c[3*a+1],h=c[3*a+2],k=0;k<f;k++)e.push({totalCount:g,dataCount:h});return e}},E=function(a,b){return F[4*(a-1)+["L","M","Q","H"].indexOf(["L","M","Q","H"][b])]},F=[1,26,19,9,1,26,16,10,1,26,13,11,1,26,9,13,1,44,34,16,1,44,28,18,1,44,22,22,1,44,16,26,1,70,55,26,1,70,44,34,2,35,17,10,2,35,13,12,2,35,9,14,1,100,80,36,2,50,32,18,2,50,24,22,4,25,9,16,2,121,97,40,2,60,38,22,2,60,26,26,4,30,13,18,2,146,116,48,3,58,36,22,4,36,20,26,4,36,14,16,2,86,68,27,4,43,27,11,6,43,19,14,6,43,15,18,2,98,78,31,4,49,31,14,6,32,14,16,6,39,14,16,2,121,97,40,2,60,38,22,6,43,19,26,6,43,15,26,2,146,116,48,6,73,43,26,6,36,20,26,6,36,16,26];window.qrcode=function(a,b){var c=new v(0,b||y.M);return{addData:function(d){c.addData(typeof d==="string"?d:JSON.stringify(d))},make:function(){c.make()},createSvgTag:function(p){p=p||{};var m=c.getModuleCount(),cell=p.cellSize||8,margin=p.margin||8,size=m*cell+2*margin*cell,svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#ffffff"/><g transform="translate('+margin*cell+','+margin*cell+')">';for(var r=0;r<m;r++)for(var col=0;col<m;col++)if(c.isDark(r,col))svg+='<rect x="'+col*cell+'" y="'+r*cell+'" width="'+cell+'" height="'+cell+'" fill="#000000"/>';return svg+='</g></svg>'}};}();
-</script>
-
 <script>
   // Navigation
-  const goTo = id => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); };
+  const goTo = id => {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
 
   // Utils
   const $=(s,r=document)=>r.querySelector(s);
-  const fmtTime=ms=>{const cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,m=Math.floor(ms/60000);const pad=x=>String(x).padStart(2,'0');return `${pad(m)}:${pad(s)}.${pad(cs)}`;}
+  const fmtTime=ms=>{
+    const cs=Math.floor(ms/10)%100, s=Math.floor(ms/1000)%60, m=Math.floor(ms/60000);
+    const pad=x=>String(x).padStart(2,'0');
+    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
+  };
   const kmh=(m,ms)=>ms<=0?0:+((m/(ms/1000))*3.6).toFixed(2);
-  const toast=m=>{const n=document.createElement('div');n.textContent=m;Object.assign(n.style,{position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:'#111827',border:'1px solid #223146',color:'#e5e7eb',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 10px 30px rgba(0,0,0,.35)',zIndex:50});document.body.appendChild(n);setTimeout(()=>n.remove(),2000);};
+  const toast=m=>{
+    const n=document.createElement('div'); n.textContent=m;
+    Object.assign(n.style,{position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:'#111827',border:'1px solid #223146',color:'#e5e7eb',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 10px 30px rgba(0,0,0,.35)',zIndex:50});
+    document.body.appendChild(n); setTimeout(()=>n.remove(),2000);
+  };
 
   // Elements
-  const timeEl=$('#time'), palierInfo=$('#palierInfo'), cibleInfo=$('#cibleInfo'), progInfo=$('#progInfo'), tbody=$('#tbody');
+  const timeEl=$('#time'), palierInfo=$('#palierInfo'), cibleInfo=$('#cibleInfo'), progInfo=$('#progInfo'), tbody=$('#tbody'), runMeta=$('#runMeta');
   const nom=$('#nom'), prenom=$('#prenom'), classe=$('#classe'), sexe=$('#sexe');
   const distTotEl=$('#distTot'), distPalierEl=$('#distPalier'), btnApply=$('#apply');
   const btnStartSetup=$('#startFromSetup');
@@ -209,7 +268,9 @@
     if(!Number.isFinite(t)||!Number.isFinite(p)||t<=0||p<=0){ toast('Distances invalides.'); return; }
     if(t%p!==0){ toast('⚠️ Distance totale multiple du palier requise.'); return; }
     distTot=t; distPalier=p; nbPaliers=distTot/distPalier;
-    palierInfo.textContent=`${distPalier} m`; cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`; progInfo.textContent=`0 / ${nbPaliers}`;
+    palierInfo.textContent=`${distPalier} m`;
+    cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`;
+    progInfo.textContent=`0 / ${nbPaliers}`;
     hardReset(false);
   }
   btnApply.addEventListener('click', applyParams);
@@ -220,12 +281,16 @@
       toast('Renseigne Nom / Prénom / Classe / Sexe.'); return;
     }
     applyParams();
-    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A
+    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // F/M/A accepté
+    runMeta.innerHTML=`<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
     goTo('page-run');
   });
 
   // Chrono
-  function tick(){ const now=performance.now(); timeEl.textContent=fmtTime(now-startTime); rafId=requestAnimationFrame(tick); }
+  function tick(){
+    const now=performance.now(); timeEl.textContent=fmtTime(now-startTime);
+    rafId=requestAnimationFrame(tick);
+  }
 
   btnStart.addEventListener('click',()=>{
     if(running) return;
@@ -242,7 +307,9 @@
     const now=performance.now(), cumMs=now-startTime, lapMs=cumMs-lastLapTime; lastLapTime=cumMs;
     paliersDone++; const pal=Math.min(distPalier*paliersDone,distTot); const v=kmh(distPalier,lapMs);
     splits.push({palier:pal, lapMs, cumMs, vKmh:v});
-    const tr=document.createElement('tr'); tr.innerHTML=`<td>${pal}</td><td>${fmtTime(lapMs)}</td><td>${fmtTime(cumMs)}</td><td>${v.toFixed(2)}</td>`; tbody.appendChild(tr);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${pal}</td><td>${fmtTime(lapMs)}</td><td>${fmtTime(cumMs)}</td><td>${v.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
     progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
     if(paliersDone>=nbPaliers){ stopRun(); }
   });
@@ -254,8 +321,8 @@
     running=false; cancelAnimationFrame(rafId); rafId=0;
     btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
 
-    const payload=buildQRPayload();      // JSON cumulés
-    renderQR(payload);                   // QR auto (SVG)
+    const payload=buildQRPayload();   // JSON avec cumulés uniquement
+    renderQR(payload);                // QR auto
     setTimeout(()=>qrBox.scrollIntoView({behavior:'smooth',block:'start'}),50);
   }
 
@@ -267,55 +334,76 @@
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // ✅ QR cumulés : tableau avec un objet { nom, prenom, classe, sexe, "200": "mm:ss.cs", ... }
+  // ✅ QR payload : tableau contenant un objet { nom, prenom, classe, sexe, "200":"mm:ss.cs", "400":"mm:ss.cs", ... }
   function buildQRPayload(){
     const record = {
       nom:     student.nom || "",
       prenom:  student.prenom || "",
       classe:  student.classe || "",
-      sexe:    student.sexe || ""   // laissé tel quel: "F", "M" ou "A" si choisi
+      sexe:    student.sexe || ""
     };
+    // Ajout des temps cumulés par distance, clés numériques "200","400",...
     splits.forEach((s, i) => {
-      const dist = distPalier * (i + 1);      // 200, 400, ...
-      record[String(dist)] = fmtTime(s.cumMs); // "mm:ss.cs"
+      const dist = distPalier * (i + 1);
+      record[String(dist)] = fmtTime(s.cumMs);
     });
-    return [record]; // tableau demandé dans ton flux (facile à parser)
+    return [record]; // tableau pour compat avec ton parseur (une "case" par clé)
   }
 
-  // 🔳 Rendu QR en SVG avec quiet zone large (8) pour détection facile
+  // 🔳 Rendu du QR (QRCode.js) + gestion robuste des erreurs
   function renderQR(payload){
+    const str = JSON.stringify(payload);
+    qrBox.innerHTML = ''; // clear
     try{
-      const qr = qrcode(0, 'M');           // type auto, correction M
-      qr.addData(JSON.stringify(payload)); // encode JSON
-      qr.make();
-      const svg = qr.createSvgTag({ cellSize: 8, margin: 8 }); // fond blanc + zone silencieuse
-      qrBox.innerHTML = svg;
+      if(typeof QRCode === 'undefined'){
+        const div = document.createElement('div');
+        div.className = 'qr-error';
+        div.textContent = 'QR non disponible : librairie QRCode.js non chargée.';
+        qrBox.appendChild(div);
+        return;
+      }
+      new QRCode(qrBox, {
+        text: str,
+        width: 340,
+        height: 340,
+        correctLevel: QRCode.CorrectLevel.L // motifs denses => scan facile
+      });
     }catch(e){
       console.error(e);
-      qrBox.innerHTML = '<div style="color:#b91c1c;font-weight:700">Erreur lors de la génération du QR.</div>';
+      const div = document.createElement('div');
+      div.className = 'qr-error';
+      div.textContent = 'Erreur lors de la génération du QR.';
+      qrBox.appendChild(div);
     }
   }
 
-  // Export CSV (inchangé, utile à l’élève)
+  // Export CSV (utile pour l’élève)
   function exportCSV(){
     if(!splits.length){ toast('Aucun temps à exporter.'); return; }
     const headers=['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];
     const rows=splits.map(s=>[s.palier,fmtTime(s.lapMs),fmtTime(s.cumMs),s.vKmh.toFixed(2)]);
     const metaTop=[['Nom',student.nom],['Prénom',student.prenom],['Classe',student.classe],['Sexe',student.sexe],['Distance cible (m)',distTot],['Palier (m)',distPalier]];
-    const totalMs=splits[splits.length-1].cumMs; const doneDistance=paliersDone*distPalier; const vitesseMoy=kmh(doneDistance,totalMs);
+    const totalMs=splits[splits.length-1].cumMs;
+    const doneDistance=paliersDone*distPalier;
+    const vitesseMoy=kmh(doneDistance,totalMs);
     const metaBottom=[['Distance validée (m)',doneDistance],['Temps total',fmtTime(totalMs)],['Vitesse moyenne (km/h)',vitesseMoy.toFixed(2)]];
     const toCSV=arr=>arr.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
     const csv=toCSV(metaTop)+'\n\n'+toCSV([headers])+'\n'+toCSV(rows)+'\n\n'+toCSV(metaBottom);
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
-    const fname=`${student.nom}_${student.prenom}_Intervalles.csv`.replace(/\s+/g,'_'); const a=document.createElement('a');
-    a.href=url; a.download=fname; document.body.appendChild(a); a.click(); setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},0);
+    const fname=`${student.nom}_${student.prenom}_Intervalles.csv`.replace(/\s+/g,'_');
+    const a=document.createElement('a'); a.href=url; a.download=fname; document.body.appendChild(a); a.click();
+    setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},0);
   }
   $('#exportCSV').addEventListener('click', exportCSV);
 
   // Init
   function initLabels(){
-    distTot=parseInt(distTotEl.value,10)||800; distPalier=parseInt(distPalierEl.value,10)||200; nbPaliers=distTot/distPalier;
-    palierInfo.textContent=`${distPalier} m`; cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`; progInfo.textContent=`0 / ${nbPaliers}`;
+    distTot=parseInt(distTotEl.value,10)||800;
+    distPalier=parseInt(distPalierEl.value,10)||200;
+    nbPaliers=distTot/distPalier;
+    palierInfo.textContent=`${distPalier} m`;
+    cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`;
+    progInfo.textContent=`0 / ${nbPaliers}`;
   }
   initLabels();
   goTo('page-home');

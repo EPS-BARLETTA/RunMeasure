@@ -20,24 +20,55 @@
 
     <section class="card smallish" id="params">
       <h2>Paramètres</h2>
+
+      <!-- Champ distance simple (Chrono + Vitesse, Intermédiaires si besoin) -->
       <div class="row" id="row-distance" style="display:none">
-        <div><label class="badge" for="distance-input">Distance (m)</label><input id="distance-input" type="number" min="0" placeholder="ex: 800"></div>
+        <div>
+          <label class="badge" for="distance-input">Distance (m)</label>
+          <input id="distance-input" type="number" min="0" placeholder="ex: 800">
+        </div>
       </div>
+
+      <!-- Piste pour Cooper / 1/2 Cooper / Minuteur + Distance -->
       <div class="row" id="row-track" style="display:none">
-        <div><label class="badge" for="track-length">Longueur de piste (m)</label><input id="track-length" type="number" min="50" step="1" value="400"></div>
+        <div>
+          <label class="badge" for="track-length">Longueur de piste (m)</label>
+          <input id="track-length" type="number" min="50" step="1" value="400">
+        </div>
       </div>
+
+      <!-- Minuteur : roues H/M/S (compact) -->
       <div class="row" id="row-timer" style="display:none">
-        <div class="wheel"><label class="badge">H</label><select id="wh-h"></select></div>
-        <div class="wheel"><label class="badge">M</label><select id="wh-m"></select></div>
-        <div class="wheel"><label class="badge">S</label><select id="wh-s"></select></div>
+        <div class="wheel">
+          <label class="badge">H</label>
+          <select id="wh-h"></select>
+        </div>
+        <div class="wheel">
+          <label class="badge">M</label>
+          <select id="wh-m"></select>
+        </div>
+        <div class="wheel">
+          <label class="badge">S</label>
+          <select id="wh-s"></select>
+        </div>
       </div>
+
+      <!-- Intermédiaires : distance totale + pas -->
       <div class="row" id="row-intervalles" style="display:none">
-        <div><label class="badge" for="total-distance">Distance totale (m)</label><input id="total-distance" type="number" min="100" step="50" value="800"></div>
-        <div><label class="badge" for="split-step">Pas d'intermédiaire (m)</label><input id="split-step" type="number" min="50" step="50" value="200"></div>
+        <div>
+          <label class="badge" for="total-distance">Distance totale (m)</label>
+          <input id="total-distance" type="number" min="100" step="50" value="800">
+        </div>
+        <div>
+          <label class="badge" for="split-step">Pas d'intermédiaire (m)</label>
+          <input id="split-step" type="number" min="50" step="50" value="200">
+        </div>
       </div>
+
       <p id="hint" class="muted"></p>
     </section>
 
+    <!-- Gros contrôles centraux -->
     <section class="card center big-controls">
       <div class="chips">
         <button id="btn-start" class="btn btn-ok">▶️ Démarrer</button>
@@ -48,31 +79,44 @@
       </div>
     </section>
 
+    <!-- Affichages -->
     <section class="card" id="results">
       <h2>Affichage</h2>
+
       <div class="grid">
         <div class="card center">
           <div class="sub">Temps</div>
           <div id="time" class="stat">00:00</div>
         </div>
+
         <div class="card center" id="box-speed" style="display:none">
           <div class="sub">Vitesse</div>
           <div id="speed" class="stat">—</div>
         </div>
+
         <div class="card center" id="box-distance" style="display:none">
           <div class="sub">Distance</div>
           <div id="distance" class="stat">—</div>
         </div>
       </div>
 
+      <!-- Tableau Intermédiaires -->
       <div id="splits-wrap" style="display:none;margin-top:12px">
         <h3>Intermédiaires</h3>
         <table id="splits-table">
-          <thead><tr><th>#</th><th>Distance cumulée (m)</th><th>Temps cumulé</th><th>Vitesse instantanée</th></tr></thead>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Distance cumulée (m)</th>
+              <th>Temps cumulé</th>
+              <th>Vitesse instantanée</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
 
+      <!-- QR (masqué automatiquement pour Chrono/Minuteur) -->
       <div id="qr-box" style="display:none">
         <h3>QR JSON</h3>
         <div id="qr" style="width:220px;height:220px;"></div>
@@ -80,19 +124,21 @@
       </div>
     </section>
 
-    <!-- Fullscreen overlays (chrono/minuteur) -->
+    <!-- Plein écran Chrono / Minuteur -->
     <div id="fs-chrono" class="fullscreen">
       <div id="fs-time" class="time-big">00:00</div>
     </div>
+
     <div id="fs-countdown" class="fullscreen">
       <div class="circle"><canvas id="cd-canvas"></canvas></div>
       <div id="cd-time" class="time-big" style="margin-top:18px">00:00</div>
     </div>
   </div>
 
-  <!-- IMPORTANT: local QR at ROOT -->
+  <!-- ⚠️ Ordre crucial des scripts : d'abord la lib QR locale, puis app.js -->
   <script defer src="qrcode.min.js"></script>
   <script defer src="app.js"></script>
+
   <footer>RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG  - JB</footer>
 </body>
 </html>

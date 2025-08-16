@@ -4,88 +4,56 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Chrono Intervalles EPS</title>
+
+<!-- ✅ QRCode.js fiable via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 <style>
-  :root{
-    --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8;
-    --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:linear-gradient(180deg, var(--bg), #0b1220 60%);
-    color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
-    display:flex; min-height:100vh; flex-direction:column;
-  }
-  .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; }
-  .page.active{ display:block }
+  :root{ --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220; }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{ margin:0; background:linear-gradient(180deg, var(--bg), #0b1220 60%); color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
+        display:flex; min-height:100vh; flex-direction:column; }
+  .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; } .page.active{ display:block }
   .hero{ display:flex; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:24px; }
   .hero h1{ margin:0 0 10px; font-weight:900; letter-spacing:.6px; font-size:clamp(2rem,6vw,3rem) }
   .hero p{ margin:0 0 20px; color:var(--muted); font-size:clamp(1rem,2.4vw,1.2rem) }
   .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
-  button,.btn{
-    border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px;
-    background:#1f2a3a; color:#e5e7eb; cursor:pointer; font-size:1rem; transition:transform .03s ease;
-    min-width:180px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
-  }
+  button,.btn{ border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px; background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; min-width:180px; display:inline-flex; align-items:center; justify-content:center }
   button:active,.btn:active{ transform:translateY(1px) }
   .b-primary{background:var(--accent2)} .b-go{background:var(--accent)} .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
-
-  .title{ text-align:center; font-weight:800 }
-  .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) }
-  .title p{ margin:0; color:var(--muted); font-size:.95rem }
-
-  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px }
-  @media (max-width:860px){ .grid{ grid-template-columns:1fr } }
-
-  .card{
-    background:linear-gradient(180deg, var(--panel), var(--card));
-    border:1px solid #1e293b; border-radius:18px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.25);
-  }
-  .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 }
-  .row{ display:flex; gap:12px; flex-wrap:wrap } .field{ flex:1 1 180px; min-width:180px }
+  .title{ text-align:center; font-weight:800 } .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) } .title p{ margin:0; color:var(--muted); font-size:.95rem }
+  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px } @media(max-width:860px){ .grid{ grid-template-columns:1fr } }
+  .card{ background:linear-gradient(180deg, var(--panel), var(--card)); border:1px solid #1e293b; border-radius:18px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.25); }
+  .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 } .row{ display:flex; gap:12px; flex-wrap:wrap } .field{ flex:1 1 180px; min-width:180px }
   label{ display:block; font-size:.85rem; color:var(--muted); margin:0 0 6px }
   input[type="text"],input[type="number"],select{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244; background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none }
-
-  .chrono{
-    display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums;
-    background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%); border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px;
-  }
+  .chrono{ display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums; background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%); border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px }
   .chrono-time{ font-size:clamp(2.6rem,7vw,4.8rem); font-weight:900; text-shadow:0 0 24px rgba(59,130,246,.25) }
-
   table{ width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius:14px; border:1px solid #223146 }
   thead th{ text-align:left; padding:12px 10px; font-size:.9rem; color:#cbd5e1; background:#0d1626; position:sticky; top:0 }
   tbody td{ padding:10px; border-top:1px solid #1c2940 } tbody tr:nth-child(odd){ background:#0a1422 } tbody tr:nth-child(even){ background:#0c1626 }
   .hint{ color:var(--muted); font-size:.85rem; margin-top:6px }
-
   .topbar{ display:flex; gap:10px; flex-wrap:wrap; margin:4px 0 12px; justify-content:center }
-  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
-  @media (max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
+  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px } @media(max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
   .safe{ border-radius:16px; padding:14px; border:1px solid rgba(255,255,255,.08); box-shadow:0 10px 30px rgba(0,0,0,.25) }
-  .safe h3{ margin:0 0 6px; font-size:1.05rem }
-  .safe ul{ margin:.3rem 0 0 1rem }
-  .s1{ background:linear-gradient(135deg,#0b1220 0%,rgba(14,165,233,.15)100%) }
-  .s2{ background:linear-gradient(135deg,#0b1220 0%,rgba(34,197,94,.15)100%) }
-  .s3{ background:linear-gradient(135deg,#0b1220 0%,rgba(245,158,11,.18)100%) }
-  .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
+  .safe h3{ margin:0 0 6px; font-size:1.05rem } .safe ul{ margin:.3rem 0 0 1rem }
+  .s1{ background:linear-gradient(135deg,#0b1220 0%,rgba(14,165,233,.15)100%) } .s2{ background:linear-gradient(135deg,#0b1220 0%,rgba(34,197,94,.15)100%) } .s3{ background:linear-gradient(135deg,#0b1220 0%,rgba(245,158,11,.18)100%) } .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
   .badge{ display:inline-block; font-weight:800; padding:6px 10px; border-radius:999px; background:#0a1220; border:1px solid #223146; margin-right:8px }
   .meta{ text-align:center; color:#cbd5e1; margin:4px 0 10px }
-
   .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
-  #qrcode svg{ background:#fff; border-radius:10px; padding:10px }
-  footer{
-    margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px;
-    font-weight:700; border-top:1px solid #cbd5e1;
-  }
+  #qrcode canvas{ background:#fff; border-radius:10px; padding:10px }
+  footer{ margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px; font-weight:700; border-top:1px solid #cbd5e1; }
 </style>
 </head>
 <body>
 
-<!-- ====== ACCUEIL ====== -->
+<!-- ACCUEIL -->
 <main id="page-home" class="page active">
   <div class="hero">
     <div>
       <h1>Chrono Intervalles EPS</h1>
-      <p>Chronomètre avec temps intermédiaires configurables, tableau récap et QR JSON compatible ScanProf.</p>
+      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON compatible ScanProf.</p>
       <div class="btns">
         <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
         <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
@@ -94,30 +62,29 @@
   </div>
 </main>
 
-<!-- ====== SÉCURITÉ ====== -->
+<!-- SÉCURITÉ -->
 <section id="page-safety" class="page">
   <div class="title">
     <h2>Fiche sécurité – Demi-fond & gestes en cas de blessure</h2>
-    <p>Lis ceci avant la séance. Si tu as une douleur vive ou un malaise : <b>tu t’arrêtes</b> et tu préviens immédiatement.</p>
+    <p>Si douleur vive ou malaise : <b>tu t’arrêtes</b> et tu préviens immédiatement.</p>
   </div>
   <div class="topbar">
     <button class="b-ghost" onclick="goTo('page-home')">Accueil</button>
     <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
   </div>
-
   <div class="safe-grid">
-    <div class="safe s1"><h3>🟦 Échauffement (10–15 min)</h3><ul><li>Course légère + mobilité (chevilles, genoux, hanches).</li><li>Montées de genoux / talons-fesses / éducatifs progressifs.</li><li>2–3 lignes droites en accélération contrôlée.</li></ul></div>
-    <div class="safe s2"><h3>🟩 Hydratation & tenue</h3><ul><li>Petites gorgées avant/pendant/après.</li><li>Chaussures adaptées, lacets serrés, tenue respirante.</li></ul></div>
-    <div class="safe s3"><h3>🟨 Pacing (gestion d’allure)</h3><ul><li>Partir <u>régulier</u>, pas trop vite.</li><li>Respiration rythmée, épaules relâchées.</li></ul></div>
-    <div class="safe s1"><h3>🟦 Signaux d’alerte</h3><ul><li>Douleur vive, essoufflement inhabituel, vertiges → <b>STOP</b>.</li><li>Asthme : ventoline disponible et signaler avant la séance.</li></ul></div>
-    <div class="safe s2"><h3>🟩 Point de côté / crampes</h3><ul><li>Ralentir, respirations profondes, étirements doux.</li><li>Hydrater. Reprendre seulement si la douleur disparaît.</li></ul></div>
-    <div class="safe s4"><h3>🟥 Chute / entorse (R-I-C-E)</h3><ul><li><b>R</b>epos – <b>I</b>ce – <b>C</b>ompression – <b>E</b>lévation.</li><li>Immobiliser si suspicion fracture/luxation. Prévenir l’enseignant.</li></ul></div>
-    <div class="safe s4"><h3>🟥 Malaise grave</h3><ul><li>Allonger/asseoir, surveiller, alerter un adulte.</li><li>Appel d’urgence : <b>112</b>.</li></ul></div>
-    <div class="safe s3"><h3>🟨 Après l’effort</h3><ul><li>Retour au calme : marche + respiration + hydratation.</li><li>Étirements doux (pas à chaud si douleur).</li></ul></div>
+    <div class="safe s1"><h3>🟦 Échauffement (10–15 min)</h3><ul><li>Course légère + mobilité.</li><li>Montées de genoux / talons-fesses.</li><li>2–3 lignes droites progressives.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Hydratation & tenue</h3><ul><li>Petites gorgées régulières.</li><li>Chaussures adaptées, lacets serrés.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Pacing</h3><ul><li>Partir régulier, pas trop vite.</li><li>Respiration rythmée, épaules relâchées.</li></ul></div>
+    <div class="safe s1"><h3>🟦 Signaux d’alerte</h3><ul><li>Douleur vive, vertiges, essoufflement inhabituel → <b>STOP</b>.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Crampes / point de côté</h3><ul><li>Ralentir, respirer, étirer doucement.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Chute / entorse (R-I-C-E)</h3><ul><li>Repos, glace protégée, compression, élévation.</li><li>Immobiliser si suspicion de fracture.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Malaise grave</h3><ul><li>Allonger/asseoir, surveiller, alerter.</li><li>Appel d’urgence : <b>112</b>.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Après l’effort</h3><ul><li>Retour au calme + hydratation.</li><li>Étirements doux.</li></ul></div>
   </div>
 </section>
 
-<!-- ====== RÉGLAGES ====== -->
+<!-- RÉGLAGES -->
 <section id="page-app" class="page">
   <div class="title">
     <h2>Chrono Intervalles</h2>
@@ -163,7 +130,7 @@
   </div>
 </section>
 
-<!-- ====== COURSE ====== -->
+<!-- COURSE -->
 <section id="page-run" class="page">
   <div class="meta" id="runMeta"></div>
 
@@ -178,8 +145,7 @@
           <button id="reset" class="b-ghost">Réinitialiser</button>
         </div>
         <div class="hint" style="text-align:center">
-          Palier: <b id="palierInfo">200 m</b> · Cible: <b id="cibleInfo">800 m (4 paliers)</b> · Progression: <b id="progInfo">0 / 4</b><br>
-          Clique “Temps intermédiaire” à chaque passage. Le dernier clic arrête automatiquement la course.
+          Palier: <b id="palierInfo">200 m</b> · Cible: <b id="cibleInfo">800 m (4 paliers)</b> · Progression: <b id="progInfo">0 / 4</b>
         </div>
       </div>
     </div>
@@ -191,7 +157,6 @@
       <thead><tr><th>Palier (m)</th><th>Temps sur le palier</th><th>Temps cumulé</th><th>Vitesse sur le palier (km/h)</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
-    <div class="hint">Le tableau se met à jour à chaque “Temps intermédiaire”.</div>
   </section>
 
   <section class="card" style="margin-top:16px">
@@ -202,9 +167,7 @@
     <div class="qr-wrap" style="margin-top:10px">
       <div id="qrcode"></div>
     </div>
-    <p class="hint" style="text-align:center;margin-top:8px">
-      Le QR s’affiche automatiquement à la fin de la course. Le professeur le scanne avec ScanProf.
-    </p>
+    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à la fin de la course (ScanProf).</p>
   </section>
 
   <div class="btns" style="margin-top:6px">
@@ -216,13 +179,6 @@
   ChronoIntrervalles - Equipe EPS Lycée Vauban - LUXEMBOURG -JB
 </footer>
 
-<!-- ====== QRCode generator fiable (SVG, offline) – qrcode-generator (MIT) ====== -->
-<script>
-/*! qrcode-generator (MIT) | https://github.com/kazuhikoarase/qrcode-generator (core SVG min) */
-!function(){function y(b){throw b;}var z=function(){function b(b,d){this.typeNumber=b;this.errorCorrectLevel=d;this.modules=null;this.moduleCount=0;this.dataCache=null;this.dataList=[]}var d={L:1,M:0,Q:3,H:2};b.prototype={addData:function(b){this.dataList.push(new A(b))},isDark:function(b,d){if(null==this.modules[b]||null==this.modules[b][d])throw new Error(b+","+d);return this.modules[b][d]},getModuleCount:function(){return this.moduleCount},make:function(){if(this.typeNumber<1){for(var a=1;40>=a;a++){var c=new b(a,this.errorCorrectLevel);c.dataList=this.dataList.slice(0);if(c.makeImpl(!1),c.dataCache=c.createData(),c.dataCache){this.typeNumber=a;break}}}this.makeImpl(!0)},makeImpl:function(b){this.moduleCount=4*this.typeNumber+17;this.modules=Array(this.moduleCount);for(var a=0;a<this.moduleCount;a++){this.modules[a]=Array(this.moduleCount);for(var c=0;c<this.moduleCount;c++)this.modules[a][c]=null}this.setupPositionProbePattern(0,0);this.setupPositionProbePattern(this.moduleCount-7,0);this.setupPositionProbePattern(0,this.moduleCount-7);this.setupPositionAdjustPattern();this.setupTimingPattern();this.setupTypeInfo(b,0);7<=this.typeNumber&&this.setupTypeNumber(b);null==this.dataCache&&(this.dataCache=this.createData());this.mapData(this.dataCache)},setupPositionProbePattern:function(b,a){for(var c=-1;7>=c;c++)if(!(b+c<=-1||this.moduleCount<=b+c))for(var e=-1;7>=e;e++)a+e<=-1||this.moduleCount<=a+e||(this.modules[b+c][a+e]=0<=c&&6>=c&&(0==e||6==e)||0<=e&&6>=e&&(0==c||6==c)||2<=c&&4>=c&&2<=e&&4>=e)},getBestMaskPattern:function(){for(var b=0,a=0,c=0;8>c;c++){this.makeImpl(!1);this.applyMaskPattern(c);var e=C.getLostPoint(this);0==c||e<b?(b=e,a=c):0}return this.applyMaskPattern(a),a},createData:function(){for(var a=D.getRSBlocks(this.typeNumber,this.errorCorrectLevel),c=new E,b=0;b<this.dataList.length;b++)this.dataList[b].write(c);for(b=0;b<a.length;b++){var e=a[b].dataCount;for(c.getLengthInBits()>8*e&&y(new Error("code length overflow. "+c.getLengthInBits()+">"+8*e));c.getLengthInBits()+4<=8*e;)c.put(0,4);for(;c.getLengthInBits()%8!=0;)c.putBit(!1)}for(;c.getLengthInBits()<8*e;)c.put(236,8),c.getLengthInBits()<8*e&&c.put(17,8);return F(c,a)},mapData:function(b){for(var a=this.getBestMaskPattern(),c=this.moduleCount-1,e=7,g=0,d=this.moduleCount-1;0<d;d-=2)for(6==d&&d--;;){for(var h=0;2>h;h++)if(null==this.modules[c-h][d]){var k=!1;g<b.length&&(k=1==(b[g]>>>e&1));C.getMask(a,c-h,d)&&(k=!k);this.modules[c-h][d]=k}if(e--,-1==e){g++;if(g>=b.length)break;e=7}c+=a?-1:1;if(c<0||this.moduleCount<=c){c+=a?1:-1;break}}},setupTimingPattern:function(){for(var b=8;b<this.moduleCount-8;b++)null==this.modules[b][6]&&(this.modules[b][6]=0==b%2),null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var b=C.getPatternPosition(this.typeNumber),a=0;a<b.length;a++)for(var c=0;c<b.length;c++){var e=b[a],g=b[c];if(null==this.modules[e][g])for(var d=-2;2>=d;d++)for(var h=-2;2>=h;h++)this.modules[e+d][g+h]=-2==d||2==d||-2==h||2==h||0==d&&0==h}},setupTypeNumber:function(b){for(var a=C.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var e=!b&&1==(a>>c&1);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=e;this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=e}},setupTypeInfo:function(b,a){for(var c=C.getBCHTypeInfo(C.getBCHTypeInfo(this.errorCorrectLevel<<3|a)),e=0;15>e;e++){var g=!b&&1==(c>>e&1);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g;8>e?this.modules[8][this.moduleCount-e-1]=g:this.modules[8][14-e]=g}},applyMaskPattern:function(b){for(var a=0;a<this.moduleCount;a++)for(var c=0;c<this.moduleCount;c++)null!=this.modules[a][c]&&(this.modules[a][c]=this.modules[a][c]^C.getMask(b,a,c))}};var C=function(){var b=[[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98]];return{PATTERN_POSITION_TABLE:b,getPatternPosition:function(a){return b[a-1]},getMask:function(a,b,c){switch(a){case 0:return 0==(b+c)%2;case 1:return 0==b%2;case 2:return 0==c%3;case 3:return 0==(b+c)%3;case 4:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case 5:return 0==b*c%2+b*c%3;case 6:return 0==(b*c%2+b*c%3)%2;case 7:return 0==((b*c%3+(b+c)%2))%2;default:throw new Error("bad maskPattern:"+a)}},getBCHTypeInfo:function(a){for(var b=a<<10;C.getBCHDigit(b)-C.getBCHDigit(1335)>=0;)b^=1335<<C.getBCHDigit(b)-C.getBCHDigit(1335);return a<<10|b},getBCHTypeNumber:function(a){for(var b=a<<12;C.getBCHDigit(b)-C.getBCHDigit(7973)>=0;)b^=7973<<C.getBCHDigit(b)-C.getBCHDigit(7973);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,e=0;e<b;e++)for(var g=0;g<b;g++){for(var d=0,h=a.isDark(e,g),k=-1;1>=k;k++)if(!(e+k<0||b<=e+k))for(var l=-1;1>=l;l++)g+l<0||b<=g+l||0==k&&0==l||h==a.isDark(e+k,g+l)&&d++;5<d&&(c+=3+d-5)}for(e=0;e<b-1;e++)for(g=0;g<b-1;g++){d=0;a.isDark(e,g)&&d++;a.isDark(e+1,g)&&d++;a.isDark(e,g+1)&&d++;a.isDark(e+1,g+1)&&d++;0==d||4==d?c+=3:0}for(e=0;e<b;e++)for(g=0;g<b-6;g++)a.isDark(e,g)&&!a.isDark(e,g+1)&&a.isDark(e,g+2)&&a.isDark(e,g+3)&&a.isDark(e,g+4)&&!a.isDark(e,g+5)&&a.isDark(e,g+6)&&(c+=40);for(g=0;g<b;g++)for(e=0;e<b-6;e++)a.isDark(e,g)&&!a.isDark(e+1,g)&&a.isDark(e+2,g)&&a.isDark(e+3,g)&&a.isDark(e+4,g)&&!a.isDark(e+5,g)&&a.isDark(e+6,g)&&(c+=40);for(var m=0,f=0,e=0;e<b;e++)for(g=0;g<b;g++)a.isDark(e,g)&&m++;f=Math.abs(100*m/b/b-50)/5*10;return c+=f}}}(),E=function(){this.buffer=[];this.length=0};E.prototype={getBuffer:function(){return this.buffer},getLengthInBits:function(){return this.length},put:function(b,a){for(var c=0;c<a;c++)this.putBit(1==(b>>>a-c-1&1))},putBit:function(b){var a=this.length>>>3;this.buffer.length<=a&&this.buffer.push(0);b&&(this.buffer[a]|=128>>>this.length%8);this.length++}};function G(b,a){for(var c=0;c<b.length&&0==b[c];)c++;this.num=b.length-c;this.buf=Array(this.num);for(var e=0;e<this.num;e++)this.buf[e]=b[e+c]}G.prototype={get:function(b){return this.buf[b]},getLength:function(){return this.num},multiply:function(b){for(var a=Array(this.getLength()+b.getLength()-1),c=0;c<this.getLength();c++)for(var e=0;e<b.getLength();e++)a[c+e]^=H.gexp(H.glog(this.get(c))+H.glog(b.get(e)));return new G(a)},mod:function(b){if(this.getLength()-b.getLength()<0)return this;var a=H.glog(this.get(0))-H.glog(b.get(0)),c=Array(this.getLength());for(var e=0;e<this.getLength();e++)c[e]=this.get(e);for(e=0;e<b.getLength();e++)c[e]^=H.gexp(H.glog(b.get(e))+a);return new G(c).mod(b)}};var H={};H.glog=function(b){if(1>b)throw new Error("glog("+b+")");return I[b]};H.gexp=function(b){for(;0>b;)b+=255;for(;256<=b;)b-=255;return J[b]};for(var J=Array(256),I=Array(256),K=0;8>K;K++)J[K]=1<<K;for(K=8;256>K;K++)J[K]=J[K-4]^J[K-5]^J[K-6]^J[K-8];for(K=0;255>K;K++)I[J[K]]=K;function L(b,a){this.totalCount=b;this.dataCount=a}var D={getRSBlocks:function(b,a){var c=M(b,a),e=c.length/3,g=[];for(b=0;b<e;b++)for(var d=c[3*b+0],h=c[3*b+1],k=c[3*b+2],l=0;l<d;l++)g.push(new L(h,k));return g}};function M(b,a){return N[4*(b-1)+["L","M","Q","H"].indexOf(["L","M","Q","H"][a])]}var N=[1,26,19,9,1,26,16,10,1,26,13,11,1,26,9,13,1,44,34,16,1,44,28,18,1,44,22,22,1,44,16,26,1,70,55,26,1,70,44,34,2,35,17,10,2,35,13,12,2,35,9,14,1,100,80,36,2,50,32,18,2,50,24,22,4,25,9,16,2,121,97,40,2,60,38,22,2,60,26,26,4,30,13,18,2,146,116,48,3,58,36,22,4,36,20,26,4,36,14,16,2,86,68,27,4,43,27,11,6,43,19,14,6,43,15,18,2,98,78,31,4,49,31,14,6,32,14,16,6,39,14,16,2,121,97,40,2,60,38,22,6,43,19,26,6,43,15,26,2,146,116,48,6,73,43,26,6,36,20,26,6,36,16,26];function F(b,a){for(var c=D.getRSBlocks(b.typeNumber,b.errorCorrectLevel),e=new E,g=0;g<b.dataList.length;g++)b.dataList[g].write(e);for(g=0;g<c.length;g++){var d=c[g].dataCount;for(e.getLengthInBits()>8*d&&y(new Error("code length overflow. "+e.getLengthInBits()+">"+8*d));e.getLengthInBits()+4<=8*d;)e.put(0,4);for(;e.getLengthInBits()%8!=0;)e.putBit(!1)}for(;e.getLengthInBits()<8*d;)e.put(236,8),e.getLengthInBits()<8*d&&e.put(17,8);for(var h=D.getRSBlocks(b.typeNumber,b.errorCorrectLevel),k=0,l=Array(h.length),m=Array(h.length),f=0;f<h.length;f++){var n=h[f].dataCount;for(l[f]=Array(n),g=0;g<n;g++)l[f][g]=255&e.getBuffer()[g+k];k+=n;var p=h[f].totalCount-n;for(m[f]=Array(p),g=0;g<p;g++)m[f][g]=0}for(var q=[],r=0;r<Math.max.apply(null,l.map(function(b){return b.length}));r++)for(f=0;f<l.length;f++)r<l[f].length&&q.push(l[f][r]);for(r=0;r<Math.max.apply(null,m.map(function(b){return b.length}));r++)for(f=0;f<m.length;f++)r<m[f].length&&q.push(m[f][r]);return q}function A(b){this.mode=4;this.data=b}A.prototype={getLength:function(){return this.data.length},write:function(b){for(var a=0;a<this.data.length;a++){var c=this.data.charCodeAt(a);128>c?b.put(c,8):2048>c?(b.put(192|c>>6,8),b.put(128|c&63,8)):55296>c||57344<=c?(b.put(224|c>>12,8),b.put(128|c>>6&63,8),b.put(128|c&63,8)):(a++,c=65536+((c&1023)<<10|this.data.charCodeAt(a)&1023),b.put(240|c>>18,8),b.put(128|c>>12&63,8),b.put(128|c>>6&63,8),b.put(128|c&63,8))}};window.qrcode=function(b,a){var c=new z(0,a||0);c.addData(b);c.make();return{createSvgTag:function(opts){opts=opts||{};var cell=opts.cellSize||6,margin=opts.margin||2,m=c.getModuleCount(),size=m*cell+2*margin*cell,svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><g transform="translate('+margin*cell+','+margin*cell+')">';for(var r=0;r<m;r++)for(var col=0;col<m;col++)if(c.isDark(r,col))svg+='<rect x="'+col*cell+'" y="'+r*cell+'" width="'+cell+'" height="'+cell+'"/>';return svg+='</g></svg>'}}};}();
-</script>
-
-<!-- ====== App logic ====== -->
 <script>
   // Navigation
   const goTo = id => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); };
@@ -261,8 +217,7 @@
   // From setup → run
   btnStartSetup.addEventListener('click', ()=>{
     if(!(nom.value.trim() && prenom.value.trim() && classe.value.trim() && sexe.value.trim())){
-      toast('Renseigne Nom / Prénom / Classe / Sexe.');
-      return;
+      toast('Renseigne Nom / Prénom / Classe / Sexe.'); return;
     }
     applyParams();
     student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A
@@ -318,26 +273,30 @@
     const doneDistance=paliersDone*distPalier;
     const totalMs=splits.length? splits[splits.length-1].cumMs : 0;
     const vitesseMoy=kmh(doneDistance,totalMs);
-    const vmaEstimee=vitesseMoy; // hypothèse effort max
+    const vmaEstimee=vitesseMoy; // hypothèse
 
     const core={
-      nom:student.nom, prenom:student.prenom, classe:student.classe, sexe:student.sexe, // M/F/A conservé
+      nom:student.nom, prenom:student.prenom, classe:student.classe, sexe:student.sexe, // M/F/A
       distance:doneDistance, vitesse:vitesseMoy, vma:vmaEstimee,
       tps_total:fmtTime(totalMs), distance_totale_m:distTot, intervalle_m:distPalier
     };
     splits.forEach(s=> core[`Tps au ${s.palier}`]=fmtTime(s.cumMs));
     core.splits=splits.map(s=>({palier_m:s.palier,tps_palier:fmtTime(s.lapMs),tps_cumule:fmtTime(s.cumMs),vitesse_kmh:+s.vKmh.toFixed(2)}));
 
-    return [core]; // tableau d’objets attendu par ScanProf
+    return [core]; // tableau attendu
   }
 
-  // QR render (SVG net)
+  // ✅ QR render avec QRCode.js (fiable)
   function renderQR(payload){
     const str=JSON.stringify(payload);
+    qrBox.innerHTML=''; // reset
     try{
-      const q = qrcode(str,'M'); // auto type, correction M
-      const svg = q.createSvgTag({ cellSize: 6, margin: 2 });
-      qrBox.innerHTML = svg;
+      new QRCode(qrBox, {
+        text: str,
+        width: 256,
+        height: 256,
+        correctLevel: QRCode.CorrectLevel.M
+      });
     }catch(e){
       console.error(e); toast('Erreur QR.');
     }

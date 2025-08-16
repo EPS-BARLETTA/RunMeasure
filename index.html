@@ -47,7 +47,7 @@
   }
   .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 }
   .row{ display:flex; gap:12px; flex-wrap:wrap } .field{ flex:1 1 180px; min-width:180px }
-  label{ display:block; font-size:.85rem; color:var(--muted); margin:0 0 6px }
+  label{ display:block; font-size:.85rem; color:#a0aec0; margin:0 0 6px }
   input[type="text"],input[type="number"],select{
     width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244;
     background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none
@@ -152,6 +152,7 @@
             <option value="" selected>Choisir…</option>
             <option value="F">Fille</option>
             <option value="M">Garçon</option>
+            <option value="A">Autre</option>
           </select>
         </div>
       </div>
@@ -208,7 +209,8 @@
       <button id="exportCSV" class="b-ghost" disabled>Exporter CSV</button>
     </div>
 
-    <div class="qr-wrap">
+    <!-- On masque les anciens QR de la page : seul le bouton flottant "QR ScanProf" reste utilisé -->
+    <div class="qr-wrap" style="display:none">
       <div class="qr-col">
         <div class="qr-title">QR ScanProf (prof)</div>
         <div id="qr-scanprof"></div>
@@ -218,7 +220,7 @@
         <div id="qr-cumules"></div>
       </div>
     </div>
-    <p class="hint">Deux QR s’affichent automatiquement à la fin : <b>Prof</b> (strict) et <b>Cumulés</b> (identité puis 200/400/…).</p>
+    <p class="hint">Utilise le bouton flottant <b>QR ScanProf</b> (en bas à droite) pour le QR compatible + PNG.</p>
   </section>
 
   <div class="btns" style="margin-top:6px">
@@ -306,11 +308,8 @@
     running=false; cancelAnimationFrame(rafId); rafId=0;
     btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
 
-    // Génère les 2 QR
-    renderQR('qr-scanprof', JSON.stringify(buildScanProfPayload()));
-    renderQR('qr-cumules',  buildCumulesJSONString());  // << chaîne JSON ordonnée
-
-    setTimeout(()=>qrProf.scrollIntoView({behavior:'smooth',block:'start'}),50);
+    // ❌ On ne génère plus les 2 anciens QR ici.
+    // ✅ Le seul QR utilisé est celui du bouton flottant "QR ScanProf" (scanprof-qr-auto.js).
   }
 
   btnReset.addEventListener('click',()=>hardReset(true));
@@ -321,72 +320,10 @@
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // ====== QR PAYLOADS ======
-
-  // 1) ScanProf strict : [ { nom, prenom, classe, sexe(M/F), distance, vitesse, vma } ]
-  function buildScanProfPayload(){
-    const totalMs = splits.length ? splits[splits.length-1].cumMs : 0;
-    const distance = distPalier * splits.length; // m parcourus
-    const vitesse = totalMs>0 ? +(((distance)/(totalMs/1000))*3.6).toFixed(2) : 0; // km/h
-    const vma = vitesse; // à défaut d'une VMA mesurée
-    const sx = (student.sexe==='M' || student.sexe==='F') ? student.sexe : 'F';
-    return [{
-      nom:     student.nom || "",
-      prenom:  student.prenom || "",
-      classe:  student.classe || "",
-      sexe:    sx,
-      distance: distance,
-      vitesse:  vitesse,
-      vma:      vma
-    }];
-  }
-
-  // 2) Cumulés EPS : chaîne JSON ordonnée manuellement pour garder identité en premier
-  // Sortie texte (à passer directement au QR): 
-  //   [{"nom":"...","prenom":"...","classe":"...","sexe":"...","200":"mm:ss.cs","400":"..."}]
-  function buildCumulesJSONString(){
-    const esc = s => JSON.stringify(String(s)); // échappe correctement
-    const recParts = [];
-    // identité d'abord
-    recParts.push(`"nom":${esc(student.nom||"")}`);
-    recParts.push(`"prenom":${esc(student.prenom||"")}`);
-    recParts.push(`"classe":${esc(student.classe||"")}`);
-    recParts.push(`"sexe":${esc(student.sexe||"")}`);
-    // ensuite les distances dans l'ordre des paliers atteints
-    splits.forEach((s,i)=>{
-      const dist = distPalier*(i+1);         // 200,400,...
-      recParts.push(`${JSON.stringify(String(dist))}:${esc(fmtTime(s.cumMs))}`);
-    });
-    // si tu veux forcer jusqu'à la distance cible avec cellules vides, décommente :
-    /*
-    for(let d=distPalier*(splits.length+1); d<=distTot; d+=distPalier){
-      recParts.push(`${JSON.stringify(String(d))}:""`);
-    }
-    */
-    const objText = `{${recParts.join(',')}}`;
-    return `[${objText}]`;
-  }
-
-  // Rendu QR générique (noir sur blanc, correction élevée)
-  function renderQR(targetId, text){
-    const el = document.getElementById(targetId);
-    if(!el) return;
-    el.innerHTML='';
-    try{
-      if(typeof QRCode==='undefined') throw new Error('QRCode.js non chargé');
-      new QRCode(el,{
-        text, // on passe la chaîne telle quelle
-        width: 340,
-        height: 340,
-        colorDark : "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    }catch(e){
-      console.error(e);
-      el.textContent='Erreur lors de la génération du QR.';
-    }
-  }
+  // ====== (fonctions QR historiques conservées mais non utilisées) ======
+  function buildScanProfPayload(){ return []; }
+  function buildCumulesJSONString(){ return "[]"; }
+  function renderQR(){ /* legacy no-op */ }
 
   // Export CSV (inchangé)
   function exportCSV(){
@@ -412,5 +349,8 @@
   initLabels();
   goTo('page-home');
 </script>
+
+<!-- ► auto-patch QR ScanProf (le QR à utiliser + bouton PNG) -->
+<script src="./scanprof-qr-auto.js" defer></script>
 </body>
 </html>

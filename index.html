@@ -5,408 +5,160 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Chrono Intervalles EPS</title>
 
-<!-- QRCode.js (fiable, hors-ligne après 1er cache navigateur) -->
+<!-- QRCode.js -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <style>
-  :root{
-    --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8;
-    --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220;
+  body {
+    margin:0; background:#0f172a; color:#e5e7eb;
+    font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
+    display:flex; flex-direction:column; min-height:100vh;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:linear-gradient(180deg,var(--bg),#0b1220 60%); color:var(--ink);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
-    display:flex; min-height:100vh; flex-direction:column;
-  }
-  .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; }
-  .page.active{ display:block }
-  .hero{ display:flex; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:24px; }
-  .hero h1{ margin:0 0 10px; font-weight:900; letter-spacing:.6px; font-size:clamp(2rem,6vw,3rem) }
-  .hero p{ margin:0 0 20px; color:var(--muted); font-size:clamp(1rem,2.4vw,1.2rem) }
-  .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
+  .page { display:none; padding:20px; width:min(1100px,100%); margin:0 auto 24px; }
+  .page.active { display:block }
+  h1,h2,h3 { text-align:center }
+  .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0 }
   button{
-    border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px;
-    background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; min-width:180px;
-    display:inline-flex; align-items:center; justify-content:center
+    border:none; border-radius:12px; padding:12px 20px; font-weight:700;
+    cursor:pointer; font-size:1rem; min-width:160px;
   }
-  button:active{ transform:translateY(1px) }
-  .b-primary{background:var(--accent2)} .b-go{background:var(--accent)}
-  .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
-
-  .title{ text-align:center; font-weight:800 }
-  .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) }
-  .title p{ margin:0; color:var(--muted); font-size:.95rem }
-
-  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px }
-  @media(max-width:860px){ .grid{ grid-template-columns:1fr } }
-
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--card));
-    border:1px solid #1e293b; border-radius:18px; padding:16px;
-    box-shadow:0 8px 30px rgba(0,0,0,.25);
-  }
-
-  .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 }
-  .row{ display:flex; gap:12px; flex-wrap:wrap }
-  .field{ flex:1 1 180px; min-width:180px }
-  label{ display:block; font-size:.85rem; color:var(--muted); margin:0 0 6px }
-  input[type="text"],input[type="number"],select{
-    width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244;
-    background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none
-  }
-
-  .chrono{
-    display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums;
-    background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%);
-    border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px
-  }
-  .chrono-time{ font-size:clamp(2.6rem,7vw,4.8rem); font-weight:900; text-shadow:0 0 24px rgba(59,130,246,.25) }
-
-  table{ width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius:14px; border:1px solid #223146 }
-  thead th{ text-align:left; padding:12px 10px; font-size:.9rem; color:#cbd5e1; background:#0d1626; position:sticky; top:0 }
-  tbody td{ padding:10px; border-top:1px solid #1c2940 } tbody tr:nth-child(odd){ background:#0a1422 } tbody tr:nth-child(even){ background:#0c1626 }
-
-  .hint{ color:var(--muted); font-size:.85rem; margin-top:6px }
-  .meta{ text-align:center; color:#cbd5e1; margin:4px 0 10px }
-  .badge{ display:inline-block; font-weight:800; padding:6px 10px; border-radius:999px; background:#0a1220; border:1px solid #223146; margin-right:8px }
-
-  /* Fiche sécurité visuelle */
-  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
-  @media(max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
-  .safe{ border-radius:16px; padding:14px; border:1px solid rgba(255,255,255,.08); box-shadow:0 10px 30px rgba(0,0,0,.25) }
-  .safe h3{ margin:0 0 6px; font-size:1.05rem } .safe ul{ margin:.3rem 0 0 1rem }
-  .s1{ background:linear-gradient(135deg,#0b1220 0%,rgba(14,165,233,.15)100%) }
-  .s2{ background:linear-gradient(135deg,#0b1220 0%,rgba(34,197,94,.15)100%) }
-  .s3{ background:linear-gradient(135deg,#0b1220 0%,rgba(245,158,11,.18)100%) }
-  .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
-
-  /* QR */
-  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
-  #qrcode canvas{ background:#fff; border-radius:10px; padding:10px }
-  .qr-error{ color:#fecaca; background:#7f1d1d; border:1px solid #b91c1c; padding:8px 10px; border-radius:8px; }
-
-  footer{
-    margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px;
-    font-weight:700; border-top:1px solid #cbd5e1;
-  }
+  .b-go{background:#22c55e;color:white} .b-stop{background:#ef4444;color:white}
+  .b-lap{background:#f59e0b;color:white} .b-export{background:#3b82f6;color:white}
+  .b-home{background:#10b981;color:white}
+  table{ width:100%; border-collapse:collapse; margin-top:20px; }
+  th,td{ border:1px solid #334155; padding:8px; text-align:center }
+  .chrono{ font-size:3rem; font-weight:900; text-align:center; margin:20px 0 }
+  footer{ background:#e5e7eb; color:#111; text-align:center; padding:10px; margin-top:auto }
+  /* sécurité */
+  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .safe{ border-radius:12px; padding:14px; }
+  .s1{background:#1e3a8a;color:white} .s2{background:#166534;color:white}
+  .s3{background:#b45309;color:white} .s4{background:#991b1b;color:white}
 </style>
 </head>
 <body>
 
-<!-- ACCUEIL -->
-<main id="page-home" class="page active">
-  <div class="hero">
-    <div>
-      <h1>Chrono Intervalles EPS</h1>
-      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON cumulés.</p>
-      <div class="btns">
-        <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
-        <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
-      </div>
-    </div>
+<!-- Page accueil -->
+<div id="accueil" class="page active">
+  <div style="text-align:center;margin-top:20vh">
+    <h1>Chrono Intervalles EPS</h1>
+    <button class="b-go" onclick="showPage('securite')">Démarrer</button>
   </div>
-</main>
+</div>
 
-<!-- SÉCURITÉ (visuelle) -->
-<section id="page-safety" class="page">
-  <div class="title">
-    <h2>Fiche sécurité – Demi-fond & gestes en cas de blessure</h2>
-    <p>Si douleur vive ou malaise : <b>tu t’arrêtes</b> et tu préviens immédiatement.</p>
-  </div>
+<!-- Fiche sécurité -->
+<div id="securite" class="page">
+  <h2>Fiche Sécurité Demi-fond</h2>
   <div class="safe-grid">
-    <div class="safe s1"><h3>🟦 Échauffement (10–15 min)</h3><ul><li>Course légère + mobilité.</li><li>Montées de genoux / talons-fesses.</li><li>2–3 lignes droites progressives.</li></ul></div>
-    <div class="safe s2"><h3>🟩 Hydratation & tenue</h3><ul><li>Petites gorgées régulières.</li><li>Chaussures adaptées, lacets serrés.</li></ul></div>
-    <div class="safe s3"><h3>🟨 Pacing</h3><ul><li>Partir régulier, pas trop vite.</li><li>Respiration rythmée, épaules relâchées.</li></ul></div>
-    <div class="safe s1"><h3>🟦 Signaux d’alerte</h3><ul><li>Douleur vive, vertiges, essoufflement inhabituel → <b>STOP</b>.</li></ul></div>
-    <div class="safe s2"><h3>🟩 Crampes / point de côté</h3><ul><li>Ralentir, respirer, étirer doucement.</li></ul></div>
-    <div class="safe s4"><h3>🟥 Chute / entorse (R-I-C-E)</h3><ul><li>Repos, glace protégée, compression, élévation.</li><li>Immobiliser si suspicion de fracture.</li></ul></div>
-    <div class="safe s4"><h3>🟥 Malaise grave</h3><ul><li>Allonger/asseoir, surveiller, alerter.</li><li>Appel d’urgence : <b>112</b>.</li></ul></div>
-    <div class="safe s3"><h3>🟨 Après l’effort</h3><ul><li>Retour au calme + hydratation.</li><li>Étirements doux.</li></ul></div>
+    <div class="safe s1"><h3>Hydratation</h3><p>Boire avant et après l’effort.</p></div>
+    <div class="safe s2"><h3>Échauffement</h3><p>10 min minimum avant de courir.</p></div>
+    <div class="safe s3"><h3>Douleurs</h3><p>Arrête-toi immédiatement en cas de malaise.</p></div>
+    <div class="safe s4"><h3>Blessure</h3><p>Alerte un enseignant et ne reste pas seul.</p></div>
   </div>
-  <div class="btns" style="margin-top:10px">
-    <button class="b-ghost" onclick="goTo('page-home')">← Accueil</button>
-    <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
+  <div class="btns">
+    <button class="b-go" onclick="showPage('formulaire')">Continuer</button>
   </div>
-</section>
+</div>
 
-<!-- RÉGLAGES -->
-<section id="page-app" class="page">
-  <div class="title">
-    <h2>Chrono Intervalles</h2>
-    <p>Renseigne l’élève et les paramètres, puis <b>Démarrer</b>.</p>
+<!-- Formulaire élève -->
+<div id="formulaire" class="page">
+  <h2>Infos Élève</h2>
+  <div>
+    <label>Nom: <input id="nom" type="text"></label><br>
+    <label>Prénom: <input id="prenom" type="text"></label><br>
+    <label>Classe: <input id="classe" type="text"></label><br>
+    <label>Sexe: 
+      <select id="sexe">
+        <option value="M">Garçon</option>
+        <option value="F">Fille</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </label><br>
+    <label>Distance totale (m): <input id="distanceTotale" type="number" value="800"></label><br>
+    <label>Intervalle (m): <input id="intervalle" type="number" value="200"></label>
   </div>
-  <div class="btns" style="margin-bottom:8px">
-    <button class="b-ghost" onclick="goTo('page-home')">Accueil</button>
-    <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
+  <div class="btns">
+    <button class="b-go" onclick="startCourse()">Lancer la course</button>
   </div>
+</div>
 
-  <div class="grid">
-    <section class="card">
-      <h3 class="section-title">Élève</h3>
-      <div class="row">
-        <div class="field"><label>Nom</label><input id="nom" type="text" placeholder="Ex. Martin"></div>
-        <div class="field"><label>Prénom</label><input id="prenom" type="text" placeholder="Ex. Julie"></div>
-        <div class="field"><label>Classe</label><input id="classe" type="text" placeholder="Ex. 4C"></div>
-        <div class="field">
-          <label>Sexe</label>
-          <select id="sexe">
-            <option value="" selected>Choisir…</option>
-            <option value="F">Fille</option>
-            <option value="M">Garçon</option>
-            <option value="A">Autre</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3 class="section-title">Paramètres de la course</h3>
-      <div class="row">
-        <div class="field"><label>Distance totale (m)</label><input id="distTot" type="number" inputmode="numeric" value="800" min="50" step="50"></div>
-        <div class="field"><label>Palier / Temps intermédiaire (m)</label><input id="distPalier" type="number" inputmode="numeric" value="200" min="25" step="25"></div>
-        <div class="field"><label>&nbsp;</label><button id="apply" class="b-ghost">Appliquer / Réinitialiser paramètres</button></div>
-      </div>
-      <p class="hint">La distance totale doit être un multiple du palier (ex. 800 et 200).</p>
-    </section>
+<!-- Chrono -->
+<div id="chronoPage" class="page">
+  <h2>Chrono</h2>
+  <div class="chrono" id="chrono">00:00.0</div>
+  <div class="btns">
+    <button class="b-go" onclick="start()">Démarrer</button>
+    <button class="b-stop" onclick="stop()">Stop</button>
+    <button class="b-lap" onclick="lap()">Temps intermédiaire</button>
   </div>
+  <table>
+    <thead><tr><th>Distance</th><th>Temps cumulé</th></tr></thead>
+    <tbody id="laps"></tbody>
+  </table>
+  <div id="result"></div>
+</div>
 
-  <div class="btns" style="margin-top:10px">
-    <button id="startFromSetup" class="b-go">Démarrer la course</button>
-  </div>
-</section>
-
-<!-- COURSE -->
-<section id="page-run" class="page">
-  <div class="meta" id="runMeta"></div>
-
-  <section class="card">
-    <div class="chrono">
-      <div style="width:100%;text-align:center">
-        <div class="chrono-time" id="time">00:00.00</div>
-        <div class="btns" style="justify-content:center;margin-top:12px">
-          <button id="start" class="b-go">Démarrer</button>
-          <button id="lap" class="b-lap" disabled>Temps intermédiaire</button>
-          <button id="stop" class="b-stop" disabled>Stop</button>
-          <button id="reset" class="b-ghost">Réinitialiser</button>
-        </div>
-        <div class="hint" style="text-align:center">
-          Palier: <b id="palierInfo">200 m</b> · Cible: <b id="cibleInfo">800 m (4 paliers)</b> · Progression: <b id="progInfo">0 / 4</b>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card" style="margin-top:16px">
-    <h3 class="section-title">Récapitulatif des intermédiaires</h3>
-    <table>
-      <thead><tr><th>Palier (m)</th><th>Temps sur le palier</th><th>Temps cumulé</th><th>Vitesse sur le palier (km/h)</th></tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </section>
-
-  <section class="card" style="margin-top:16px">
-    <h3 class="section-title">QR (auto) & Export</h3>
-    <div class="btns" style="justify-content:center">
-      <button id="exportCSV" class="b-ghost" disabled>Exporter CSV</button>
-    </div>
-    <div class="qr-wrap" style="margin-top:10px">
-      <div id="qrcode"></div>
-    </div>
-    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à la fin de la course.</p>
-  </section>
-
-  <div class="btns" style="margin-top:6px">
-    <button class="b-ghost" onclick="goTo('page-app')">← Retour aux réglages</button>
-  </div>
-</section>
-
-<footer>
-  ChronoIntrervalles - Equipe EPS Lycée Vauban - LUXEMBOURG -JB
-</footer>
+<footer>Chrono Intervalles EPS - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 
 <script>
-  // Navigation
-  const goTo = id => {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-
-  // Utils
-  const $=(s,r=document)=>r.querySelector(s);
-  const fmtTime=ms=>{
-    const cs=Math.floor(ms/10)%100, s=Math.floor(ms/1000)%60, m=Math.floor(ms/60000);
-    const pad=x=>String(x).padStart(2,'0');
-    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
-  };
-  const kmh=(m,ms)=>ms<=0?0:+((m/(ms/1000))*3.6).toFixed(2);
-  const toast=m=>{
-    const n=document.createElement('div'); n.textContent=m;
-    Object.assign(n.style,{position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:'#111827',border:'1px solid #223146',color:'#e5e7eb',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 10px 30px rgba(0,0,0,.35)',zIndex:50});
-    document.body.appendChild(n); setTimeout(()=>n.remove(),2000);
-  };
-
-  // Elements
-  const timeEl=$('#time'), palierInfo=$('#palierInfo'), cibleInfo=$('#cibleInfo'), progInfo=$('#progInfo'), tbody=$('#tbody'), runMeta=$('#runMeta');
-  const nom=$('#nom'), prenom=$('#prenom'), classe=$('#classe'), sexe=$('#sexe');
-  const distTotEl=$('#distTot'), distPalierEl=$('#distPalier'), btnApply=$('#apply');
-  const btnStartSetup=$('#startFromSetup');
-  const btnStart=$('#start'), btnLap=$('#lap'), btnStop=$('#stop'), btnReset=$('#reset');
-  const btnExportCSV=$('#exportCSV'); const qrBox=$('#qrcode');
-
-  // State
-  let running=false, startTime=0, lastLapTime=0, rafId=0;
-  let distTot=800, distPalier=200, nbPaliers=4, paliersDone=0;
-  const splits=[]; // { palier, lapMs, cumMs, vKmh }
-  let student={nom:'', prenom:'', classe:'', sexe:''};
-
-  // Params
-  function applyParams(){
-    const t=parseInt(distTotEl.value,10), p=parseInt(distPalierEl.value,10);
-    if(!Number.isFinite(t)||!Number.isFinite(p)||t<=0||p<=0){ toast('Distances invalides.'); return; }
-    if(t%p!==0){ toast('⚠️ Distance totale multiple du palier requise.'); return; }
-    distTot=t; distPalier=p; nbPaliers=distTot/distPalier;
-    palierInfo.textContent=`${distPalier} m`;
-    cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`;
-    progInfo.textContent=`0 / ${nbPaliers}`;
-    hardReset(false);
+let startTime, timerInterval, totalDist, stepDist, nextStep, laps=[];
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function startCourse(){
+  totalDist=parseInt(document.getElementById("distanceTotale").value)||800;
+  stepDist=parseInt(document.getElementById("intervalle").value)||200;
+  nextStep=stepDist;
+  laps=[];
+  document.getElementById("laps").innerHTML="";
+  document.getElementById("result").innerHTML="";
+  showPage("chronoPage");
+}
+function format(t){ let d=new Date(t); return d.getUTCMinutes().toString().padStart(2,"0")+":"+(d.getUTCSeconds()).toString().padStart(2,"0")+"." + Math.floor(d.getUTCMilliseconds()/100); }
+function updateChrono(){ document.getElementById("chrono").textContent=format(Date.now()-startTime); }
+function start(){ startTime=Date.now(); clearInterval(timerInterval); timerInterval=setInterval(updateChrono,100); }
+function stop(){ clearInterval(timerInterval); generateQR(); }
+function lap(){
+  let elapsed=Date.now()-startTime;
+  let dist=nextStep;
+  if(dist<=totalDist){
+    laps.push({distance:dist,temps:format(elapsed)});
+    document.getElementById("laps").innerHTML+=`<tr><td>${dist}</td><td>${format(elapsed)}</td></tr>`;
+    nextStep+=stepDist;
+    if(dist>=totalDist){ stop(); }
   }
-  btnApply.addEventListener('click', applyParams);
+}
+function generateQR(){
+  const payload=[{
+    nom:document.getElementById("nom").value,
+    prenom:document.getElementById("prenom").value,
+    classe:document.getElementById("classe").value,
+    sexe:document.getElementById("sexe").value,
+  }];
+  laps.forEach(l=>{ payload[0][l.distance]=l.temps; });
 
-  // From setup → run
-  btnStartSetup.addEventListener('click', ()=>{
-    if(!(nom.value.trim() && prenom.value.trim() && classe.value.trim() && sexe.value.trim())){
-      toast('Renseigne Nom / Prénom / Classe / Sexe.'); return;
-    }
-    applyParams();
-    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // F/M/A accepté
-    runMeta.innerHTML=`<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
-    goTo('page-run');
+  let resDiv=document.getElementById("result");
+  resDiv.innerHTML="<h3>Résultat</h3><div id='qrcode'></div><br><button class='b-export' onclick='exportCSV()'>Exporter CSV</button><button class='b-home' onclick='showPage(\"accueil\")'>Accueil</button>";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: JSON.stringify(payload),
+    width: 256,
+    height: 256,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
   });
-
-  // Chrono
-  function tick(){
-    const now=performance.now(); timeEl.textContent=fmtTime(now-startTime);
-    rafId=requestAnimationFrame(tick);
-  }
-
-  btnStart.addEventListener('click',()=>{
-    if(running) return;
-    if(splits.length>0){ toast('Réinitialise pour un nouveau départ.'); return; }
-    running=true; startTime=performance.now(); lastLapTime=0; paliersDone=0;
-    progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
-    btnLap.disabled=false; btnStop.disabled=false; btnStart.disabled=true;
-    btnExportCSV.disabled=true; qrBox.innerHTML='';
-    rafId=requestAnimationFrame(tick);
-  });
-
-  btnLap.addEventListener('click',()=>{
-    if(!running) return;
-    const now=performance.now(), cumMs=now-startTime, lapMs=cumMs-lastLapTime; lastLapTime=cumMs;
-    paliersDone++; const pal=Math.min(distPalier*paliersDone,distTot); const v=kmh(distPalier,lapMs);
-    splits.push({palier:pal, lapMs, cumMs, vKmh:v});
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${pal}</td><td>${fmtTime(lapMs)}</td><td>${fmtTime(cumMs)}</td><td>${v.toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-    progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
-    if(paliersDone>=nbPaliers){ stopRun(); }
-  });
-
-  btnStop.addEventListener('click',()=>stopRun(true));
-
-  function stopRun(){
-    if(!running) return;
-    running=false; cancelAnimationFrame(rafId); rafId=0;
-    btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
-
-    const payload=buildQRPayload();   // JSON avec cumulés uniquement
-    renderQR(payload);                // QR auto
-    setTimeout(()=>qrBox.scrollIntoView({behavior:'smooth',block:'start'}),50);
-  }
-
-  btnReset.addEventListener('click',()=>hardReset(true));
-  function hardReset(announce=true){
-    running=false; cancelAnimationFrame(rafId); rafId=0; timeEl.textContent='00:00.00';
-    lastLapTime=0; startTime=0; paliersDone=0; splits.length=0; tbody.innerHTML='';
-    progInfo.textContent=`0 / ${nbPaliers}`; btnStart.disabled=false; btnLap.disabled=true; btnStop.disabled=true; btnExportCSV.disabled=true; qrBox.innerHTML='';
-    if(announce) toast('Paramètres/résultats réinitialisés.');
-  }
-
-  // ✅ QR payload : tableau contenant un objet { nom, prenom, classe, sexe, "200":"mm:ss.cs", "400":"mm:ss.cs", ... }
-  function buildQRPayload(){
-    const record = {
-      nom:     student.nom || "",
-      prenom:  student.prenom || "",
-      classe:  student.classe || "",
-      sexe:    student.sexe || ""
-    };
-    // Ajout des temps cumulés par distance, clés numériques "200","400",...
-    splits.forEach((s, i) => {
-      const dist = distPalier * (i + 1);
-      record[String(dist)] = fmtTime(s.cumMs);
-    });
-    return [record]; // tableau pour compat avec ton parseur (une "case" par clé)
-  }
-
-  // 🔳 Rendu du QR (QRCode.js) + gestion robuste des erreurs
-  function renderQR(payload){
-    const str = JSON.stringify(payload);
-    qrBox.innerHTML = ''; // clear
-    try{
-      if(typeof QRCode === 'undefined'){
-        const div = document.createElement('div');
-        div.className = 'qr-error';
-        div.textContent = 'QR non disponible : librairie QRCode.js non chargée.';
-        qrBox.appendChild(div);
-        return;
-      }
-      new QRCode(qrBox, {
-        text: str,
-        width: 340,
-        height: 340,
-        correctLevel: QRCode.CorrectLevel.L // motifs denses => scan facile
-      });
-    }catch(e){
-      console.error(e);
-      const div = document.createElement('div');
-      div.className = 'qr-error';
-      div.textContent = 'Erreur lors de la génération du QR.';
-      qrBox.appendChild(div);
-    }
-  }
-
-  // Export CSV (utile pour l’élève)
-  function exportCSV(){
-    if(!splits.length){ toast('Aucun temps à exporter.'); return; }
-    const headers=['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];
-    const rows=splits.map(s=>[s.palier,fmtTime(s.lapMs),fmtTime(s.cumMs),s.vKmh.toFixed(2)]);
-    const metaTop=[['Nom',student.nom],['Prénom',student.prenom],['Classe',student.classe],['Sexe',student.sexe],['Distance cible (m)',distTot],['Palier (m)',distPalier]];
-    const totalMs=splits[splits.length-1].cumMs;
-    const doneDistance=paliersDone*distPalier;
-    const vitesseMoy=kmh(doneDistance,totalMs);
-    const metaBottom=[['Distance validée (m)',doneDistance],['Temps total',fmtTime(totalMs)],['Vitesse moyenne (km/h)',vitesseMoy.toFixed(2)]];
-    const toCSV=arr=>arr.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const csv=toCSV(metaTop)+'\n\n'+toCSV([headers])+'\n'+toCSV(rows)+'\n\n'+toCSV(metaBottom);
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
-    const fname=`${student.nom}_${student.prenom}_Intervalles.csv`.replace(/\s+/g,'_');
-    const a=document.createElement('a'); a.href=url; a.download=fname; document.body.appendChild(a); a.click();
-    setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},0);
-  }
-  $('#exportCSV').addEventListener('click', exportCSV);
-
-  // Init
-  function initLabels(){
-    distTot=parseInt(distTotEl.value,10)||800;
-    distPalier=parseInt(distPalierEl.value,10)||200;
-    nbPaliers=distTot/distPalier;
-    palierInfo.textContent=`${distPalier} m`;
-    cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`;
-    progInfo.textContent=`0 / ${nbPaliers}`;
-  }
-  initLabels();
-  goTo('page-home');
+}
+function exportCSV(){
+  let csv="Distance,Temps\n";
+  laps.forEach(l=>{ csv+=`${l.distance},${l.temps}\n`; });
+  let blob=new Blob([csv],{type:"text/csv"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="resultats.csv";
+  a.click();
+}
 </script>
 </body>
 </html>

@@ -8,65 +8,81 @@
   :root{
     --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8;
     --accent:#22c55e; --accent2:#3b82f6; --danger:#ef4444; --warn:#f59e0b; --card:#0b1220;
-    --safe1:#1f2937; --safe2:#0ea5e9; --safe3:#22c55e; --safe4:#f59e0b; --safe5:#ef4444;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{ margin:0; background:linear-gradient(180deg, var(--bg), #0b1220 60%);
+  body{
+    margin:0; background:linear-gradient(180deg, var(--bg), #0b1220 60%);
     color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
-    display:flex; min-height:100vh; flex-direction:column; }
-  a{color:inherit}
-  footer{ margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px; font-weight:700; border-top:1px solid #cbd5e1; }
+    display:flex; min-height:100vh; flex-direction:column;
+  }
+  footer{
+    margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px;
+    font-weight:700; border-top:1px solid #cbd5e1;
+  }
   .page{ display:none; padding:18px; width:min(1100px,100%); margin:0 auto 24px; }
   .page.active{ display:block }
   .hero{ display:flex; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:24px; }
-  .hero h1{ margin:0 0 10px; font-weight:900; letter-spacing:.6px; font-size:clamp(2rem,6vw,3rem); }
+  .hero h1{ margin:0 0 10px; font-weight:900; letter-spacing:.6px; font-size:clamp(2rem,6vw,3rem) }
   .hero p{ margin:0 0 20px; color:var(--muted); font-size:clamp(1rem,2.4vw,1.2rem) }
   .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
-  button,.btn{ border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px; background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; transition:transform .03s ease; min-width:180px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+  button,.btn{
+    border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px;
+    background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; transition:transform .03s ease;
+    min-width:180px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+  }
   button:active,.btn:active{ transform:translateY(1px) }
   .b-primary{background:var(--accent2)} .b-go{background:var(--accent)} .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
-  .title{ text-align:center; font-weight:800; }
+
+  .title{ text-align:center; font-weight:800 }
   .title h2{ margin:.2rem 0 .1rem; font-size:clamp(1.2rem,2vw+.8rem,2rem) }
   .title p{ margin:0; color:var(--muted); font-size:.95rem }
-  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px } @media(max-width:860px){ .grid{ grid-template-columns:1fr } }
-  .card{ background:linear-gradient(180deg, var(--panel), var(--card)); border:1px solid #1e293b; border-radius:18px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.25); }
+
+  .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:16px }
+  @media (max-width:860px){ .grid{ grid-template-columns:1fr } }
+
+  .card{
+    background:linear-gradient(180deg, var(--panel), var(--card));
+    border:1px solid #1e293b; border-radius:18px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.25);
+  }
   .section-title{ font-weight:700; margin:0 0 8px; color:#cbd5e1 }
   .row{ display:flex; gap:12px; flex-wrap:wrap } .field{ flex:1 1 180px; min-width:180px }
   label{ display:block; font-size:.85rem; color:var(--muted); margin:0 0 6px }
-  input[type="text"],input[type="number"],select,textarea{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244; background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none; }
+  input[type="text"],input[type="number"],select{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid #243244; background:#0a1220; color:#e5e7eb; font-size:1rem; outline:none }
 
-  .chrono{ display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums;
-    background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%); border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px; }
-  .chrono-time{ font-size:clamp(2.4rem, 7vw, 4.6rem); font-weight:900; text-shadow:0 0 24px rgba(59,130,246,.25); }
+  /* Chrono & table */
+  .chrono{
+    display:flex; align-items:center; justify-content:center; text-align:center; font-variant-numeric:tabular-nums;
+    background:radial-gradient(60% 60% at 50% 45%, #0b1730 0%, #0a1220 100%); border-radius:20px; border:1px solid #1f2a3a; padding:22px; margin-top:8px;
+  }
+  .chrono-time{ font-size:clamp(2.4rem,7vw,4.6rem); font-weight:900; text-shadow:0 0 24px rgba(59,130,246,.25) }
+
   table{ width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius:14px; border:1px solid #223146 }
-  thead th{ text-align:left; padding:12px 10px; font-size:.9rem; color:#cbd5e1; background:#0d1626; position:sticky; top:0; }
+  thead th{ text-align:left; padding:12px 10px; font-size:.9rem; color:#cbd5e1; background:#0d1626; position:sticky; top:0 }
   tbody td{ padding:10px; border-top:1px solid #1c2940 } tbody tr:nth-child(odd){ background:#0a1422 } tbody tr:nth-child(even){ background:#0c1626 }
   .hint{ color:var(--muted); font-size:.85rem; margin-top:6px }
-  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap } #qrcode{ background:white; padding:10px; border-radius:10px }
 
-  /* SÉCURITÉ – blocs très visuels */
-  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media(max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
-  .safe{
-    border-radius:16px; padding:14px; border:1px solid rgba(255,255,255,.08);
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
-  }
-  .safe h3{ margin:0 0 6px; font-size:1.05rem }
-  .safe p, .safe li{ margin:.2rem 0; }
-  .safe ul{ margin:.3rem 0 0 1rem }
-  .s1{ background:linear-gradient(135deg, #0b1220 0%, rgba(14,165,233,.15) 100%); }
-  .s2{ background:linear-gradient(135deg, #0b1220 0%, rgba(34,197,94,.15) 100%); }
-  .s3{ background:linear-gradient(135deg, #0b1220 0%, rgba(245,158,11,.18) 100%); }
-  .s4{ background:linear-gradient(135deg, #0b1220 0%, rgba(239,68,68,.18) 100%); }
-  .badge{ display:inline-block; font-weight:800; padding:6px 10px; border-radius:999px; background:#0a1220; border:1px solid #223146; margin-right:8px; }
+  /* Sécurité visuelle */
   .topbar{ display:flex; gap:10px; flex-wrap:wrap; margin:4px 0 12px; justify-content:center }
+  .safe-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+  @media (max-width:860px){ .safe-grid{ grid-template-columns:1fr } }
+  .safe{ border-radius:16px; padding:14px; border:1px solid rgba(255,255,255,.08); box-shadow:0 10px 30px rgba(0,0,0,.25) }
+  .safe h3{ margin:0 0 6px; font-size:1.05rem }
+  .safe ul{ margin:.3rem 0 0 1rem }
+  .s1{ background:linear-gradient(135deg,#0b1220 0%,rgba(14,165,233,.15)100%) }
+  .s2{ background:linear-gradient(135deg,#0b1220 0%,rgba(34,197,94,.15)100%) }
+  .s3{ background:linear-gradient(135deg,#0b1220 0%,rgba(245,158,11,.18)100%) }
+  .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
+  .badge{ display:inline-block; font-weight:800; padding:6px 10px; border-radius:999px; background:#0a1220; border:1px solid #223146; margin-right:8px }
   .meta{ text-align:center; color:#cbd5e1; margin:4px 0 10px }
+  /* QR */
+  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
+  #qrcode{ background:white; padding:10px; border-radius:10px }
 </style>
 </head>
 <body>
 
-<!-- ====== PAGE : ACCUEIL ====== -->
+<!-- ====== ACCUEIL ====== -->
 <main id="page-home" class="page active">
   <div class="hero">
     <div>
@@ -80,7 +96,7 @@
   </div>
 </main>
 
-<!-- ====== PAGE : SÉCURITÉ (visuelle) ====== -->
+<!-- ====== SÉCURITÉ ====== -->
 <section id="page-safety" class="page">
   <div class="title">
     <h2>Fiche sécurité – Demi-fond & gestes en cas de blessure</h2>
@@ -92,74 +108,25 @@
   </div>
 
   <div class="safe-grid">
-    <div class="safe s1">
-      <h3>🟦 Échauffement (10–15 min)</h3>
-      <ul>
-        <li>Course légère + mobilité (chevilles, genoux, hanches).</li>
-        <li>Montées de genoux / talons-fesses / éducatifs progressifs.</li>
-        <li>2–3 lignes droites en accélération contrôlée.</li>
-      </ul>
-    </div>
-    <div class="safe s2">
-      <h3>🟩 Hydratation & tenue</h3>
-      <ul>
-        <li>Petites gorgées avant/pendant/après.</li>
-        <li>Chaussures adaptées, lacets serrés, tenue respirante.</li>
-      </ul>
-    </div>
-    <div class="safe s3">
-      <h3>🟨 Pacing (gestion d’allure)</h3>
-      <ul>
-        <li>Partir <u>régulier</u>, pas trop vite.</li>
-        <li>Respiration rythmée, épaules relâchées.</li>
-      </ul>
-    </div>
-    <div class="safe s1">
-      <h3>🟦 Signaux d’alerte</h3>
-      <ul>
-        <li>Douleur vive, essoufflement inhabituel, vertiges → <b>STOP</b>.</li>
-        <li>Asthme : ventoline disponible et signaler avant la séance.</li>
-      </ul>
-    </div>
-    <div class="safe s2">
-      <h3>🟩 Point de côté / crampes</h3>
-      <ul>
-        <li>Ralentir, respirations profondes, étirements doux.</li>
-        <li>Hydrater. Reprendre seulement si la douleur disparaît.</li>
-      </ul>
-    </div>
-    <div class="safe s4">
-      <h3>🟥 Chute / entorse (R-I-C-E)</h3>
-      <ul>
-        <li><b>R</b>epos – <b>I</b>ce (glace protégée) – <b>C</b>ompression – <b>E</b>lévation.</li>
-        <li>Immobiliser si suspicion fracture/luxation. Prévenir l’enseignant.</li>
-      </ul>
-    </div>
-    <div class="safe s4">
-      <h3>🟥 Malaise grave</h3>
-      <ul>
-        <li>Allonger/asseoir, surveiller, alerter un adulte.</li>
-        <li>Appel d’urgence : <b>112</b> (lieu, état, nombre de personnes).</li>
-      </ul>
-    </div>
-    <div class="safe s3">
-      <h3>🟨 Après l’effort</h3>
-      <ul>
-        <li>Retour au calme : marche + respiration + hydratation.</li>
-        <li>Étirements doux (pas à chaud si douleur).</li>
-      </ul>
-    </div>
+    <div class="safe s1"><h3>🟦 Échauffement (10–15 min)</h3><ul><li>Course légère + mobilité (chevilles, genoux, hanches).</li><li>Montées de genoux / talons-fesses / éducatifs progressifs.</li><li>2–3 lignes droites en accélération contrôlée.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Hydratation & tenue</h3><ul><li>Petites gorgées avant/pendant/après.</li><li>Chaussures adaptées, lacets serrés, tenue respirante.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Pacing (gestion d’allure)</h3><ul><li>Partir <u>régulier</u>, pas trop vite.</li><li>Respiration rythmée, épaules relâchées.</li></ul></div>
+    <div class="safe s1"><h3>🟦 Signaux d’alerte</h3><ul><li>Douleur vive, essoufflement inhabituel, vertiges → <b>STOP</b>.</li><li>Asthme : ventoline disponible et signaler avant la séance.</li></ul></div>
+    <div class="safe s2"><h3>🟩 Point de côté / crampes</h3><ul><li>Ralentir, respirations profondes, étirements doux.</li><li>Hydrater. Reprendre seulement si la douleur disparaît.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Chute / entorse (R-I-C-E)</h3><ul><li><b>R</b>epos – <b>I</b>ce – <b>C</b>ompression – <b>E</b>lévation.</li><li>Immobiliser si suspicion fracture/luxation. Prévenir l’enseignant.</li></ul></div>
+    <div class="safe s4"><h3>🟥 Malaise grave</h3><ul><li>Allonger/asseoir, surveiller, alerter un adulte.</li><li>Appel d’urgence : <b>112</b>.</li></ul></div>
+    <div class="safe s3"><h3>🟨 Après l’effort</h3><ul><li>Retour au calme : marche + respiration + hydratation.</li><li>Étirements doux (pas à chaud si douleur).</li></ul></div>
   </div>
   <p class="hint" style="text-align:center;margin-top:10px">Cette fiche est informative et ne remplace pas un avis médical.</p>
 </section>
 
-<!-- ====== PAGE : RÉGLAGES & SAISIE AVANT COURSE ====== -->
+<!-- ====== RÉGLAGES ====== -->
 <section id="page-app" class="page">
   <div class="title">
     <h2>Chrono Intervalles</h2>
     <p>Renseigne l’élève et les paramètres, puis <b>Démarrer</b>.</p>
   </div>
-  <div class="topbar">
+  <div class="btns" style="margin-bottom:8px">
     <button class="b-ghost" onclick="goTo('page-home')">Accueil</button>
     <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
   </div>
@@ -168,9 +135,9 @@
     <section class="card">
       <h3 class="section-title">Élève</h3>
       <div class="row">
-        <div class="field"><label>Nom</label><input id="nom" type="text" placeholder="Ex. Martin" autocomplete="off"></div>
-        <div class="field"><label>Prénom</label><input id="prenom" type="text" placeholder="Ex. Julie" autocomplete="off"></div>
-        <div class="field"><label>Classe</label><input id="classe" type="text" placeholder="Ex. 4C" autocomplete="off"></div>
+        <div class="field"><label>Nom</label><input id="nom" type="text" placeholder="Ex. Martin"></div>
+        <div class="field"><label>Prénom</label><input id="prenom" type="text" placeholder="Ex. Julie"></div>
+        <div class="field"><label>Classe</label><input id="classe" type="text" placeholder="Ex. 4C"></div>
         <div class="field">
           <label>Sexe</label>
           <select id="sexe">
@@ -198,7 +165,7 @@
   </div>
 </section>
 
-<!-- ====== PAGE : COURSE (plein focus : chrono + splits + QR) ====== -->
+<!-- ====== COURSE (focus chrono + tableau + QR auto) ====== -->
 <section id="page-run" class="page">
   <div class="meta" id="runMeta"></div>
 
@@ -230,23 +197,15 @@
   </section>
 
   <section class="card" style="margin-top:16px">
-    <h3 class="section-title">QR & Export</h3>
-    <div class="btns" style="justify-content:flex-start">
-      <button id="makeQR" class="b-primary" disabled>Générer le QR code</button>
-      <button id="copyJSON" class="b-ghost" disabled>Copier le JSON</button>
+    <h3 class="section-title">QR (auto) & Export</h3>
+    <div class="btns" style="justify-content:center">
       <button id="exportCSV" class="b-ghost" disabled>Exporter CSV</button>
     </div>
-
     <div class="qr-wrap" style="margin-top:10px">
       <div id="qrcode"></div>
-      <div style="flex:1 1 260px; min-width:260px">
-        <label class="hint" style="display:block;margin-bottom:6px">Aperçu JSON</label>
-        <textarea id="jsonOut" readonly placeholder="Le JSON apparaîtra ici après arrêt du chrono…"></textarea>
-      </div>
     </div>
-
-    <p class="hint" style="margin-top:8px">
-      Format QR émis (compatible ScanProf) : <code>[ { nom, prenom, classe, sexe, distance, vitesse, vma, ... } ]</code>.
+    <p class="hint" style="text-align:center;margin-top:8px">
+      Le QR s’affiche automatiquement à la fin de la course. Le professeur le scanne avec ScanProf.
     </p>
   </section>
 
@@ -259,237 +218,144 @@
   ChronoIntrervalles - Equipe EPS Lycée Vauban - LUXEMBOURG -JB
 </footer>
 
-<!-- ====== QRCode library (hors-ligne) – qrcodejs (MIT) minifiée ====== -->
+<!-- ====== QRCode lib (hors-ligne) ====== -->
 <script>
-!function(o){function n(o){this.mode=s.MODE_8BIT_BYTE,this.data=o}function e(o,n){this.typeNumber=o,this.errorCorrectLevel=n,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function t(o,n){if(void 0==o.length)throw new Error(o.length+"/"+n);for(var e=0;e<o.length&&0==o[e];)e++;this.num=o.length-e,this.buf=new Array(this.num+1);for(var t=0;t<this.num;t++)this.buf[t]=o[e+t]}function r(o,n){this.totalCount=o,this.dataCount=n}var i={};n.prototype={getLength:function(){return this.data.length},write:function(o){for(var n=0;n<this.data.length;n++){var e=this.data.charCodeAt(n);e<128?o.put(e,8):e<2048?(o.put(192|e>>6,8),o.put(128|63&e,8)):e<55296||e>=57344?(o.put(224|e>>12,8),o.put(128|e>>6&63,8),o.put(128|63&e,8)):(n++,e=65536+((1023&e)<<10|1023&this.data.charCodeAt(n)),o.put(240|e>>18,8),o.put(128|e>>12&63,8),o.put(128|e>>6&63,8),o.put(128|63&e,8))}}};var s={};s.PAD0=236,s.PAD1=17,s.MODE_NUMBER=1,s.MODE_ALPHA_NUM=2,s.MODE_8BIT_BYTE=4,s.MODE_KANJI=8,s.ErrorCorrectLevel={L:1,M:0,Q:3,H:2};var a={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(o){var n=o<<10;for(;a.getBCHDigit(n)-a.getBCHDigit(a.G15)>=0;)n^=a.G15<<a.getBCHDigit(n)-a.getBCHDigit(a.G15);return o<<10|n},getBCHTypeNumber:function(o){for(var n=o<<12;a.getBCHDigit(n)-a.getBCHDigit(a.G18)>=0;)n^=a.G18<<a.getBCHDigit(n)-a.getBCHDigit(a.G18);return o<<12|n},getBCHDigit:function(o){for(var n=0;0!=o;)n++,o>>>=1;return n},getPatternPosition:function(o){return a.PATTERN_POSITION_TABLE[o-1]},getMask:function(o,n,e){switch(o){case 0:return(n+e)%2==0;case 1:return n%2==0;case 2:return e%3==0;case 3:return(n+e)%3==0;case 4:return((n>>>1)+(e/3|0))%2==0;case 5:return n*e%2+n*e%3==0;case 6:return(n*e%2+n*e%3)%2==0;case 7:return((n*e%3+(n+e)%2)|0)%2==0;default:throw new Error("bad maskPattern:"+o)}},getErrorCorrectPolynomial:function(o){for(var n=new t([1],0),e=0;e<o;e++)n=n.multiply(new t([1,Math.gexp(e)],0));return n},getLengthInBits:function(o,n){if(1<=n&&n<10)switch(o){case s.MODE_NUMBER:return 10;case s.MODE_ALPHA_NUM:return 9;case s.MODE_8BIT_BYTE:return 8;case s.MODE_KANJI:return 8;default:throw new Error("mode:"+o)}else if(n<27)switch(o){case s.MODE_NUMBER:return 12;case s.MODE_ALPHA_NUM:return 11;case s.MODE_8BIT_BYTE:return 16;case s.MODE_KANJI:return 10;default:throw new Error("mode:"+o)}else{if(!(n<41))throw new Error("type:"+n);switch(o){case s.MODE_NUMBER:return 14;case s.MODE_ALPHA_NUM:return 13;case s.MODE_8BIT_BYTE:return 16;case s.MODE_KANJI:return 12;default:throw new Error("mode:"+o)}}},getLostPoint:function(o){for(var n=o.getModuleCount(),e=0,t=0;t<n;t++)for(var r=0;r<n;r++){for(var i=0,s=o.isDark(t,r),a=-1;a<=1;a++)if(!(t+a<0||n<=t+a))for(var l=-1;l<=1;l++)r+l<0||n<=r+l||0==a&&0==l||s==o.isDark(t+a,r+l)&&i++;i>5&&(e+=3+i-5)}for(t=0;t<n-1;t++)for(r=0;r<n-1;r++){var u=0;o.isDark(t,r)&&u++,o.isDark(t+1,r)&&u++,o.isDark(t,r+1)&&u++,o.isDark(t+1,r+1)&&u++,(0==u||4==u)&&(e+=3)}for(t=0;t<n;t++)for(r=0;r<n-6;r++)o.isDark(t,r)&&!o.isDark(t,r+1)&&o.isDark(t,r+2)&&o.isDark(t,r+3)&&o.isDark(t,r+4)&&!o.isDark(t,r+5)&&o.isDark(t,r+6)&&(e+=40);for(r=0;r<n;r++)for(t=0;t<n-6;t++)o.isDark(t,r)&&!o.isDark(t+1,r)&&o.isDark(t+2,r)&&o.isDark(t+3,r)&&o.isDark(t+4,r)&&!o.isDark(t+5,r)&&o.isDark(t+6,r)&&(e+=40);for(var c=0,f=0,r=0;r<n;r++)for(t=0;t<n;t++)o.isDark(t,r)&&c++;f=Math.abs(100*c/n/n-50)/5*10;return e+=f},glog:function(o){if(o<1)throw new Error("glog("+o+")");return i[o]},gexp:function(o){for(;o<0;)o+=255;for(;o>=256;)o-=255;return n[o]};for(var n=new Array(256),i=new Array(256),l=0;l<8;l++)n[l]=1<<l;for(l=8;l<256;l++)n[l]=n[l-4]^n[l-5]^n[l-6]^n[l-8];for(l=0;l<255;l++)i[n[l]]=l;t.prototype={get:function(o){return this.buf[o]},getLength:function(){return this.buf.length},multiply:function(o){for(var n=new Array(this.getLength()+o.getLength()-1),e=0;e<this.getLength();e++)for(var r=0;r<o.getLength();r++)n[e+r]^=Math.gexp(Math.glog(this.get(e))+Math.glog(o.get(r)));return new t(n,0)},mod:function(o){if(this.getLength()-o.getLength()<0)return this;for(var n=Math.glog(this.get(0))-Math.glog(o.get(0)),e=new Array(this.getLength(),0),r=0;r<this.getLength();r++)e[r]=this.get(r];for(r=0;r<o.getLength();r++)e[r]^=Math.gexp(Math.glog(o.get(r))+n);return new t(e,0).mod(o)}};var u=[[],[new r(19,7)],[new r(34,10)],[new r(55,15)],[new r(80,20)],[new r(108,26)],[new r(136,18)],[new r(156,20)],[new r(194,24)],[new r(232,30)],[new r(274,18)],[new r(324,20)],[new r(370,24)],[new r(428,26)],[new r(461,30)],[new r(523,22)],[new r(589,24)],[new r(647,28)],[new r(721,30)],[new r(795,28)],[new r(861,28)],[new r(932,30)],[new r(1006,28)],[new r(1094,30)],[new r(1174,28)],[new r(1276,30)],[new r(1370,30)],[new r(1468,30)],[new r(1531,30)],[new r(1631,30)],[new r(1735,30)],[new r(1843,30)],[new r(1955,30)],[new r(2071,30)],[new r(2191,30)],[new r(2306,30)],[new r(2434,30)],[new r(2566,30)],[new r(2702,28)],[new r(2812,30)],[new r(2956,28)]];e.prototype={addData:function(o){this.dataList.push(new n(o)),this.dataCache=null},isDark:function(o,n){if(void 0==this.modules[o]||void 0==this.modules[o][n])throw new Error(o+","+n);return this.modules[o][n]},getModuleCount:function(){return this.moduleCount},make:function(){if(this.typeNumber<1){for(var o=1;o<40;o++){for(var n=new e(o,this.errorCorrectLevel),t=0;t<this.dataList.length;t++)n.addData(this.dataList[t].data);if(n.dataCache=n.createData(),n.createQrCode(),n.getBestMaskPattern(),n.createQrCode(),n.dataCache)this.typeNumber=o;break}}else this.dataCache=this.createData(),this.createQrCode();},createQrCode:function(){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var o=0;o<this.moduleCount;o++){this.modules[o]=new Array(this.moduleCount);for(var n=0;n<this.moduleCount;n++)this.modules[o][n]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupTimingPattern(),this.setupTypeInfo(!0,0),this.typeNumber>=7&&this.setupTypeNumber(!0),null==this.dataCache&&(this.dataCache=this.createData()),this.mapData(this.dataCache,0)},setupPositionProbePattern:function(o,n){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var t=-1;t<=7;t++)n+t<=-1||this.moduleCount<=n+t||(e>=0&&e<=6&&(0==t||6==t)||t>=0&&t<=6&&(0==e||6==e)||e>=2&&e<=4&&t>=2&&t<=4?this.modules[o+e][n+t]=!0:this.modules[o+e][n+t]=!1)},setupTimingPattern:function(){for(var o=8;o<this.moduleCount-8;o++)null==this.modules[o][6]&&(this.modules[o][6]=o%2==0),null==this.modules[6][o]&&(this.modules[6][o]=o%2==0)},setupTypeNumber:function(o){for(var n=a.getBCHTypeNumber(this.typeNumber),e=0;e<18;e++){var t=!o&&1==(n>>e&1);this.modules[Math.floor(e/3)][e%3+this.moduleCount-8-3]=t,this.modules[e%3+this.moduleCount-8-3][Math.floor(e/3)]=t}},setupTypeInfo:function(o,n){for(var e=a.getBCHTypeInfo(a.getBCHTypeInfo(this.errorCorrectLevel<<3|n)),t=0;t<15;t++){var r=!o&&1==(e>>t&1);t<6?this.modules[t][8]=r:t<8?this.modules[t+1][8]=r:this.modules[this.moduleCount-15+t][8]=r,t<8?this.modules[8][this.moduleCount-t-1]=r:this.modules[8][14-t]=r}},mapData:function(o,n){for(var e=-1,t=this.moduleCount-1,r=7,i=0;t>0;t-=2){for(6==t&&t--;!0;){for(var s=0;s<2;s++)null==this.modules[t-s][e]&&(this.modules[t-s][e]=1==(o[i>>>3]>>>7-i%8&1));if((i++,e+=r)<0||this.moduleCount<=e){e-=r,r=-r;break}}}},createData:function(){for(var o=[],n=0;n<this.dataList.length;n++){var t=this.dataList[n];o.push(4),o.push(t.getLength()),o=o.concat(function(o){for(var n=[],e=o.length,t=0;t<e;t++){var r=o.charCodeAt(t);r<128?n.push(r):r<2048?(n.push(192|r>>6),n.push(128|63&r,8)):r<55296||r>=57344?(n.push(224|r>>12),n.push(128|r>>6&63,8),n.push(128|63&r)):(t++,r=65536+((1023&r)<<10|1023&o.charCodeAt(t)),n.push(240|r>>18),n.push(128|r>>12&63,8),n.push(128|r>>6&63,8),n.push(128|63&r))}return n}(t.data))}for(var r=1;r<40;r++){for(var s=u[r],a=0;a<s.length;a++)if(s[a].dataCount>=o.length){for(var l=s[a].dataCount-o.length;o.length<s[a].dataCount;)o.push(0);for(var c=[],f=0;f<o.length;f++)c.push(o[f]);return c}}return null},getBestMaskPattern:function(){for(var o=0,n=0,e=0;e<8;e++){this.createQrCode(),this.applyMaskPattern(e);var t=a.getLostPoint(this);(0==e||t<o)&&(o=t,n=e)}return this.applyMaskPattern(n),n},applyMaskPattern:function(o){for(var n=0;n<this.moduleCount;n++)for(var e=0;e<this.moduleCount;e++)null!=this.modules[n][e]&&(this.modules[n][e]=!this.modules[n][e]==!!a.getMask(o,n,e))},setupPositionAdjustPattern:function(){var o=a.getPatternPosition(this.typeNumber);if(void 0!==o)for(var n=0;n<o.length;n++)for(var e=0;e<o.length;e++){var t=o[n],r=o[e];if(null==this.modules[t][r])for(var i=-2;i<=2;i++)for(var s=-2;s<=2;s++)this.modules[t+i][r+s]=i==-2||2==i||-2==s||2==s||i==0&&s==0}}};window.QRCode=function(o,n){var t=document.createElement("canvas");o.innerHTML="",o.appendChild(t);var r=t.getContext("2d"),i=new e(0,s.ErrorCorrectLevel.M);i.addData(n||"");i.make();var a=i.getModuleCount(),l=6,u=10;t.width=t.height=(a+2*l)*u,r.fillStyle="#fff",r.fillRect(0,0,t.width,t.height),r.fillStyle="#000";for(var c=0;c<a;c++)for(var f=0;f<a;f++)i.isDark(c,f)&&r.fillRect((f+l)*u,(c+l)*u,u,u);return t};}(this);
+!function(o){function n(o){this.mode=s.MODE_8BIT_BYTE,this.data=o}function e(o,n){this.typeNumber=o,this.errorCorrectLevel=n,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function t(o,n){if(void 0==o.length)throw new Error(o.length+"/"+n);for(var e=0;e<o.length&&0==o[e];)e++;this.num=o.length-e,this.buf=new Array(this.num+1);for(var t=0;t<this.num;t++)this.buf[t]=o[e+t]}function r(o,n){this.totalCount=o,this.dataCount=n}var i={};n.prototype={getLength:function(){return this.data.length},write:function(o){for(var n=0;n<this.data.length;n++){var e=this.data.charCodeAt(n);e<128?o.put(e,8):e<2048?(o.put(192|e>>6,8),o.put(128|63&e,8)):e<55296||e>=57344?(o.put(224|e>>12,8),o.put(128|e>>6&63,8),o.put(128|63&e,8)):(n++,e=65536+((1023&e)<<10|1023&this.data.charCodeAt(n)),o.put(240|e>>18,8),o.put(128|e>>12&63,8),o.put(128|e>>6&63,8),o.put(128|63&e,8))}}};var s={};s.PAD0=236,s.PAD1=17,s.MODE_NUMBER=1,s.MODE_ALPHA_NUM=2,s.MODE_8BIT_BYTE=4,s.MODE_KANJI=8,s.ErrorCorrectLevel={L:1,M:0,Q:3,H:2};var a={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(o){var n=o<<10;for(;a.getBCHDigit(n)-a.getBCHDigit(a.G15)>=0;)n^=a.G15<<a.getBCHDigit(n)-a.getBCHDigit(a.G15);return o<<10|n},getBCHTypeNumber:function(o){for(var n=o<<12;a.getBCHDigit(n)-a.getBCHDigit(a.G18)>=0;)n^=a.G18<<a.getBCHDigit(n)-a.getBCHDigit(a.G18);return o<<12|n},getBCHDigit:function(o){for(var n=0;0!=o;)n++,o>>>=1;return n},getPatternPosition:function(o){return a.PATTERN_POSITION_TABLE[o-1]},getMask:function(o,n,e){switch(o){case 0:return(n+e)%2==0;case 1:return n%2==0;case 2:return e%3==0;case 3:return(n+e)%3==0;case 4:return((n>>>1)+(e/3|0))%2==0;case 5:return n*e%2+n*e%3==0;case 6:return(n*e%2+n*e%3)%2==0;case 7:return((n*e%3+(n+e)%2)|0)%2==0;default:throw new Error("bad maskPattern:"+o)}},getErrorCorrectPolynomial:function(o){for(var n=new t([1],0),e=0;e<o;e++)n=n.multiply(new t([1,Math.gexp(e)],0));return n},getLengthInBits:function(o,n){if(1<=n&&n<10)switch(o){case s.MODE_NUMBER:return 10;case s.MODE_ALPHA_NUM:return 9;case s.MODE_8BIT_BYTE:return 8;case s.MODE_KANJI:return 8;default:throw new Error("mode:"+o)}else if(n<27)switch(o){case s.MODE_NUMBER:return 12;case s.MODE_ALPHA_NUM:return 11;case s.MODE_8BIT_BYTE:return 16;case s.MODE_KANJI:return 10;default:throw new Error("mode:"+o)}else{if(!(n<41))throw new Error("type:"+n);switch(o){case s.MODE_NUMBER:return 14;case s.MODE_ALPHA_NUM:return 13;case s.MODE_8BIT_BYTE:return 16;case s.MODE_KANJI:return 12;default:throw new Error("mode:"+o)}}},getLostPoint:function(o){for(var n=o.getModuleCount(),e=0,t=0;t<n;t++)for(var r=0;r<n;r++){for(var i=0,s=o.isDark(t,r),a=-1;a<=1;a++)if(!(t+a<0||n<=t+a))for(var l=-1;l<=1;l++)r+l<0||n<=r+l||0==a&&0==l||s==o.isDark(t+a,r+l)&&i++;i>5&&(e+=3+i-5)}for(t=0;t<n-1;t++)for(r=0;r<n-1;r++){var u=0;o.isDark(t,r)&&u++,o.isDark(t+1,r)&&u++,o.isDark(t,r+1)&&u++,o.isDark(t+1,r+1)&&u++,(0==u||4==u)&&(e+=3)}for(t=0;t<n;t++)for(r=0;r<n-6;r++)o.isDark(t,r)&&!o.isDark(t,r+1)&&o.isDark(t,r+2)&&o.isDark(t,r+3)&&o.isDark(t,r+4)&&!o.isDark(t,r+5)&&o.isDark(t,r+6)&&(e+=40);for(r=0;r<n;r++)for(t=0;t<n-6;t++)o.isDark(t,r)&&!o.isDark(t+1,r)&&o.isDark(t+2,r)&&o.isDark(t+3,r)&&o.isDark(t+4)&&!o.isDark(t+5,r)&&o.isDark(t+6,r)&&(e+=40);for(var c=0,f=0,r=0;r<n;r++)for(t=0;t<n;t++)o.isDark(t,r)&&c++;f=Math.abs(100*c/n/n-50)/5*10;return e+=f},glog:function(o){if(o<1)throw new Error("glog("+o+")");return i[o]},gexp:function(o){for(;o<0;)o+=255;for(;o>=256;)o-=255;return n[o]};for(var n=new Array(256),i=new Array(256),l=0;l<8;l++)n[l]=1<<l;for(l=8;l<256;l++)n[l]=n[l-4]^n[l-5]^n[l-6]^n[l-8];for(l=0;l<255;l++)i[n[l]]=l;t.prototype={get:function(o){return this.buf[o]},getLength:function(){return this.buf.length},multiply:function(o){for(var n=new Array(this.getLength()+o.getLength()-1),e=0;e<this.getLength();e++)for(var r=0;r<o.getLength();r++)n[e+r]^=Math.gexp(Math.glog(this.get(e))+Math.glog(o.get(r)));return new t(n,0)},mod:function(o){if(this.getLength()-o.getLength()<0)return this;for(var n=Math.glog(this.get(0))-Math.glog(o.get(0)),e=new Array(this.getLength(),0),r=0;r<this.getLength();r++)e[r]=this.get(r];for(r=0;r<o.getLength();r++)e[r]^=Math.gexp(Math.glog(o.get(r))+n);return new t(e,0).mod(o)}};var u=[[],[new r(19,7)],[new r(34,10)],[new r(55,15)],[new r(80,20)],[new r(108,26)],[new r(136,18)],[new r(156,20)],[new r(194,24)],[new r(232,30)],[new r(274,18)],[new r(324,20)],[new r(370,24)],[new r(428,26)],[new r(461,30)],[new r(523,22)],[new r(589,24)],[new r(647,28)],[new r(721,30)],[new r(795,28)],[new r(861,28)],[new r(932,30)],[new r(1006,28)],[new r(1094,30)],[new r(1174,28)],[new r(1276,30)],[new r(1370,30)],[new r(1468,30)],[new r(1531,30)],[new r(1631,30)],[new r(1735,30)],[new r(1843,30)],[new r(1955,30)],[new r(2071,30)],[new r(2191,30)],[new r(2306,30)],[new r(2434,30)],[new r(2566,30)],[new r(2702,28)],[new r(2812,30)],[new r(2956,28)]];e.prototype={addData:function(o){this.dataList.push(new n(o)),this.dataCache=null},isDark:function(o,n){if(void 0==this.modules[o]||void 0==this.modules[o][n])throw new Error(o+","+n);return this.modules[o][n]},getModuleCount:function(){return this.moduleCount},make:function(){if(this.typeNumber<1){for(var o=1;o<40;o++){for(var n=new e(o,this.errorCorrectLevel),t=0;t<this.dataList.length;t++)n.addData(this.dataList[t].data);if(n.dataCache=n.createData(),n.createQrCode(),n.getBestMaskPattern(),n.createQrCode(),n.dataCache)this.typeNumber=o;break}}else this.dataCache=this.createData(),this.createQrCode();},createQrCode:function(){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var o=0;o<this.moduleCount;o++){this.modules[o]=new Array(this.moduleCount);for(var n=0;n<this.moduleCount;n++)this.modules[o][n]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupTimingPattern(),this.setupTypeInfo(!0,0),this.typeNumber>=7&&this.setupTypeNumber(!0),null==this.dataCache&&(this.dataCache=this.createData()),this.mapData(this.dataCache,0)},setupPositionProbePattern:function(o,n){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var t=-1;t<=7;t++)n+t<=-1||this.moduleCount<=n+t||(e>=0&&e<=6&&(0==t||6==t)||t>=0&&t<=6&&(0==e||6==e)||e>=2&&e<=4&&t>=2&&t<=4?this.modules[o+e][n+t]=!0:this.modules[o+e][n+t]=!1)},setupTimingPattern:function(){for(var o=8;o<this.moduleCount-8;o++)null==this.modules[o][6]&&(this.modules[o][6]=o%2==0),null==this.modules[6][o]&&(this.modules[6][o]=o%2==0)},setupTypeNumber:function(o){for(var n=a.getBCHTypeNumber(this.typeNumber),e=0;e<18;e++){var t=!o&&1==(n>>e&1);this.modules[Math.floor(e/3)][e%3+this.moduleCount-8-3]=t,this.modules[e%3+this.moduleCount-8-3][Math.floor(e/3)]=t}},setupTypeInfo:function(o,n){for(var e=a.getBCHTypeInfo(a.getBCHTypeInfo(this.errorCorrectLevel<<3|n)),t=0;t<15;t++){var r=!o&&1==(e>>t&1);t<6?this.modules[t][8]=r:t<8?this.modules[t+1][8]=r:this.modules[this.moduleCount-15+t][8]=r,t<8?this.modules[8][this.moduleCount-t-1]=r:this.modules[8][14-t]=r}},mapData:function(o,n){for(var e=-1,t=this.moduleCount-1,r=7,i=0;t>0;t-=2){for(6==t&&t--;!0;){for(var s=0;s<2;s++)null==this.modules[t-s][e]&&(this.modules[t-s][e]=1==(o[i>>>3]>>>7-i%8&1));if((i++,e+=r)<0||this.moduleCount<=e){e-=r,r=-r;break}}}},createData:function(){for(var o=[],n=0;n<this.dataList.length;n++){var t=this.dataList[n];o.push(4),o.push(t.getLength()),o=o.concat(function(o){for(var n=[],e=o.length,t=0;t<e;t++){var r=o.charCodeAt(t);r<128?n.push(r):r<2048?(n.push(192|r>>6),n.push(128|63&r,8)):r<55296||r>=57344?(n.push(224|r>>12),n.push(128|r>>6&63,8),n.push(128|63&r)):(t++,r=65536+((1023&r)<<10|1023&o.charCodeAt(t)),n.push(240|r>>18),n.push(128|r>>12&63,8),n.push(128|r>>6&63,8),n.push(128|63&r))}return n}(t.data))}for(var r=1;r<40;r++){for(var s=u[r],a=0;a<s.length;a++)if(s[a].dataCount>=o.length){for(var l=s[a].dataCount-o.length;o.length<s[a].dataCount;)o.push(0);for(var c=[],f=0;f<o.length;f++)c.push(o[f]);return c}}return null},getBestMaskPattern:function(){for(var o=0,n=0,e=0;e<8;e++){this.createQrCode(),this.applyMaskPattern(e);var t=a.getLostPoint(this);(0==e||t<o)&&(o=t,n=e)}return this.applyMaskPattern(n),n},applyMaskPattern:function(o){for(var n=0;n<this.moduleCount;n++)for(var e=0;e<this.moduleCount;e++)null!=this.modules[n][e]&&(this.modules[n][e]=!this.modules[n][e]==!!a.getMask(o,n,e))},setupPositionAdjustPattern:function(){var o=a.getPatternPosition(this.typeNumber);if(void 0!==o)for(var n=0;n<o.length;n++)for(var e=0;e<o.length;e++){var t=o[n],r=o[e];if(null==this.modules[t][r])for(var i=-2;i<=2;i++)for(var s=-2;s<=2;s++)this.modules[t+i][r+s]=i==-2||2==i||-2==s||2==s||i==0&&s==0}}};window.QRCode=function(o,n){var t=document.createElement("canvas");o.innerHTML="",o.appendChild(t);var r=t.getContext("2d"),i=new e(0,s.ErrorCorrectLevel.M);i.addData(n||"");i.make();var a=i.getModuleCount(),l=6,u=10;t.width=t.height=(a+2*l)*u,r.fillStyle="#fff",r.fillRect(0,0,t.width,t.height),r.fillStyle="#000";for(var c=0;c<a;c++)for(var f=0;f<a;f++)i.isDark(c,f)&&r.fillRect((f+l)*u,(c+l)*u,u,u);return t};}(this);
 </script>
 
 <!-- ====== App logic ====== -->
 <script>
-  // --------- Navigation ---------
-  const goTo = (id) => {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({top:0, behavior:'smooth'});
-  };
+  // Nav
+  const goTo = id => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); };
 
-  // --------- Utils ---------
-  const $ = (s, r=document)=>r.querySelector(s);
-  const fmtTime = (ms) => {
-    const cs=Math.floor(ms/10)%100, s=Math.floor(ms/1000)%60, m=Math.floor(ms/60000);
-    const pad=x=>String(x).padStart(2,'0');
-    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
-  };
-  const kmh = (meters, ms) => ms<=0 ? 0 : +((meters/(ms/1000))*3.6).toFixed(2);
-  const toast = (m)=>{ const n=document.createElement('div'); n.textContent=m; Object.assign(n.style,{position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:'#111827',border:'1px solid #223146',color:'#e5e7eb',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 10px 30px rgba(0,0,0,.35)',zIndex:50}); document.body.appendChild(n); setTimeout(()=>n.remove(),2000); };
+  // Utils
+  const $=(s,r=document)=>r.querySelector(s);
+  const fmtTime=ms=>{const cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,m=Math.floor(ms/60000);const pad=x=>String(x).padStart(2,'0');return `${pad(m)}:${pad(s)}.${pad(cs)}`;}
+  const kmh=(m,ms)=>ms<=0?0:+((m/(ms/1000))*3.6).toFixed(2);
+  const toast=m=>{const n=document.createElement('div');n.textContent=m;Object.assign(n.style,{position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:'#111827',border:'1px solid #223146',color:'#e5e7eb',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 10px 30px rgba(0,0,0,.35)',zIndex:50});document.body.appendChild(n);setTimeout(()=>n.remove(),2000);};
 
-  // --------- Elements ---------
-  const eHomeStart = $('#startFromSetup');
-  const timeEl = $('#time');
-  const palierInfo = $('#palierInfo');
-  const cibleInfo = $('#cibleInfo');
-  const progInfo = $('#progInfo');
-  const tbody = $('#tbody');
+  // Elements
+  const eHomeStart=$('#startFromSetup');
+  const timeEl=$('#time'), palierInfo=$('#palierInfo'), cibleInfo=$('#cibleInfo'), progInfo=$('#progInfo'), tbody=$('#tbody');
+  const nom=$('#nom'), prenom=$('#prenom'), classe=$('#classe'), sexe=$('#sexe');
+  const distTotEl=$('#distTot'), distPalierEl=$('#distPalier'), btnApply=$('#apply');
+  const btnStart=$('#start'), btnLap=$('#lap'), btnStop=$('#stop'), btnReset=$('#reset');
+  const btnExportCSV=$('#exportCSV'); const qrBox=$('#qrcode'); const runMeta=$('#runMeta');
 
-  const nom = $('#nom'), prenom = $('#prenom'), classe = $('#classe'), sexe = $('#sexe');
-  const distTotEl = $('#distTot'), distPalierEl = $('#distPalier');
-  const btnApply = $('#apply');
-
-  const btnStart = $('#start'), btnLap = $('#lap'), btnStop = $('#stop'), btnReset = $('#reset');
-  const btnMakeQR = $('#makeQR'), btnCopyJSON = $('#copyJSON'), btnExportCSV = $('#exportCSV');
-  const qrBox = $('#qrcode'), jsonOut = $('#jsonOut');
-  const runMeta = $('#runMeta');
-
-  // --------- State ---------
+  // State
   let running=false, startTime=0, lastLapTime=0, rafId=0;
   let distTot=800, distPalier=200, nbPaliers=4, paliersDone=0;
   const splits=[]; // { palier, lapMs, cumMs, vKmh }
-  let student = {nom:'', prenom:'', classe:'', sexe:''};
+  let student={nom:'',prenom:'',classe:'',sexe:''};
 
-  // --------- Params ---------
+  // Params
   function applyParams(){
     const t=parseInt(distTotEl.value,10), p=parseInt(distPalierEl.value,10);
     if(!Number.isFinite(t)||!Number.isFinite(p)||t<=0||p<=0){ toast('Distances invalides.'); return; }
-    if(t%p!==0){ toast('⚠️ La distance totale doit être un multiple du palier (ex. 800 et 200).'); return; }
+    if(t%p!==0){ toast('⚠️ Distance totale multiple du palier requise.'); return; }
     distTot=t; distPalier=p; nbPaliers=distTot/distPalier;
-    palierInfo.textContent = `${distPalier} m`;
-    cibleInfo.textContent = `${distTot} m (${nbPaliers} paliers)`;
-    progInfo.textContent = `0 / ${nbPaliers}`;
+    palierInfo.textContent=`${distPalier} m`; cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`; progInfo.textContent=`0 / ${nbPaliers}`;
     hardReset(false);
   }
   btnApply.addEventListener('click', applyParams);
 
-  // --------- From setup → run page ---------
+  // From setup → run
   eHomeStart.addEventListener('click', ()=>{
-    // Validate form
-    if(!(nom.value.trim() && prenom.value.trim() && classe.value.trim() && sexe.value.trim())){
-      toast('Renseigne Nom / Prénom / Classe / Sexe.');
-      return;
-    }
-    applyParams(); // sync labels & reset
-    // Lock student info for this run
-    student = {
-      nom: nom.value.trim(),
-      prenom: prenom.value.trim(),
-      classe: classe.value.trim(),
-      sexe: sexe.value.trim() === 'A' ? 'A' : sexe.value.trim() // M/F/A
-    };
-    runMeta.innerHTML = `<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
+    if(!(nom.value.trim()&&prenom.value.trim()&&classe.value.trim()&&sexe.value.trim())){ toast('Renseigne Nom / Prénom / Classe / Sexe.'); return; }
+    applyParams();
+    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A
+    runMeta.innerHTML=`<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
     goTo('page-run');
   });
 
-  // --------- Chrono loop ---------
+  // Chrono
   function tick(){ const now=performance.now(); timeEl.textContent=fmtTime(now-startTime); rafId=requestAnimationFrame(tick); }
 
-  // --------- Controls ---------
-  btnStart.addEventListener('click', ()=>{
+  btnStart.addEventListener('click',()=>{
     if(running) return;
     if(splits.length>0){ toast('Réinitialise pour un nouveau départ.'); return; }
     running=true; startTime=performance.now(); lastLapTime=0; paliersDone=0;
-    progInfo.textContent = `${paliersDone} / ${nbPaliers}`;
+    progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
     btnLap.disabled=false; btnStop.disabled=false; btnStart.disabled=true;
-    btnMakeQR.disabled=true; btnCopyJSON.disabled=true; btnExportCSV.disabled=true;
-    jsonOut.value=''; qrBox.innerHTML='';
+    btnExportCSV.disabled=true; qrBox.innerHTML='';
     rafId=requestAnimationFrame(tick);
   });
 
-  btnLap.addEventListener('click', ()=>{
+  btnLap.addEventListener('click',()=>{
     if(!running) return;
-    const now=performance.now();
-    const cumMs=now-startTime;
-    const lapMs=cumMs-lastLapTime;
-    lastLapTime=cumMs;
-    paliersDone++;
-    const palierDist=Math.min(distPalier*paliersDone, distTot);
-    const v=kmh(distPalier, lapMs);
-    splits.push({ palier: palierDist, lapMs, cumMs, vKmh: v });
-
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td>${palierDist}</td><td>${fmtTime(lapMs)}</td><td>${fmtTime(cumMs)}</td><td>${v.toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-
-    progInfo.textContent = `${paliersDone} / ${nbPaliers}`;
+    const now=performance.now(), cumMs=now-startTime, lapMs=cumMs-lastLapTime; lastLapTime=cumMs;
+    paliersDone++; const pal=Math.min(distPalier*paliersDone,distTot); const v=kmh(distPalier,lapMs);
+    splits.push({palier:pal, lapMs, cumMs, vKmh:v});
+    const tr=document.createElement('tr'); tr.innerHTML=`<td>${pal}</td><td>${fmtTime(lapMs)}</td><td>${fmtTime(cumMs)}</td><td>${v.toFixed(2)}</td>`; tbody.appendChild(tr);
+    progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
     if(paliersDone>=nbPaliers){ stopRun(); }
   });
 
-  btnStop.addEventListener('click', ()=> stopRun(true));
+  btnStop.addEventListener('click',()=>stopRun(true));
 
-  function stopRun(manual=false){
+  function stopRun(){
     if(!running) return;
     running=false; cancelAnimationFrame(rafId); rafId=0;
+    btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
 
-    btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true;
-    btnMakeQR.disabled=false; btnCopyJSON.disabled=false; btnExportCSV.disabled=false;
-
-    const payload = buildQRPayload(); // Build JSON immediately
-    jsonOut.value = JSON.stringify(payload, null, 2);
-
-    // Auto-générer le QR au stop
+    // Build JSON (format ScanProf) & auto QR
+    const payload=buildQRPayload();
     renderQR(payload);
-    // Scroller vers le QR (pour iPad)
-    setTimeout(()=> document.getElementById('qrcode').scrollIntoView({behavior:'smooth', block:'start'}), 50);
+    setTimeout(()=>qrBox.scrollIntoView({behavior:'smooth',block:'start'}),50);
   }
 
-  btnReset.addEventListener('click', ()=> hardReset(true));
+  btnReset.addEventListener('click',()=>hardReset(true));
   function hardReset(announce=true){
-    running=false; cancelAnimationFrame(rafId); rafId=0;
-    timeEl.textContent='00:00.00';
-    lastLapTime=0; startTime=0; paliersDone=0;
-    splits.length=0; tbody.innerHTML='';
-    progInfo.textContent = `0 / ${nbPaliers}`;
-    btnStart.disabled=false; btnLap.disabled=true; btnStop.disabled=true;
-    btnMakeQR.disabled=true; btnCopyJSON.disabled=true; btnExportCSV.disabled=true;
-    qrBox.innerHTML=''; jsonOut.value='';
+    running=false; cancelAnimationFrame(rafId); rafId=0; timeEl.textContent='00:00.00';
+    lastLapTime=0; startTime=0; paliersDone=0; splits.length=0; tbody.innerHTML='';
+    progInfo.textContent=`0 / ${nbPaliers}`; btnStart.disabled=false; btnLap.disabled=true; btnStop.disabled=true; btnExportCSV.disabled=true; qrBox.innerHTML='';
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // --------- QR & JSON ---------
+  // QR & payload
   function buildQRPayload(){
-    const doneDistance = paliersDone * distPalier;
-    const totalMs = splits.length ? splits[splits.length-1].cumMs : 0;
-    const vitesseMoy = kmh(doneDistance, totalMs);
-    const vmaEstimee = vitesseMoy; // hypothèse : effort max ~ VMA
+    const doneDistance=paliersDone*distPalier;
+    const totalMs=splits.length? splits[splits.length-1].cumMs : 0;
+    const vitesseMoy=kmh(doneDistance,totalMs);
+    const vmaEstimee=vitesseMoy; // hypothèse
 
-    const core = {
-      nom: student.nom, prenom: student.prenom, classe: student.classe, sexe: student.sexe,
-      distance: doneDistance, vitesse: vitesseMoy, vma: vmaEstimee,
-      tps_total: fmtTime(totalMs),
-      distance_totale_m: distTot, intervalle_m: distPalier
+    const core={
+      nom:student.nom, prenom:student.prenom, classe:student.classe, sexe:student.sexe, // M/F/A (A conservé)
+      distance:doneDistance, vitesse:vitesseMoy, vma:vmaEstimee,
+      tps_total:fmtTime(totalMs), distance_totale_m:distTot, intervalle_m:distPalier
     };
-    splits.forEach(s=> core[`Tps au ${s.palier}`] = fmtTime(s.cumMs));
-    core.splits = splits.map(s=>({ palier_m:s.palier, tps_palier:fmtTime(s.lapMs), tps_cumule:fmtTime(s.cumMs), vitesse_kmh:+s.vKmh.toFixed(2) }));
+    splits.forEach(s=> core[`Tps au ${s.palier}`]=fmtTime(s.cumMs));
+    core.splits=splits.map(s=>({palier_m:s.palier,tps_palier:fmtTime(s.lapMs),tps_cumule:fmtTime(s.cumMs),vitesse_kmh:+s.vKmh.toFixed(2)}));
 
-    return [ core ]; // format attendu par ScanProf : tableau d’objets
-  }
-
-  function validateBeforeQR(){
-    if(!splits.length){ toast('Aucun temps enregistré.'); return false; }
-    if(!(student.nom && student.prenom && student.classe && student.sexe)){ toast('Infos élève manquantes.'); return false; }
-    return true;
+    return [core]; // tableau exigé par ScanProf
   }
 
   function renderQR(payload){
-    const str = JSON.stringify(payload);
-    qrBox.innerHTML = '';
+    const str=JSON.stringify(payload);
+    qrBox.innerHTML='';
     try{ new QRCode(qrBox, str); }catch(e){ console.error(e); toast('Erreur QR.'); }
   }
 
-  btnMakeQR.addEventListener('click', ()=>{
-    if(!validateBeforeQR()) return;
-    const payload = buildQRPayload();
-    jsonOut.value = JSON.stringify(payload, null, 2);
-    renderQR(payload);
-    toast('QR code généré.');
-  });
-
-  btnCopyJSON.addEventListener('click', async ()=>{
-    if(!validateBeforeQR()) return;
-    try{ await navigator.clipboard.writeText(jsonOut.value); toast('JSON copié.'); }
-    catch{ toast('Copie impossible. Sélectionne et copie manuellement.'); }
-  });
-
-  // --------- Export CSV (tableau des splits) ---------
+  // Export CSV
   function exportCSV(){
     if(!splits.length){ toast('Aucun temps à exporter.'); return; }
-    const headers = ['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];
-    const rows = splits.map(s => [s.palier, fmtTime(s.lapMs), fmtTime(s.cumMs), s.vKmh.toFixed(2)]);
-    const metaTop = [
-      ['Nom', student.nom], ['Prénom', student.prenom], ['Classe', student.classe], ['Sexe', student.sexe],
-      ['Distance cible (m)', distTot], ['Palier (m)', distPalier]
-    ];
-    const totalMs = splits[splits.length-1].cumMs;
-    const doneDistance = paliersDone * distPalier;
-    const vitesseMoy = kmh(doneDistance, totalMs);
-
-    const metaBottom = [
-      ['Distance validée (m)', doneDistance], ['Temps total', fmtTime(totalMs)], ['Vitesse moyenne (km/h)', vitesseMoy.toFixed(2)]
-    ];
-
-    const toCSV = arr => arr.map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
-
-    const csv =
-      toCSV(metaTop) + '\n\n' +
-      toCSV([headers]) + '\n' +
-      toCSV(rows) + '\n\n' +
-      toCSV(metaBottom);
-
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const fname = `${student.nom}_${student.prenom}_Intervalles.csv`.replace(/\s+/g,'_');
-    const a = document.createElement('a');
-    a.href = url; a.download = fname; document.body.appendChild(a); a.click();
-    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+    const headers=['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];
+    const rows=splits.map(s=>[s.palier,fmtTime(s.lapMs),fmtTime(s.cumMs),s.vKmh.toFixed(2)]);
+    const metaTop=[['Nom',student.nom],['Prénom',student.prenom],['Classe',student.classe],['Sexe',student.sexe],['Distance cible (m)',distTot],['Palier (m)',distPalier]];
+    const totalMs=splits[splits.length-1].cumMs; const doneDistance=paliersDone*distPalier; const vitesseMoy=kmh(doneDistance,totalMs);
+    const metaBottom=[['Distance validée (m)',doneDistance],['Temps total',fmtTime(totalMs)],['Vitesse moyenne (km/h)',vitesseMoy.toFixed(2)]];
+    const toCSV=arr=>arr.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv=toCSV(metaTop)+'\n\n'+toCSV([headers])+'\n'+toCSV(rows)+'\n\n'+toCSV(metaBottom);
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
+    const fname=`${student.nom}_${student.prenom}_Intervalles.csv`.replace(/\s+/g,'_'); const a=document.createElement('a');
+    a.href=url; a.download=fname; document.body.appendChild(a); a.click(); setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},0);
   }
-  btnExportCSV.addEventListener('click', exportCSV);
+  $('#exportCSV').addEventListener('click', exportCSV);
 
-  // --------- Init ---------
+  // Init
   function initLabels(){
-    distTot = parseInt(distTotEl.value,10) || 800;
-    distPalier = parseInt(distPalierEl.value,10) || 200;
-    nbPaliers = distTot / distPalier;
-    palierInfo.textContent = `${distPalier} m`;
-    cibleInfo.textContent = `${distTot} m (${nbPaliers} paliers)`;
-    progInfo.textContent = `0 / ${nbPaliers}`;
+    distTot=parseInt(distTotEl.value,10)||800; distPalier=parseInt(distPalierEl.value,10)||200; nbPaliers=distTot/distPalier;
+    palierInfo.textContent=`${distPalier} m`; cibleInfo.textContent=`${distTot} m (${nbPaliers} paliers)`; progInfo.textContent=`0 / ${nbPaliers}`;
   }
   initLabels();
   goTo('page-home');

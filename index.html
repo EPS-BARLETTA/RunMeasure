@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Chrono Intervalles EPS</title>
 
-<!-- ✅ QRCode.js fiable via CDN -->
+<!-- QRCode.js fiable (CDN) -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <style>
@@ -53,7 +53,7 @@
   <div class="hero">
     <div>
       <h1>Chrono Intervalles EPS</h1>
-      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON compatible ScanProf.</p>
+      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON pour l’enseignant.</p>
       <div class="btns">
         <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
         <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
@@ -167,7 +167,7 @@
     <div class="qr-wrap" style="margin-top:10px">
       <div id="qrcode"></div>
     </div>
-    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à la fin de la course (ScanProf).</p>
+    <p class="hint" style="text-align:center;margin-top:8px">Le QR s’affiche automatiquement à la fin de la course.</p>
   </section>
 
   <div class="btns" style="margin-top:6px">
@@ -220,7 +220,7 @@
       toast('Renseigne Nom / Prénom / Classe / Sexe.'); return;
     }
     applyParams();
-    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A
+    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A (on laisse tel quel)
     runMeta.innerHTML=`<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
     goTo('page-run');
   });
@@ -268,41 +268,39 @@
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // QR payload (ScanProf)
+  // ✅ QR payload : nom, prenom, classe, sexe, puis uniquement les temps cumulés ("200m","400m",...)
   function buildQRPayload(){
-    const doneDistance=paliersDone*distPalier;
-    const totalMs=splits.length? splits[splits.length-1].cumMs : 0;
-    const vitesseMoy=kmh(doneDistance,totalMs);
-    const vmaEstimee=vitesseMoy; // hypothèse
-
-    const core={
-      nom:student.nom, prenom:student.prenom, classe:student.classe, sexe:student.sexe, // M/F/A
-      distance:doneDistance, vitesse:vitesseMoy, vma:vmaEstimee,
-      tps_total:fmtTime(totalMs), distance_totale_m:distTot, intervalle_m:distPalier
+    const record = {
+      nom:     student.nom || "",
+      prenom:  student.prenom || "",
+      classe:  student.classe || "",
+      sexe:    student.sexe || ""   // M/F/A tel quel (si ScanProf refuse A, on pourra mapper plus tard)
     };
-    splits.forEach(s=> core[`Tps au ${s.palier}`]=fmtTime(s.cumMs));
-    core.splits=splits.map(s=>({palier_m:s.palier,tps_palier:fmtTime(s.lapMs),tps_cumule:fmtTime(s.cumMs),vitesse_kmh:+s.vKmh.toFixed(2)}));
-
-    return [core]; // tableau attendu
+    // Ajout des temps cumulés par distance
+    splits.forEach((s, i) => {
+      const dist = distPalier * (i+1);
+      record[`${dist}m`] = fmtTime(s.cumMs);
+    });
+    return [record];
   }
 
-  // ✅ QR render avec QRCode.js (fiable)
+  // QR render
   function renderQR(payload){
-    const str=JSON.stringify(payload);
-    qrBox.innerHTML=''; // reset
+    const str = JSON.stringify(payload);
+    qrBox.innerHTML = '';
     try{
       new QRCode(qrBox, {
         text: str,
-        width: 256,
-        height: 256,
-        correctLevel: QRCode.CorrectLevel.M
+        width: 320,
+        height: 320,
+        correctLevel: QRCode.CorrectLevel.L
       });
     }catch(e){
       console.error(e); toast('Erreur QR.');
     }
   }
 
-  // Export CSV
+  // Export CSV (inchangé)
   function exportCSV(){
     if(!splits.length){ toast('Aucun temps à exporter.'); return; }
     const headers=['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];

@@ -23,12 +23,12 @@
 
   /* Boutons */
   .btns{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center }
-  button,.btn{
+  button{
     border:none; border-radius:14px; padding:14px 20px; font-weight:800; letter-spacing:.3px;
     background:#1f2a3a; color:var(--ink); cursor:pointer; font-size:1rem; min-width:180px;
     display:inline-flex; align-items:center; justify-content:center
   }
-  button:active,.btn:active{ transform:translateY(1px) }
+  button:active{ transform:translateY(1px) }
   .b-primary{background:var(--accent2)} .b-go{background:var(--accent)}
   .b-stop{background:var(--danger)} .b-lap{background:var(--warn)} .b-ghost{background:#0a1220;border:1px solid #223146}
 
@@ -80,9 +80,12 @@
   .s4{ background:linear-gradient(135deg,#0b1220 0%,rgba(239,68,68,.18)100%) }
 
   /* QR */
-  .qr-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center }
-  #qrcode canvas{ background:#ffffff; border-radius:10px; padding:10px; border:1px solid #d1d5db }
-  .qr-error{ color:#fecaca; background:#7f1d1d; border:1px solid #b91c1c; padding:8px 10px; border-radius:8px; }
+  .qr-wrap{ display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; justify-content:center; margin-top:12px }
+  .qr-col{ text-align:center }
+  .qr-title{ color:#cbd5e1; font-weight:800; margin:6px 0 8px }
+  #qr-scanprof canvas,#qr-cumules canvas{
+    background:#fff; padding:12px; border:1px solid #d1d5db; border-radius:10px;
+  }
 
   footer{ margin-top:auto; background:#e5e7eb; color:#111827; text-align:center; padding:10px 12px; font-weight:700; border-top:1px solid #cbd5e1; }
 </style>
@@ -94,7 +97,7 @@
   <div class="hero">
     <div>
       <h1>Chrono Intervalles EPS</h1>
-      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON cumulés.</p>
+      <p>Chronomètre avec temps intermédiaires configurables, tableau récapitulatif et QR JSON.</p>
       <div class="btns">
         <button class="b-go" onclick="goTo('page-app')">Démarrer</button>
         <button class="b-ghost" onclick="goTo('page-safety')">Fiche sécurité</button>
@@ -201,14 +204,22 @@
   </section>
 
   <section class="card" style="margin-top:16px">
-    <h3 class="section-title">QR (auto) & Export</h3>
+    <h3 class="section-title">QR & Export</h3>
     <div class="btns" style="justify-content:center">
       <button id="exportCSV" class="b-ghost" disabled>Exporter CSV</button>
     </div>
-    <div class="qr-wrap" style="margin-top:10px">
-      <div id="qrcode"></div>
+
+    <div class="qr-wrap">
+      <div class="qr-col">
+        <div class="qr-title">QR ScanProf (prof)</div>
+        <div id="qr-scanprof"></div>
+      </div>
+      <div class="qr-col">
+        <div class="qr-title">QR Cumulés (EPS)</div>
+        <div id="qr-cumules"></div>
+      </div>
     </div>
-    <p class="hint">Le QR s’affiche automatiquement à la fin de la course (noir sur blanc).</p>
+    <p class="hint">Les deux QR s’affichent automatiquement à la fin de la course (noir sur blanc).</p>
   </section>
 
   <div class="btns" style="margin-top:6px">
@@ -236,7 +247,7 @@
   const distTotEl=$('#distTot'), distPalierEl=$('#distPalier'), btnApply=$('#apply');
   const btnStartSetup=$('#startFromSetup');
   const btnStart=$('#start'), btnLap=$('#lap'), btnStop=$('#stop'), btnReset=$('#reset');
-  const btnExportCSV=$('#exportCSV'); const qrBox=$('#qrcode');
+  const btnExportCSV=$('#exportCSV'); const qrProf=$('#qr-scanprof'); const qrCum=$('#qr-cumules');
 
   // State
   let running=false, startTime=0, lastLapTime=0, rafId=0;
@@ -275,7 +286,7 @@
     running=true; startTime=performance.now(); lastLapTime=0; paliersDone=0;
     progInfo.textContent=`${paliersDone} / ${nbPaliers}`;
     btnLap.disabled=false; btnStop.disabled=false; btnStart.disabled=true;
-    btnExportCSV.disabled=true; qrBox.innerHTML='';
+    btnExportCSV.disabled=true; qrProf.innerHTML=''; qrCum.innerHTML='';
     rafId=requestAnimationFrame(tick);
   });
 
@@ -296,53 +307,75 @@
     running=false; cancelAnimationFrame(rafId); rafId=0;
     btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
 
-    const payload=buildQRPayload();   // JSON avec cumulés uniquement
-    renderQR(payload);                // QR auto (noir sur blanc)
-    setTimeout(()=>qrBox.scrollIntoView({behavior:'smooth',block:'start'}),50);
+    // Génère les 2 QR
+    renderQR('qr-scanprof', buildScanProfPayload());
+    renderQR('qr-cumules',  buildCumulesPayload());
+
+    setTimeout(()=>qrProf.scrollIntoView({behavior:'smooth',block:'start'}),50);
   }
 
   btnReset.addEventListener('click',()=>hardReset(true));
   function hardReset(announce=true){
     running=false; cancelAnimationFrame(rafId); rafId=0; timeEl.textContent='00:00.00';
     lastLapTime=0; startTime=0; paliersDone=0; splits.length=0; tbody.innerHTML='';
-    progInfo.textContent=`0 / ${nbPaliers}`; btnStart.disabled=false; btnLap.disabled=true; btnStop.disabled=true; btnExportCSV.disabled=true; qrBox.innerHTML='';
+    progInfo.textContent=`0 / ${nbPaliers}`; btnStart.disabled=false; btnLap.disabled=true; btnStop.disabled=true; btnExportCSV.disabled=true; qrProf.innerHTML=''; qrCum.innerHTML='';
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // ✅ QR payload : tableau contenant un objet { nom, prenom, classe, sexe, "200":"mm:ss.cs", "400":"mm:ss.cs", ... }
-  function buildQRPayload(){
-    const record = {
+  // ====== QR PAYLOADS ======
+
+  // ScanProf strict : [ { nom, prenom, classe, sexe(M/F), distance, vitesse, vma } ]
+  function buildScanProfPayload(){
+    const totalMs = splits.length ? splits[splits.length-1].cumMs : 0;
+    const distance = distPalier * splits.length; // m parcourus
+    const vitesse = totalMs>0 ? +(((distance)/(totalMs/1000))*3.6).toFixed(2) : 0; // km/h
+    const vma = vitesse; // à défaut d'une VMA mesurée
+    const sx = (student.sexe==='M' || student.sexe==='F') ? student.sexe : 'F';
+
+    return [{
+      nom:     student.nom || "",
+      prenom:  student.prenom || "",
+      classe:  student.classe || "",
+      sexe:    sx,
+      distance: distance,
+      vitesse:  vitesse,
+      vma:      vma
+    }];
+  }
+
+  // Cumulés EPS : [ { nom, prenom, classe, sexe, "200":"mm:ss.cs", "400":"mm:ss.cs", ... } ]
+  function buildCumulesPayload(){
+    const rec = {
       nom:     student.nom || "",
       prenom:  student.prenom || "",
       classe:  student.classe || "",
       sexe:    student.sexe || ""
     };
-    // Ajoute les temps cumulés par distance (clés numériques)
-    splits.forEach((s, i) => {
-      const dist = distPalier * (i + 1);
-      record[String(dist)] = fmtTime(s.cumMs);
+    splits.forEach((s,i)=>{
+      const dist = distPalier*(i+1);
+      rec[String(dist)] = fmtTime(s.cumMs);
     });
-    return [record]; // tableau attendu par ton parseur dynamique
+    return [rec];
   }
 
-  // 🔳 Rendu du QR : NOIR sur BLANC + correction élevée
-  function renderQR(payload){
-    const str = JSON.stringify(payload);
-    qrBox.innerHTML = '';
+  // Rendu QR générique (noir sur blanc, correction élevée)
+  function renderQR(targetId, payload){
+    const el = document.getElementById(targetId);
+    if(!el) return;
+    el.innerHTML='';
     try{
-      if(typeof QRCode === 'undefined'){ throw new Error('QRCode.js non chargé'); }
-      new QRCode(qrBox, {
-        text: str,
+      if(typeof QRCode==='undefined') throw new Error('QRCode.js non chargé');
+      new QRCode(el,{
+        text: JSON.stringify(payload),
         width: 340,
         height: 340,
         colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
       });
     }catch(e){
       console.error(e);
-      const div=document.createElement('div'); div.className='qr-error'; div.textContent='Erreur lors de la génération du QR.';
-      qrBox.appendChild(div);
+      el.textContent='Erreur lors de la génération du QR.';
     }
   }
 

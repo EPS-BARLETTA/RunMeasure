@@ -3,57 +3,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>RunMeasure • Mode</title>
+  <title>Mode • RunMeasure</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="wrap">
-    <header class="card center">
+    <header class="center">
       <h1 class="brand">RunMeasure</h1>
       <div class="chips">
-        <a class="btn btn-ghost" href="options.html">← Choisir un autre mode</a>
-        <button id="btn-help" class="btn btn-ghost">Aide</button>
+        <a class="btn btn-ghost" href="options.html">← Options</a>
+        <a class="btn btn-ghost" href="safety.html">Fiche sécurité</a>
+        <a class="btn btn-ghost" href="help.html">Aide</a>
         <button id="btn-full" class="btn btn-primary">⛶ Plein écran</button>
       </div>
     </header>
 
-    <section class="card" id="params">
+    <section class="card smallish" id="params">
       <h2>Paramètres</h2>
       <div class="row" id="row-distance" style="display:none">
         <div><label class="badge" for="distance-input">Distance (m)</label><input id="distance-input" type="number" min="0" placeholder="ex: 800"></div>
       </div>
       <div class="row" id="row-track" style="display:none">
         <div><label class="badge" for="track-length">Longueur de piste (m)</label><input id="track-length" type="number" min="50" step="1" value="400"></div>
-        <div><label class="badge" for="laps-count">Tours complets</label><input id="laps-count" type="number" min="0" step="1" value="0"></div>
-        <div><label class="badge" for="lap-fraction">Fraction</label>
-          <select id="lap-fraction">
-            <option value="0">0</option>
-            <option value="0.25">1/4</option>
-            <option value="0.5">1/2</option>
-            <option value="0.75">3/4</option>
-          </select>
-        </div>
+      </div>
+      <div class="row" id="row-timer" style="display:none">
+        <div class="wheel"><label class="badge">H</label><select id="wh-h"></select></div>
+        <div class="wheel"><label class="badge">M</label><select id="wh-m"></select></div>
+        <div class="wheel"><label class="badge">S</label><select id="wh-s"></select></div>
       </div>
       <div class="row" id="row-intervalles" style="display:none">
         <div><label class="badge" for="total-distance">Distance totale (m)</label><input id="total-distance" type="number" min="100" step="50" value="800"></div>
         <div><label class="badge" for="split-step">Pas d'intermédiaire (m)</label><input id="split-step" type="number" min="50" step="50" value="200"></div>
       </div>
-      <div class="row" id="row-timer" style="display:none">
-        <div class="wheel"><label class="badge">Heures</label><select id="wh-h"></select></div>
-        <div class="wheel"><label class="badge">Minutes</label><select id="wh-m"></select></div>
-        <div class="wheel"><label class="badge">Secondes</label><select id="wh-s"></select></div>
-      </div>
       <p id="hint" class="muted"></p>
     </section>
 
-    <section class="card" id="controls">
-      <h2>Contrôles</h2>
+    <section class="card center big-controls">
       <div class="chips">
         <button id="btn-start" class="btn btn-ok">▶️ Démarrer</button>
-        <button id="btn-lap" class="btn btn-ghost" style="display:none">🏁 Intermédiaire</button>
+        <button id="btn-lap" class="btn btn-ghost" style="display:none">🏁 Intermédiaire / Tour</button>
         <button id="btn-stop" class="btn btn-warn" disabled>⏸️ Stop</button>
         <button id="btn-reset" class="btn btn-danger" disabled>🔄 Reset</button>
-        <button id="btn-qr" class="btn btn-ghost">📱 Générer le QR JSON</button>
+        <button id="btn-qr" class="btn btn-ghost">📱 QR JSON</button>
       </div>
     </section>
 
@@ -77,32 +68,30 @@
       <div id="splits-wrap" style="display:none;margin-top:12px">
         <h3>Intermédiaires</h3>
         <table id="splits-table">
-          <thead><tr><th>#</th><th>Distance cumulée (m)</th><th>Temps cumulé</th></tr></thead>
+          <thead><tr><th>#</th><th>Distance cumulée (m)</th><th>Temps cumulé</th><th>Vitesse instantanée</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
+
+      <div id="qr-box" style="display:none">
+        <h3>QR JSON</h3>
+        <div id="qr" style="width:220px;height:220px;"></div>
+        <pre id="qr-json" class="code"></pre>
+      </div>
     </section>
 
-    <!-- Fullscreen overlays -->
+    <!-- Fullscreen overlays (chrono/minuteur) -->
     <div id="fs-chrono" class="fullscreen">
       <div id="fs-time" class="time-big">00:00</div>
     </div>
-
     <div id="fs-countdown" class="fullscreen">
       <div class="circle"><canvas id="cd-canvas"></canvas></div>
       <div id="cd-time" class="time-big" style="margin-top:18px">00:00</div>
     </div>
-
-    <div id="fs-speed" class="fullscreen">
-      <div id="fs-speed-val" class="speed-big">—</div>
-      <div id="fs-time2" class="time-big" style="font-size:12vw;margin-top:12px">00:00</div>
-    </div>
-
-    <footer class="muted center">EPS iPad • QR intégrés</footer>
   </div>
 
-  <!-- QR lib via CDN (dual fallback loaded by app.js if missing) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script defer src="js/qrcode.min.js"></script>
   <script defer src="app.js"></script>
+  <footer>RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG  - JB</footer>
 </body>
 </html>

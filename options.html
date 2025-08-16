@@ -3,39 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>RunMeasure • Options</title>
+  <title>Options • RunMeasure</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="wrap">
-    <header class="card center">
+    <header class="center">
       <h1 class="brand">RunMeasure</h1>
       <div class="chips">
         <a class="btn btn-ghost" href="index.html">← Accueil</a>
-        <a class="btn btn-ghost" href="help.html">Aide</a>
         <a class="btn btn-ghost" href="safety.html">Fiche sécurité</a>
+        <a class="btn btn-ghost" href="help.html">Aide</a>
       </div>
     </header>
 
     <section class="card">
       <h2 class="center">Informations élève</h2>
-      <div class="row">
+      <div class="row smallish">
         <div>
-          <label for="nom" class="badge">Nom</label>
+          <label class="badge" for="nom">Nom</label>
           <input id="nom" type="text" placeholder="Martin">
         </div>
         <div>
-          <label for="prenom" class="badge">Prénom</label>
+          <label class="badge" for="prenom">Prénom</label>
           <input id="prenom" type="text" placeholder="Julie">
         </div>
       </div>
-      <div class="row">
+      <div class="row smallish">
         <div>
-          <label for="classe" class="badge">Classe</label>
+          <label class="badge" for="classe">Classe</label>
           <input id="classe" type="text" placeholder="2nde 4">
         </div>
         <div>
-          <label for="sexe" class="badge">Sexe</label>
+          <label class="badge" for="sexe">Sexe</label>
           <select id="sexe">
             <option value="">—</option>
             <option value="fille">Fille</option>
@@ -52,23 +52,22 @@
     <section class="card">
       <h2 class="center">Choisir un mode</h2>
       <div class="grid">
-        <a class="btn btn-primary btn-wide go" data-mode="chrono">Chrono</a>
-        <a class="btn btn-primary btn-wide go" data-mode="minuteur">Minuteur</a>
-        <a class="btn btn-primary btn-wide go" data-mode="chrono_vitesse">Chrono avec calcul de vitesse</a>
-        <a class="btn btn-primary btn-wide go" data-mode="minuteur_distance">Minuteur avec distance</a>
-        <a class="btn btn-primary btn-wide go" data-mode="intermediaire">Temps intermédiaire</a>
-        <a class="btn btn-primary btn-wide go" data-mode="demi_cooper">Demi-Cooper (6′)</a>
-        <a class="btn btn-primary btn-wide go" data-mode="cooper">Cooper (12′)</a>
+        <a class="btn btn-primary btn-wide go" style="background:#2c5be0" data-mode="chrono">Chrono</a>
+        <a class="btn btn-primary btn-wide go" style="background:#119b86" data-mode="minuteur">Minuteur</a>
+        <a class="btn btn-primary btn-wide go" style="background:#6b37ff" data-mode="chrono_vitesse">Chrono + Vitesse</a>
+        <a class="btn btn-primary btn-wide go" style="background:#c96d07" data-mode="minuteur_distance">Minuteur + Distance</a>
+        <a class="btn btn-primary btn-wide go" style="background:#2c5be0" data-mode="intermediaire">Temps intermédiaire</a>
+        <a class="btn btn-primary btn-wide go" style="background:#c0316e" data-mode="demi_cooper">Demi-Cooper (6′)</a>
+        <a class="btn btn-primary btn-wide go" style="background:#c0156a" data-mode="cooper">Cooper (12′)</a>
       </div>
     </section>
-
-    <footer class="muted center">Pack EPS iPad</footer>
   </div>
+  <footer>RunMeasure - Equipe EPS Lycée Vauban - LUXEMBOURG  - JB</footer>
 
   <script>
     function getEleve(){ try{const raw=localStorage.getItem('eleve'); if(raw) return JSON.parse(raw);}catch{} return {nom:'',prenom:'',classe:'',sexe:''}; }
     function setEleve(e){ try{localStorage.setItem('eleve', JSON.stringify(e));}catch{} }
-    function loadForm(){ const e=getEleve(); const ids=['nom','prenom','classe','sexe']; ids.forEach(id=>{ if(e[id]) document.getElementById(id).value=e[id]; }); }
+    function loadForm(){ const e=getEleve(); ['nom','prenom','classe','sexe'].forEach(id=>{ const el=document.getElementById(id); if(el && e[id]) el.value = e[id]; }); }
     function readForm(){ return { nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim().toLowerCase() }; }
     document.addEventListener('DOMContentLoaded',()=>{
       loadForm();

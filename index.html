@@ -220,7 +220,7 @@
       toast('Renseigne Nom / Prénom / Classe / Sexe.'); return;
     }
     applyParams();
-    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A (on laisse tel quel)
+    student={ nom:nom.value.trim(), prenom:prenom.value.trim(), classe:classe.value.trim(), sexe:sexe.value.trim() }; // M/F/A (laissé tel quel)
     runMeta.innerHTML=`<span class="badge">${student.prenom} ${student.nom}</span> · Classe <b>${student.classe}</b> · Palier <b>${distPalier} m</b> · Cible <b>${distTot} m</b>`;
     goTo('page-run');
   });
@@ -268,23 +268,23 @@
     if(announce) toast('Paramètres/résultats réinitialisés.');
   }
 
-  // ✅ QR payload : nom, prenom, classe, sexe, puis uniquement les temps cumulés ("200m","400m",...)
+  // ✅ QR payload : nom, prenom, classe, sexe, puis uniquement les temps cumulés par distance
   function buildQRPayload(){
     const record = {
       nom:     student.nom || "",
       prenom:  student.prenom || "",
       classe:  student.classe || "",
-      sexe:    student.sexe || ""   // M/F/A tel quel (si ScanProf refuse A, on pourra mapper plus tard)
+      sexe:    student.sexe || ""   // si ScanProf n'accepte que M/F, on pourra mapper ici A->F ou A->M
     };
-    // Ajout des temps cumulés par distance
+    // clés numériques "200","400","600",...
     splits.forEach((s, i) => {
-      const dist = distPalier * (i+1);
-      record[`${dist}m`] = fmtTime(s.cumMs);
+      const dist = distPalier * (i + 1);
+      record[String(dist)] = fmtTime(s.cumMs);
     });
-    return [record];
+    return [record]; // tableau attendu
   }
 
-  // QR render
+  // QR render (QRCode.js)
   function renderQR(payload){
     const str = JSON.stringify(payload);
     qrBox.innerHTML = '';

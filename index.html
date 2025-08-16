@@ -219,7 +219,7 @@
         <div id="qr-cumules"></div>
       </div>
     </div>
-    <p class="hint">Les deux QR s’affichent automatiquement à la fin de la course (noir sur blanc).</p>
+    <p class="hint">Deux QR s’affichent automatiquement à la fin : <b>Prof</b> (strict) et <b>Cumulés</b> (identité puis 200/400/…).</p>
   </section>
 
   <div class="btns" style="margin-top:6px">
@@ -308,8 +308,8 @@
     btnLap.disabled=true; btnStop.disabled=true; btnStart.disabled=true; btnExportCSV.disabled=false;
 
     // Génère les 2 QR
-    renderQR('qr-scanprof', buildScanProfPayload());
-    renderQR('qr-cumules',  buildCumulesPayload());
+    renderQR('qr-scanprof', JSON.stringify(buildScanProfPayload()));
+    renderQR('qr-cumules',  buildCumulesJSONString());  // << chaîne JSON ordonnée
 
     setTimeout(()=>qrProf.scrollIntoView({behavior:'smooth',block:'start'}),50);
   }
@@ -324,14 +324,13 @@
 
   // ====== QR PAYLOADS ======
 
-  // ScanProf strict : [ { nom, prenom, classe, sexe(M/F), distance, vitesse, vma } ]
+  // 1) ScanProf strict : [ { nom, prenom, classe, sexe(M/F), distance, vitesse, vma } ]
   function buildScanProfPayload(){
     const totalMs = splits.length ? splits[splits.length-1].cumMs : 0;
     const distance = distPalier * splits.length; // m parcourus
     const vitesse = totalMs>0 ? +(((distance)/(totalMs/1000))*3.6).toFixed(2) : 0; // km/h
     const vma = vitesse; // à défaut d'une VMA mesurée
     const sx = (student.sexe==='M' || student.sexe==='F') ? student.sexe : 'F';
-
     return [{
       nom:     student.nom || "",
       prenom:  student.prenom || "",
@@ -343,30 +342,41 @@
     }];
   }
 
-  // Cumulés EPS : [ { nom, prenom, classe, sexe, "200":"mm:ss.cs", "400":"mm:ss.cs", ... } ]
-  function buildCumulesPayload(){
-    const rec = {
-      nom:     student.nom || "",
-      prenom:  student.prenom || "",
-      classe:  student.classe || "",
-      sexe:    student.sexe || ""
-    };
+  // 2) Cumulés EPS : chaîne JSON ordonnée manuellement pour garder identité en premier
+  // Sortie texte (à passer directement au QR): 
+  //   [{"nom":"...","prenom":"...","classe":"...","sexe":"...","200":"mm:ss.cs","400":"..."}]
+  function buildCumulesJSONString(){
+    const esc = s => JSON.stringify(String(s)); // échappe correctement
+    const recParts = [];
+    // identité d'abord
+    recParts.push(`"nom":${esc(student.nom||"")}`);
+    recParts.push(`"prenom":${esc(student.prenom||"")}`);
+    recParts.push(`"classe":${esc(student.classe||"")}`);
+    recParts.push(`"sexe":${esc(student.sexe||"")}`);
+    // ensuite les distances dans l'ordre des paliers atteints
     splits.forEach((s,i)=>{
-      const dist = distPalier*(i+1);
-      rec[String(dist)] = fmtTime(s.cumMs);
+      const dist = distPalier*(i+1);         // 200,400,...
+      recParts.push(`${JSON.stringify(String(dist))}:${esc(fmtTime(s.cumMs))}`);
     });
-    return [rec];
+    // si tu veux forcer jusqu'à la distance cible avec cellules vides, décommente :
+    /*
+    for(let d=distPalier*(splits.length+1); d<=distTot; d+=distPalier){
+      recParts.push(`${JSON.stringify(String(d))}:""`);
+    }
+    */
+    const objText = `{${recParts.join(',')}}`;
+    return `[${objText}]`;
   }
 
   // Rendu QR générique (noir sur blanc, correction élevée)
-  function renderQR(targetId, payload){
+  function renderQR(targetId, text){
     const el = document.getElementById(targetId);
     if(!el) return;
     el.innerHTML='';
     try{
       if(typeof QRCode==='undefined') throw new Error('QRCode.js non chargé');
       new QRCode(el,{
-        text: JSON.stringify(payload),
+        text, // on passe la chaîne telle quelle
         width: 340,
         height: 340,
         colorDark : "#000000",
@@ -379,7 +389,7 @@
     }
   }
 
-  // Export CSV
+  // Export CSV (inchangé)
   function exportCSV(){
     if(!splits.length){ toast('Aucun temps à exporter.'); return; }
     const headers=['Palier (m)','Temps palier','Temps cumulé','Vitesse palier (km/h)'];

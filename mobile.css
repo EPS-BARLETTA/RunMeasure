@@ -1,0 +1,44 @@
+/* mobile.css — couche responsive et tactile, sans toucher au QR */
+:root{ --gap:.8rem; --pad:1rem; --radius:14px; --brand:#0b1220; --ink:#0f172a; --ink-soft:#334155; --line:#e5e7eb; }
+*{ box-sizing:border-box; }
+html{ font-size:16px; }
+body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; color:var(--ink); }
+
+.app{ display:grid; gap:var(--gap); padding:var(--pad); max-width:1200px; margin-inline:auto; }
+.card{ border:1px solid var(--line); border-radius:var(--radius); padding:var(--pad); background:#fff; }
+.card h2{ margin-top:0; font-size:1.1rem; color:var(--ink-soft); }
+
+.controls{ display:flex; flex-wrap:wrap; gap:var(--gap); }
+.controls button{ flex:1 1 140px; min-height:52px; padding:1rem; border-radius:var(--radius); touch-action:manipulation; border:1px solid var(--line); background:#f8fafc; }
+.controls button.primary{ background:#2563eb; color:#fff; border-color:#1d4ed8; }
+.controls button.warn{ background:#ef4444; color:#fff; border-color:#dc2626; }
+.controls button.success{ background:#16a34a; color:#fff; border-color:#15803d; }
+
+.timer-big{ font-variant-numeric: tabular-nums; text-align:center; letter-spacing:0.03em; font-weight:700;
+  font-size: clamp(2rem, 12vw, 10rem); padding: .5rem 0; }
+
+.grid-2{ display:grid; gap:var(--gap); }
+@media (min-width: 900px){ .grid-2{ grid-template-columns: 1fr 1fr; align-items:start; } }
+
+label{ display:block; font-size:.9rem; color:var(--ink-soft); margin-bottom:.25rem; }
+input, select{ width:100%; padding:.7rem .8rem; border:1px solid var(--line); border-radius:10px; font-size:16px; background:#fff; }
+
+/* Aide visuelle : boites info (ex: tours, distance totale) */
+.stats-row{ display:flex; gap:var(--gap); flex-wrap:wrap; }
+.stat{ flex:1 1 180px; border:1px dashed var(--line); border-radius:12px; padding:.8rem; }
+.stat .k{ font-size:.8rem; color:var(--ink-soft); }
+.stat .v{ font-size:1.3rem; font-weight:700; }
+
+/* Dark mode */
+@media (prefers-color-scheme:dark){
+  body{ background:#0b1220; color:#e5e7eb; }
+  .card{ background:#111827; border-color:#1f2937; }
+  input, select{ background:#111827; color:#e5e7eb; border-color:#334155; }
+  .controls button{ background:#0f172a; color:#e5e7eb; border-color:#1f2937; }
+  .controls button.primary{ background:#2563eb; border-color:#1d4ed8; }
+  .controls button.warn{ background:#ef4444; border-color:#dc2626; color:#fff; }
+  .controls button.success{ background:#16a34a; border-color:#15803d; color:#fff; }
+}
+
+/* Réduction d'animations si demandé */
+@media (prefers-reduced-motion:reduce){ *{ animation:none!important; transition:none!important; } }
